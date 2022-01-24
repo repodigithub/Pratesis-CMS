@@ -20,6 +20,7 @@ class AlterUserTable extends Migration
             $table->string('email')->unique();
             $table->string('username')->unique();
             $table->string('password');
+            $table->enum('status', ['active', 'non-active'])->default('non-active');
             $table->string('user_level')->nullable();
             $table->char('kode_distributor', 8)->nullable();
             $table->char('kode_area', 6)->nullable();
@@ -41,6 +42,7 @@ class AlterUserTable extends Migration
         $this->dropColumnIfExists('user', 'email');
         $this->dropColumnIfExists('user', 'username');
         $this->dropColumnIfExists('user', 'password');
+        $this->dropColumnIfExists('user', 'status');
         $this->dropColumnIfExists('user', 'user_level');
         $this->dropColumnIfExists('user', 'kode_distributor');
         $this->dropColumnIfExists('user', 'kode_area');

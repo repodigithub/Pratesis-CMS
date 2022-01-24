@@ -17,6 +17,9 @@ class User extends Model implements AuthenticatableContract, AuthorizableContrac
 {
     use Authenticatable, Authorizable, HasFactory, Notifiable, CanResetPassword;
 
+    const STATUS_ACTIVE = 'active';
+    const STATUS_NON_ACTIVE = 'non-active';
+
     protected $table = 'user';
 
     /**

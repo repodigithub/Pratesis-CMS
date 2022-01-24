@@ -30,8 +30,8 @@ class AuthController extends Controller
       'email' => 'email|required|unique:user',
       'password' => 'required',
       'username' => 'required|unique:user',
-      'kode_distributor' => 'required',
-      'kode_area' => 'required',
+      'kode_distributor' => 'required|nullable',
+      'kode_area' => 'required|nullable',
       'g-recaptcha-response' => 'required'
     ]);
 
@@ -99,8 +99,6 @@ class AuthController extends Controller
     $req->validate([
       'password' => 'required|confirmed'
     ]);
-
-
 
     return $this->response([]);
   }
