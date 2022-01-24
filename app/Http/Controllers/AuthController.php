@@ -112,10 +112,12 @@ class AuthController extends Controller
 
   private function verifyCaptcha($grecaptcha)
   {
-    $response = Http::post(self::RECAPTCHA_URL, [
+    $response = Http::asForm()->post(self::RECAPTCHA_URL, [
       'secret' => env('RECAPTCHA_SECRET'),
       'response' => $grecaptcha
     ])->json();
+
+    die(json_encode($response));
 
     if (!$response['success']) {
       throw new HttpException(Response::HTTP_BAD_REQUEST, "CAPTCHA is not valid");
