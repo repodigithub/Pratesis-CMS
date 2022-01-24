@@ -8,7 +8,10 @@ use Illuminate\Http\Response;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Http;
+use Illuminate\Support\Facades\Mail;
+use Illuminate\Support\Facades\Password;
 use Symfony\Component\HttpKernel\Exception\HttpException;
+use Symfony\Component\HttpKernel\Exception\UnauthorizedHttpException;
 
 class AuthController extends Controller
 {
@@ -59,20 +62,52 @@ class AuthController extends Controller
 
     $credentials = $req->only(['email', 'password']);
 
-    if (Auth::attempt($credentials)) {
-      $req->session()->regenerate();
-
-      return redirect()->intended('dashboard');
+    if (!$token = auth()->attempt($credentials)) {
+      throw new UnauthorizedHttpException('', 'Unauthorized.');
     }
+
+    $user = Auth::user();
+    $user->token = $token;
+
+    return $this->response($user);
 
     throw new HttpException(Response::HTTP_BAD_REQUEST, "The provided credentials do not match our records.'");
   }
 
-  public function me(Request $req)
+  public function forgetPassword(Request $req)
   {
     $this->validate($req, [
-      'index' => 'required'
+      'email' => 'email|required',
+      'g-recaptcha-response' => 'required'
     ]);
+
+    $this->verifyCaptcha($req->input('g-recaptcha-response'));
+
+    $status = Password::sendResetLink($req->only('email'), function ($user, $token) {
+      Mail::to($user);
+    });
+
+    if ($status === Password::RESET_LINK_SENT) {
+      return $this->response([]);
+    }
+
+    throw new HttpException(Response::HTTP_BAD_REQUEST, __($status));
+  }
+
+  public function resetPassword(Request $req)
+  {
+    $req->validate([
+      'password' => 'required|confirmed'
+    ]);
+
+
+
+    return $this->response([]);
+  }
+
+  public function me()
+  {
+    return $this->response(Auth::user());
   }
 
   private function verifyCaptcha($grecaptcha)
