@@ -14,7 +14,7 @@ class AlterUserGroupTable extends Migration
     public function up()
     {
         Schema::table('user', function (Blueprint $table) {
-            $table->char('kode_group');
+            $table->char('kode_group')->nullable();
 
             $table->foreign('kode_group')->references('kode_group')->on('user_group')
                 ->cascadeOnUpdate()->cascadeOnUpdate();

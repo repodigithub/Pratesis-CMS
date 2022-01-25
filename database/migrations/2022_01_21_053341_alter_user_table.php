@@ -20,8 +20,7 @@ class AlterUserTable extends Migration
             $table->string('email')->unique();
             $table->string('username')->unique();
             $table->string('password');
-            $table->enum('status', ['active', 'non-active'])->default('non-active');
-            $table->string('user_level')->nullable();
+            $table->enum('status', ['pending', 'reject', 'approve'])->default('pending');
             $table->char('kode_distributor', 8)->nullable();
             $table->char('kode_area', 6)->nullable();
 
