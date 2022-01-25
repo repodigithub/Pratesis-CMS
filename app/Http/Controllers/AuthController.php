@@ -29,8 +29,8 @@ class AuthController extends Controller
       'email' => 'email|required|unique:user',
       'password' => 'required',
       'username' => 'required|unique:user',
-      'kode_distributor' => 'required|nullable',
-      'kode_area' => 'required|nullable',
+      'kode_distributor' => 'nullable',
+      'kode_area' => 'nullable',
       'g-recaptcha-response' => 'required'
     ]);
 
