@@ -11,7 +11,6 @@ use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Facades\Password;
 use Symfony\Component\HttpKernel\Exception\HttpException;
-use Symfony\Component\HttpKernel\Exception\UnauthorizedHttpException;
 
 class AuthController extends Controller
 {
@@ -63,15 +62,13 @@ class AuthController extends Controller
     $credentials = $req->only(['email', 'password']);
 
     if (!$token = auth()->attempt($credentials)) {
-      throw new UnauthorizedHttpException('', 'Unauthorized.');
+      throw new HttpException(Response::HTTP_BAD_REQUEST, "The provided credentials do not match our records.'");
     }
 
     $user = Auth::user();
     $user->token = $token;
 
     return $this->response($user);
-
-    throw new HttpException(Response::HTTP_BAD_REQUEST, "The provided credentials do not match our records.'");
   }
 
   public function forgetPassword(Request $req)
@@ -114,8 +111,6 @@ class AuthController extends Controller
       'secret' => env('RECAPTCHA_SECRET'),
       'response' => $grecaptcha
     ])->json();
-
-    die(json_encode($response));
 
     if (!$response['success']) {
       throw new HttpException(Response::HTTP_BAD_REQUEST, "CAPTCHA is not valid");
