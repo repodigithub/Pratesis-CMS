@@ -6,6 +6,7 @@ Powered by Lumen PHP Framework
 
 ```
 composer install
+php artisan migrate
 php artisan jwt:secret
 ```
 
