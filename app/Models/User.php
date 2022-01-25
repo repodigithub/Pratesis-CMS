@@ -17,8 +17,9 @@ class User extends Model implements AuthenticatableContract, AuthorizableContrac
 {
     use Authenticatable, Authorizable, HasFactory, Notifiable, CanResetPassword;
 
-    const STATUS_ACTIVE = 'active';
-    const STATUS_NON_ACTIVE = 'non-active';
+    const STATUS_PENDING = 'pending';
+    const STATUS_APPROVE = 'approve';
+    const STATUS_REJECT = 'reject';
 
     protected $table = 'user';
 
@@ -28,7 +29,15 @@ class User extends Model implements AuthenticatableContract, AuthorizableContrac
      * @var array
      */
     protected $fillable = [
-        'name', 'email',
+        "created_at",
+        "user_id",
+        "full_name",
+        "email",
+        "username",
+        "kode_group",
+        "kode_area",
+        "kode_distributor",
+        "status",
     ];
 
     /**
@@ -58,10 +67,5 @@ class User extends Model implements AuthenticatableContract, AuthorizableContrac
     public function getJWTCustomClaims()
     {
         return [];
-    }
-
-    protected function resetUrl($notifiable)
-    {
-        return 'abcdefg';
     }
 }

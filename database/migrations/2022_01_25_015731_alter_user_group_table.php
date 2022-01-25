@@ -4,7 +4,7 @@ use Database\Factories\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
 
-class CreateSubBrandTable extends Migration
+class AlterUserGroupTable extends Migration
 {
     /**
      * Run the migrations.
@@ -13,11 +13,11 @@ class CreateSubBrandTable extends Migration
      */
     public function up()
     {
-        Schema::create('sub_brand', function (Blueprint $table) {
-            $table->id();
-            $table->char('kode_sub_brand', 15)->unique();
-            $table->string('nama_sub_brand');
-            $table->timestamps();
+        Schema::table('user', function (Blueprint $table) {
+            $table->char('kode_group')->nullable();
+
+            $table->foreign('kode_group')->references('kode_group')->on('user_group')
+                ->cascadeOnUpdate()->cascadeOnUpdate();
         });
     }
 
@@ -28,6 +28,6 @@ class CreateSubBrandTable extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('sub_brand');
+        $this->dropColumnIfExists('user', 'kode_group');
     }
 }

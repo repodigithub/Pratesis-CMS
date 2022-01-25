@@ -1,6 +1,6 @@
 <?php
 
-use Illuminate\Database\Migrations\Migration;
+use Database\Factories\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
 
@@ -20,8 +20,7 @@ class AlterUserTable extends Migration
             $table->string('email')->unique();
             $table->string('username')->unique();
             $table->string('password');
-            $table->enum('status', ['active', 'non-active'])->default('non-active');
-            $table->string('user_level')->nullable();
+            $table->enum('status', ['pending', 'reject', 'approve'])->default('pending');
             $table->char('kode_distributor', 8)->nullable();
             $table->char('kode_area', 6)->nullable();
 
@@ -46,14 +45,5 @@ class AlterUserTable extends Migration
         $this->dropColumnIfExists('user', 'user_level');
         $this->dropColumnIfExists('user', 'kode_distributor');
         $this->dropColumnIfExists('user', 'kode_area');
-    }
-
-    private function dropColumnIfExists($table, $column)
-    {
-        if (Schema::hasColumn($table, $column)) {
-            Schema::table($table, function (Blueprint $table) use ($column) {
-                $table->dropColumn($column);
-            });
-        }
     }
 }
