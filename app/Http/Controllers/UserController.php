@@ -68,9 +68,9 @@ class UserController extends Controller
       $users[] = User::findOrFail($id);
     }
 
-    foreach ($users as $user) {
-      $user->status = $req->input("status");
-    }
+    User::whereIn("id", $req->input("ids"))->update([
+      "status" => $req->input("action")
+    ]);
 
     return $this->response();
   }
@@ -95,7 +95,7 @@ class UserController extends Controller
       "kode_group" => "nullable",
       "kode_area" => "nullable",
       "kode_distributor" => "nullable",
-      "status" => ['required', Rule::in([User::STATUS_APPROVE, User::STATUS_REJECT])],
+      "status" => ["required", Rule::in([User::STATUS_APPROVE, User::STATUS_REJECT])],
     ]);
 
     $data->update($req->only([
