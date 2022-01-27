@@ -17,7 +17,6 @@ class CreateUserGroupTable extends Migration
             $table->id();
             $table->char('kode_group')->unique();
             $table->string('nama_group');
-            $table->timestamps();
         });
     }
 

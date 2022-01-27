@@ -17,7 +17,6 @@ class CreateGroupPermissionTable extends Migration
             $table->id();
             $table->char('kode_group');
             $table->char('kode_permission');
-            $table->timestamps();
 
             $table->foreign('kode_group')->references('kode_group')->on('user_group')
                 ->cascadeOnUpdate()->cascadeOnUpdate();
