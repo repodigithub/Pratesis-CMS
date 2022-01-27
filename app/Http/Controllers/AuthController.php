@@ -2,10 +2,12 @@
 
 namespace App\Http\Controllers;
 
+use App\Mail\UserRegisteredMail;
 use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Mail;
@@ -31,20 +33,25 @@ class AuthController extends Controller
       'username' => 'required|unique:user',
       'kode_distributor' => 'nullable',
       'kode_area' => 'nullable',
-      'g-recaptcha-response' => 'required'
+      // 'g-recaptcha-response' => 'required'
     ]);
 
-    $this->verifyCaptcha($req->input('g-recaptcha-response'));
+    // $this->verifyCaptcha($req->input('g-recaptcha-response'));
 
-    $user = new User();
-    $user->user_id = $req->input('user_id');
-    $user->full_name = $req->input('full_name');
-    $user->email = $req->input('email');
-    $user->username = $req->input('username');
-    $user->password = Hash::make($req->input('password'));
-    $user->kode_distributor = $req->input('kode_distributor');
-    $user->kode_area = $req->input('kode_area');
-    $user->save();
+    DB::transaction(function () use ($req) {
+      $user = new User();
+      $user->user_id = $req->input('user_id');
+      $user->full_name = $req->input('full_name');
+      $user->email = $req->input('email');
+      $user->username = $req->input('username');
+      $user->password = Hash::make($req->input('password'));
+      $user->kode_distributor = $req->input('kode_distributor');
+      $user->kode_area = $req->input('kode_area');
+      // $user->save();
+
+      // Send mail
+      Mail::to($user)->send(new UserRegisteredMail());
+    });
 
     return $this->response([]);
   }
