@@ -2,8 +2,12 @@
 
 namespace Database\Seeders;
 
+use App\Models\Depot;
+use App\Models\Distributor;
 use App\Models\Permission\Group;
 use App\Models\Permission\Permission;
+use App\Models\Region;
+use App\Models\Sales;
 use App\Models\User;
 use Illuminate\Database\Seeder;
 use Illuminate\Support\Facades\DB;
@@ -71,11 +75,35 @@ class SetupSeeder extends Seeder
                 }
             }
 
-            // Buat kode depo / area
-            
+            // Buat region
+            $region = Region::create([
+                'kode_region' => 'TEST01',
+                'nama_region' => 'Tes region',
+            ]);
+
+            // Buat kode depot / area
+            $depot = Depot::create([
+                'kode_area' => 'TEST01',
+                'nama_area' => 'Tes area',
+                'alamat_depo' => 'Alamat tes area',
+                'kode_region' => $region->kode_region,
+            ]);
+
+            // Buat sales
+            $sales = Sales::create([
+                'kode_sales_workforce' => 'TEST01',
+                'nama_sales_workforce' => 'Tes sales',
+            ]);
 
             // Buat kode distributor
-            
+            $distributor = Distributor::create([
+                'kode_distributor' => 'TEST01',
+                'nama_distributor' => 'Test distributor',
+                'kode_sales_workforce' => $sales->kode_sales_workforce,
+                'kode_area' => $depot->kode_area,
+                'kode_region' => $region->kode_region,
+                'status_distributor' => Distributor::STATUS_ACTIVE,
+            ]);
 
             // Buat admin
             $user = User::create([
