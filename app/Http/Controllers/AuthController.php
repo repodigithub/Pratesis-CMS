@@ -33,10 +33,10 @@ class AuthController extends Controller
       'username' => 'required|unique:user',
       'kode_distributor' => 'nullable',
       'kode_area' => 'nullable',
-      // 'g-recaptcha-response' => 'required'
+      'g-recaptcha-response' => 'required'
     ]);
 
-    // $this->verifyCaptcha($req->input('g-recaptcha-response'));
+    $this->verifyCaptcha($req->input('g-recaptcha-response'));
 
     DB::transaction(function () use ($req) {
       $user = new User();
@@ -61,10 +61,10 @@ class AuthController extends Controller
     $this->validate($req, [
       'email' => 'email|required',
       'password' => 'required',
-      // 'g-recaptcha-response' => 'required'
+      'g-recaptcha-response' => 'required'
     ]);
 
-    // $this->verifyCaptcha($req->input('g-recaptcha-response'));
+    $this->verifyCaptcha($req->input('g-recaptcha-response'));
 
     $credentials = $req->only(['email', 'password']);
 
