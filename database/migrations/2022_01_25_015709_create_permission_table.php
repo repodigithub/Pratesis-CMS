@@ -17,7 +17,6 @@ class CreatePermissionTable extends Migration
             $table->id();
             $table->char('kode_permission')->unique();
             $table->string('nama_permission');
-            $table->timestamps();
         });
     }
 
