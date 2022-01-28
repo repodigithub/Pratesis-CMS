@@ -27,7 +27,7 @@ class CreatePromoTable extends Migration
             $table->char('kode_area', 6);
             $table->char('kode_sales_workforce', 6);
             $table->char('kode_distributor', 8);
-            $table->enum('status_promo', ['approved', 'pending']);
+            $table->string('status_promo');
             $table->char('kode_spend_type');
             $table->date('tanggal_awal');
             $table->date('tanggal_ahir');

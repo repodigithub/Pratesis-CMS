@@ -17,7 +17,7 @@ class User extends Model implements AuthenticatableContract, AuthorizableContrac
 {
     use Authenticatable, Authorizable, HasFactory, Notifiable, CanResetPassword;
 
-    const STATUS_PENDING = 'pending';
+    const STATUS_PENDING = 'waiting_approval';
     const STATUS_APPROVE = 'approve';
     const STATUS_REJECT = 'reject';
 

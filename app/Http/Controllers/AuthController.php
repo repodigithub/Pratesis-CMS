@@ -61,10 +61,10 @@ class AuthController extends Controller
     $this->validate($req, [
       'email' => 'email|required',
       'password' => 'required',
-      'g-recaptcha-response' => 'required'
+      // 'g-recaptcha-response' => 'required'
     ]);
 
-    $this->verifyCaptcha($req->input('g-recaptcha-response'));
+    // $this->verifyCaptcha($req->input('g-recaptcha-response'));
 
     $credentials = $req->only(['email', 'password']);
 
