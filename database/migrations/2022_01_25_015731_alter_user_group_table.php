@@ -17,7 +17,7 @@ class AlterUserGroupTable extends Migration
             $table->char('kode_group')->nullable();
 
             $table->foreign('kode_group')->references('kode_group')->on('user_group')
-                ->cascadeOnUpdate()->cascadeOnUpdate();
+                ->nullOnDelete()->cascadeOnUpdate();
         });
     }
 

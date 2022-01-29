@@ -76,12 +76,14 @@ class SetupSeeder extends Seeder
             }
 
             // Buat region
+            Region::truncate();
             $region = Region::create([
                 'kode_region' => 'TEST01',
                 'nama_region' => 'Tes region',
             ]);
 
             // Buat kode depot / area
+            Depot::truncate();
             $depot = Depot::create([
                 'kode_area' => 'TEST01',
                 'nama_area' => 'Tes area',
@@ -90,12 +92,14 @@ class SetupSeeder extends Seeder
             ]);
 
             // Buat sales
+            Sales::truncate();
             $sales = Sales::create([
                 'kode_sales_workforce' => 'TEST01',
                 'nama_sales_workforce' => 'Tes sales',
             ]);
 
             // Buat kode distributor
+            Distributor::truncate();
             $distributor = Distributor::create([
                 'kode_distributor' => 'TEST01',
                 'nama_distributor' => 'Test distributor',
@@ -106,6 +110,7 @@ class SetupSeeder extends Seeder
             ]);
 
             // Buat admin
+            User::truncate();
             $user = User::create([
                 "user_id" => "ADM01",
                 "full_name" => "Administrator",
