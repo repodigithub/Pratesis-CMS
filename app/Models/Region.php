@@ -6,7 +6,10 @@ use Illuminate\Database\Eloquent\Model;
 
 class Region extends Model
 {
-  protected $table = 'region';
+  const FILE_PATH = "region";
+  const FILE_NAME = "MSTREGION";
 
-  public $fillable = ['kode_region', 'nama_region'];
+  protected $table = "region";
+
+  public $fillable = ["kode_region", "nama_region"];
 }

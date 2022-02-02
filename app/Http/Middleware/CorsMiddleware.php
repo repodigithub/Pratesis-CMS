@@ -17,14 +17,14 @@ class CorsMiddleware
   public function handle($request, Closure $next)
   {
     $headers = [
-      'Access-Control-Allow-Methods' => '*',
-      'Access-Control-Allow-Origin' => '*',
-      'Access-Control-Allow-Headers' => '*',
-      'Access-Control-Allow-Credentials' => true
+      "Access-Control-Allow-Methods" => "*",
+      "Access-Control-Allow-Origin" => "*",
+      "Access-Control-Allow-Headers" => "*",
+      "Access-Control-Allow-Credentials" => true
     ];
 
-    if ($request->isMethod('OPTIONS')) {
-      return response()->json('', Response::HTTP_NO_CONTENT, $headers);
+    if ($request->isMethod("OPTIONS")) {
+      return response()->json("", Response::HTTP_NO_CONTENT, $headers);
     }
 
     $response = $next($request);

@@ -11,7 +11,7 @@ class UserGroupController extends Controller
 {
   public function __construct()
   {
-    $this->middleware('auth:api');
+    $this->middleware("auth:api");
   }
 
   public function index(Request $req)
@@ -19,7 +19,7 @@ class UserGroupController extends Controller
 
     $pagination = $this->getPagination($req);
 
-    $data = Group::with('permissions');
+    $data = Group::with("permissions");
 
     if ($req->filled("search")) {
       $data->where(function ($query) use ($req) {
@@ -57,15 +57,15 @@ class UserGroupController extends Controller
   public function create(Request $req)
   {
     $this->validate($req, [
-      'kode_group' => 'required|unique:user_group',
-      'nama_group' => 'required',
-      'permission_ids' => 'array|nullable'
+      "kode_group" => "required|unique:user_group",
+      "nama_group" => "required",
+      "permission_ids" => "array|nullable"
     ]);
 
     $data = DB::transaction(function () use ($req) {
-      $group = Group::create($req->only(['kode_group', 'nama_group']));
-      if ($req->filled('permission_ids')) {
-        $permissions = Permission::whereIn('id', $req->input('permission_ids'))->get();
+      $group = Group::create($req->only(["kode_group", "nama_group"]));
+      if ($req->filled("permission_ids")) {
+        $permissions = Permission::whereIn("id", $req->input("permission_ids"))->get();
         $group->permissions()->attach($permissions);
       }
       $group->permissions;
@@ -85,17 +85,17 @@ class UserGroupController extends Controller
   public function update($id, Request $req)
   {
     $this->validate($req, [
-      'kode_group' => 'required|unique:user_group',
-      'nama_group' => 'required',
-      'permission_ids' => 'array|nullable'
+      "kode_group" => "required|unique:user_group",
+      "nama_group" => "required",
+      "permission_ids" => "array|nullable"
     ]);
 
     $data = DB::transaction(function () use ($req, $id) {
       $group = $this->getModel(Group::class, $id);
 
-      $group->update($req->only(['kode_group', 'nama_group']));
-      if ($req->filled('permission_ids')) {
-        $permissions = Permission::whereIn('id', $req->input('permission_ids'))->get();
+      $group->update($req->only(["kode_group", "nama_group"]));
+      if ($req->filled("permission_ids")) {
+        $permissions = Permission::whereIn("id", $req->input("permission_ids"))->get();
         $group->permissions()->sync($permissions);
       }
       $group->permissions;
@@ -115,11 +115,11 @@ class UserGroupController extends Controller
   public function attach($id, Request $req)
   {
     $this->validate($req, [
-      'permission_ids' => 'required|array'
+      "permission_ids" => "required|array"
     ]);
 
     $group = $this->getModel(Group::class, $id);
-    $permissions = Permission::whereIn('id', $req->input('permission_ids'))->get();
+    $permissions = Permission::whereIn("id", $req->input("permission_ids"))->get();
 
     $group->permissions()->attach($permissions);
 
@@ -129,11 +129,11 @@ class UserGroupController extends Controller
   public function detach($id, Request $req)
   {
     $this->validate($req, [
-      'permission_ids' => 'required|array'
+      "permission_ids" => "required|array"
     ]);
 
     $group = $this->getModel(Group::class, $id);
-    $permissions = Permission::whereIn('id', $req->input('permission_ids'))->get();
+    $permissions = Permission::whereIn("id", $req->input("permission_ids"))->get();
 
     $group->permissions()->detach($permissions);
 

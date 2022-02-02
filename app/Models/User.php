@@ -17,11 +17,11 @@ class User extends Model implements AuthenticatableContract, AuthorizableContrac
 {
     use Authenticatable, Authorizable, HasFactory, Notifiable, CanResetPassword;
 
-    const STATUS_PENDING = 'waiting_approval';
-    const STATUS_APPROVE = 'approve';
-    const STATUS_REJECT = 'reject';
+    const STATUS_PENDING = "waiting_approval";
+    const STATUS_APPROVE = "approve";
+    const STATUS_REJECT = "reject";
 
-    protected $table = 'user';
+    protected $table = "user";
 
     /**
      * The attributes that are mass assignable.
@@ -41,12 +41,12 @@ class User extends Model implements AuthenticatableContract, AuthorizableContrac
     ];
 
     /**
-     * The attributes excluded from the model's JSON form.
+     * The attributes excluded from the model"s JSON form.
      *
      * @var array
      */
     protected $hidden = [
-        'password',
+        "password",
     ];
 
     /**

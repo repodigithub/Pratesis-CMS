@@ -10,13 +10,13 @@ class DistributorController extends Controller
 {
   public function __construct()
   {
-    $this->middleware('auth:api');
+    $this->middleware("auth:api");
   }
 
   public function index(Request $req)
   {
     $this->validate($req, [
-      'status' => [Rule::in([Distributor::STATUS_ACTIVE, Distributor::STATUS_NON_ACTIVE])]
+      "status" => [Rule::in([Distributor::STATUS_ACTIVE, Distributor::STATUS_NON_ACTIVE])]
     ]);
 
     $pagination = $this->getPagination($req);

@@ -18,7 +18,7 @@ class UserRegisteredMail extends Mailable
      */
     public function __construct()
     {
-        $this->subject('Terimakasih sudah mendaftar');
+        $this->subject("Terimakasih sudah mendaftar");
     }
 
     /**
@@ -28,6 +28,6 @@ class UserRegisteredMail extends Mailable
      */
     public function build()
     {
-        return $this->view('mail.user.registered');
+        return $this->view("mail.user.registered");
     }
 }
