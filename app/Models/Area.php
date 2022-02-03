@@ -9,6 +9,7 @@ class Area extends Model
   const FILE_PATH = "area";
   const FILE_NAME = "MSTAREA";
   const WORKSHEET_NAME = "AREAMST";
+  const FIELD_NAME = ["Kode Area", "Nama Area", "Alamat", "Titik Koordinat", "Kode Region"];
 
   protected $table = "area";
 

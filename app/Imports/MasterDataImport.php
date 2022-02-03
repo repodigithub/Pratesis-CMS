@@ -2,8 +2,8 @@
 
 namespace App\Imports;
 
-use App\Imports\Sheet\DistributorGroupSheetImport;
-use App\Imports\Sheet\RegionSheetImport;
+use App\Imports\Sheet\SheetImport;
+use App\Models\Area;
 use App\Models\DistributorGroup;
 use App\Models\Region;
 use Maatwebsite\Excel\Concerns\WithConditionalSheets;
@@ -16,8 +16,9 @@ class MasterDataImport implements WithMultipleSheets
   public function conditionalSheets(): array
   {
     return [
-      Region::WORKSHEET_NAME => new RegionSheetImport(),
-      DistributorGroup::WORKSHEET_NAME => new DistributorGroupSheetImport()
+      Region::WORKSHEET_NAME => new SheetImport(),
+      DistributorGroup::WORKSHEET_NAME => new SheetImport(),
+      Area::WORKSHEET_NAME => new SheetImport(),
     ];
   }
 }

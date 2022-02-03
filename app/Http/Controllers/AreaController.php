@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Imports\MasterDataImport;
 use App\Imports\RegionsImport;
 use App\Models\Area;
 use App\Models\File;
@@ -72,50 +73,72 @@ class AreaController extends Controller
       "file" => "required|file|mimes:xlsx"
     ]);
 
-    DB::transaction(function () use ($req) {
-      $file = $req->file("file");
-      $filename = $file->getClientOriginalName();
-      if (strpos($filename, Region::FILE_NAME) === false) {
-        throw new BadRequestHttpException("Filename must \"" . Region::FILE_NAME . "\"");
+
+    $data = DB::transaction(function () use ($req) {
+      $file = $req->file('file');
+      $file_data = $this->storeFile(Area::class, $file);
+
+      $import = new MasterDataImport();
+      $import->onlySheets(Area::WORKSHEET_NAME);
+
+      $imported_data = Excel::toCollection($import, $file)[Area::WORKSHEET_NAME];
+
+      $data = $imported_data[0];
+      foreach (Area::FIELD_NAME as $key => $field) {
+        if ($data[$key] != $field) {
+          throw new BadRequestHttpException("#{$key}_column_error");
+        }
       }
-      $timestamp = date("Ymd-Gis");
-      $path = "/" . implode("/", [Region::FILE_PATH, $timestamp]);
-      $storage_path = "/app/public/$path";
-      $public_path = "/storage/$path";
-      $file_data = File::create([
-        "title" => $filename,
-        "type" => $file->getClientOriginalExtension(),
-        "storage_path" => $storage_path,
-        "public_path" => $public_path,
-        "uploader_id" => Auth::user()->id
-      ]);
-      $regions = Excel::toCollection(new RegionsImport, $file)[0];
+
+      $imported_data->splice(0, 1);
       $error = true;
-      foreach ($regions as $key => $region) {
-        if ($region["kode_region"] == "//END") {
-          $regions->splice($key);
+      foreach ($imported_data as $key => $value) {
+        if ($value[0] == "//END") {
+          $imported_data->splice($key);
           $error = false;
           break;
         }
       }
 
       if ($error) {
-        throw new BadRequestHttpException("no_end_tag_exception");
+        throw new BadRequestHttpException("no_end_tag_error");
       }
 
-      foreach ($regions as $key => $region) {
-        $this->validate(new Request($region->toArray()), [
-          "kode_region" => "required|unique:region",
-          "nama_region" => "required",
+      $imported_data = $imported_data->map(function ($row) {
+        return [
+          "kode_area" => $row[0],
+          "nama_area" => $row[1],
+          "alamat_depo" => $row[2],
+          "kode_region" => $row[3],
+          "koordinat" => $row[4],
+        ];
+      });
+
+      $data = collect();
+      foreach ($imported_data as $key => $value) {
+        $this->validate(new Request($value), [
+          "kode_area" => "required|unique:area",
+          "nama_area" => "required",
+          "alamat_depo" => "required",
+          "kode_region" => "required|exists:region,kode_region",
+          "koordinat" => "nullable"
         ], [
-          "unique" => ":attribute \":input\" has already been taken.",
+          "required" => "The :attribute #" . ($key + 1) . " field is required",
+          "unique" => "The :attribute #" . ($key + 1) . " with value \":input\" has already been taken.",
+        ], [
+          "kode_area" => "Kode Area", 
+          "nama_area" => "Nama Area", 
+          "alamat_depo" => "Alamat", 
+          "kode_region" => "Kode Region", 
+          "koordinat" => "Titik Koordinat", 
         ]);
-        Region::create($region->toArray());
+        $data->push(Area::create($value));
       }
-      $file->move(storage_path($storage_path), $filename);
+      $file->move(storage_path($file_data->storage_path), $file_data->filename . '.' . $file_data->type);
+      return $data;
     });
 
-    return $this->response();
+    return $this->response($data);
   }
 
   public function show($id, Request $req)

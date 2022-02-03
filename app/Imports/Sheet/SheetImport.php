@@ -5,7 +5,7 @@ namespace App\Imports\Sheet;
 use Illuminate\Support\Collection;
 use Maatwebsite\Excel\Concerns\ToCollection;
 
-class DistributorGroupSheetImport implements ToCollection
+class SheetImport implements ToCollection
 {
     /**
     * @param Collection $collection
