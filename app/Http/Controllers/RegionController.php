@@ -61,60 +61,59 @@ class RegionController extends Controller
       "file" => "required|file|mimes:xlsx"
     ]);
 
-    $regions = DB::transaction(function () use ($req) {
+    $data = DB::transaction(function () use ($req) {
       $file = $req->file('file');
       $file_data = $this->storeFile(Region::class, $file);
 
       $import = new MasterDataImport();
       $import->onlySheets(Region::WORKSHEET_NAME);
 
-      $regions = Excel::toCollection($import, $file)[Region::WORKSHEET_NAME];
+      $imported_data = Excel::toCollection($import, $file)[Region::WORKSHEET_NAME];
 
-      $first_region = $regions[0];
-      if ($first_region[0] != Region::FIELD_NAME[0]) {
-        throw new BadRequestHttpException("first_column_exception");
-      }
-      if ($first_region[1] != Region::FIELD_NAME[1]) {
-        throw new BadRequestHttpException("second_column_exception");
+      $data = $imported_data[0];
+      foreach (Region::FIELD_NAME as $key => $field) {
+        if ($data[$key] != $field) {
+          throw new BadRequestHttpException("#{$key}_column_error");
+        }
       }
 
-      $regions->splice(0, 1);
+      $imported_data->splice(0, 1);
       $error = true;
-      foreach ($regions as $key => $region) {
-        if ($region[0] == "//END") {
-          $regions->splice($key);
+      foreach ($imported_data as $key => $value) {
+        if ($value[0] == "//END") {
+          $imported_data->splice($key);
           $error = false;
           break;
         }
       }
 
       if ($error) {
-        throw new BadRequestHttpException("no_end_tag_exception");
+        throw new BadRequestHttpException("no_end_tag_error");
       }
 
-      $regions = $regions->map(function ($row) {
+      $imported_data = $imported_data->map(function ($row) {
         return [
           "kode_region" => $row[0],
           "nama_region" => $row[1],
         ];
       });
 
-      $regions_data = collect();
-      foreach ($regions as $key => $region) {
-        $this->validate(new Request($region), [
+      $data = collect();
+      foreach ($imported_data as $key => $value) {
+        $this->validate(new Request($value), [
           "kode_region" => "required|unique:region",
           "nama_region" => "required",
         ], [
           "required" => "The :attribute #" . ($key + 1) . " field is required",
           "unique" => "The :attribute #" . ($key + 1) . " with value \":input\" has already been taken.",
         ]);
-        $regions_data->push(Region::create($region));
+        $data->push(Region::create($value));
       }
       $file->move(storage_path($file_data->storage_path), $file_data->filename . '.' . $file_data->type);
-      return $regions_data;
+      return $data;
     });
 
-    return $this->response($regions);
+    return $this->response($data);
   }
 
   public function show($id, Request $req)
