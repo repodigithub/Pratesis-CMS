@@ -105,9 +105,7 @@ class DistributorGroupController extends Controller
         ]);
         DistributorGroup::updateOrCreate([
           "kode_distributor_group" => $value['kode_distributor_group'],
-        ], [
-          "nama_distributor_group" => $value['nama_distributor_group'],
-        ]);
+        ], $value);
         $data++;
       }
       $file->move(storage_path($file_data->storage_path), $file_data->filename . '.' . $file_data->type);
