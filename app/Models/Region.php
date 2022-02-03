@@ -8,6 +8,7 @@ class Region extends Model
 {
   const FILE_PATH = "region";
   const FILE_NAME = "MSTREGION";
+  const WORKSHEET_NAME = "REGIONMST";
 
   protected $table = "region";
 

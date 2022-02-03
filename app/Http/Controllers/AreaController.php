@@ -3,7 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Imports\RegionsImport;
-use App\Models\DistributorGroup;
+use App\Models\Area;
 use App\Models\File;
 use App\Models\Region;
 use Illuminate\Http\Request;
@@ -12,7 +12,7 @@ use Illuminate\Support\Facades\DB;
 use Maatwebsite\Excel\Facades\Excel;
 use Symfony\Component\HttpKernel\Exception\BadRequestHttpException;
 
-class DistributorGroupController extends Controller
+class AreaController extends Controller
 {
   public function __construct()
   {
@@ -23,12 +23,21 @@ class DistributorGroupController extends Controller
   {
     $pagination = $this->getPagination($req);
 
-    $data = DistributorGroup::select("*");
+    $data = Area::select("*");
+
+    if ($req->filled("include")) {
+      $data->with($req->query("include"));
+    }
+
+    if ($req->filled("region")) {
+      $data->where("kode_region", $req->query("region"));
+    }
 
     if ($req->filled("search")) {
       $data->where(function ($query) use ($req) {
-        $query->where("kode_sales_workforce", "ILIKE", "%{$req->query("search")}%");
-        $query->orWhere("nama_sales_workforce", "ILIKE", "%{$req->query("search")}%");
+        $query->where("kode_area", "ILIKE", "%{$req->query("search")}%");
+        $query->orWhere("nama_area", "ILIKE", "%{$req->query("search")}%");
+        $query->orWhere("alamat_depo", "ILIKE", "%{$req->query("search")}%");
       });
     }
 
@@ -45,11 +54,14 @@ class DistributorGroupController extends Controller
   public function create(Request $req)
   {
     $this->validate($req, [
-      "kode_sales_workforce" => "required|unique:sales_workforce",
-      "nama_sales_workforce" => "required",
+      "kode_area" => "required|unique:area",
+      "nama_area" => "required",
+      "alamat_depo" => "required",
+      "kode_region" => "required|exists:region,kode_region",
+      "koordinat" => "nullable"
     ]);
 
-    $data = DistributorGroup::create($req->all());
+    $data = Area::create($req->all());
 
     return $this->response($data);
   }
@@ -108,18 +120,21 @@ class DistributorGroupController extends Controller
 
   public function show($id, Request $req)
   {
-    $data = $this->getModel(DistributorGroup::class, $id);
+    $data = $this->getModel(Area::class, $id, $req->query("include"));
 
     return $this->response($data);
   }
 
   public function update($id, Request $req)
   {
-    $data = $this->getModel(DistributorGroup::class, $id);
+    $data = $this->getModel(Area::class, $id);
 
     $this->validate($req, [
-      "kode_sales_workforce" => "required|unique:sales_workforce,kode_sales_workforce,$data->id",
-      "nama_sales_workforce" => "required"
+      "kode_area" => "required|unique:area,kode_area,$data->id",
+      "nama_area" => "required",
+      "alamat_depo" => "required",
+      "kode_region" => "required|exists:region,kode_region",
+      "koordinat" => "nullable"
     ]);
 
     $data->update($req->all());
@@ -129,7 +144,7 @@ class DistributorGroupController extends Controller
 
   public function delete($id, Request $req)
   {
-    $data = $this->getModel(DistributorGroup::class, $id);
+    $data = $this->getModel(Area::class, $id);
     $data->delete();
     return $this->response();
   }

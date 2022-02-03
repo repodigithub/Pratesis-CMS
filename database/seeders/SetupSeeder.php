@@ -7,7 +7,7 @@ use App\Models\Distributor;
 use App\Models\Permission\Group;
 use App\Models\Permission\Permission;
 use App\Models\Region;
-use App\Models\Sales;
+use App\Models\DistributorGroup;
 use App\Models\User;
 use Illuminate\Database\Seeder;
 use Illuminate\Support\Facades\DB;
@@ -92,8 +92,8 @@ class SetupSeeder extends Seeder
             ]);
 
             // Buat sales
-            Sales::truncate();
-            $sales = Sales::create([
+            DistributorGroup::truncate();
+            $sales = DistributorGroup::create([
                 'kode_sales_workforce' => 'TEST01',
                 'nama_sales_workforce' => 'Tes sales',
             ]);

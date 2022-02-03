@@ -6,15 +6,11 @@ use Illuminate\Database\Eloquent\Model;
 
 class DistributorGroup extends Model
 {
-  const FILE_PATH = "region";
-  const FILE_NAME = "MSTREGION";
+  const FILE_PATH = "distributor-group";
+  const FILE_NAME = "MSTDISTRIBUTOR_GROUP";
+  const WORKSHEET_NAME = "DISTRIBUTOR_GROUPMST";
 
-  protected $table = "area";
+  protected $table = "sales_workforce";
 
-  public $fillable = ["kode_area", "nama_area", "alamat_depo", "kode_region", "koordinat"];
-
-  public function region()
-  {
-    return $this->belongsTo(Region::class, 'kode_region', 'kode_region');
-  }
+  public $fillable = ["kode_sales_workforce", "nama_sales_workforce"];
 }
