@@ -2,8 +2,10 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\File;
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Http;
 use Laravel\Lumen\Routing\Controller as BaseController;
 use stdClass;
@@ -47,5 +49,25 @@ class Controller extends BaseController
         }
 
         return $pagination;
+    }
+
+    protected function storeFile($model, $file)
+    {
+        $filename = $file->getClientOriginalName();
+        if (strpos($filename, $model::FILE_NAME) === false) {
+            throw new BadRequestHttpException("Filename must \"" . $model::FILE_NAME . "\"");
+        }
+        $timestamp = date('Ymd-His');
+        $path = "/" . implode("/", [$model::FILE_PATH, $timestamp]);
+        $storage_path = "/app/public/$path";
+        $public_path = "/storage/$path";
+        $file_data = File::create([
+            "title" => $filename,
+            "type" => $file->getClientOriginalExtension(),
+            "storage_path" => $storage_path,
+            "public_path" => $public_path,
+            "uploader_id" => Auth::user()->id
+        ]);
+        return $file_data;
     }
 }

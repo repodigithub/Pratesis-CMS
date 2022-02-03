@@ -63,6 +63,7 @@ class Handler extends ExceptionHandler
         $data = [];
         if ($e instanceof ValidationException) {
             $data = $e->errors();
+            $status_code = $e->status;
         }
         
         return config("app.debug", false) ? [
