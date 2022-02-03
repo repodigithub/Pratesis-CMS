@@ -20,11 +20,17 @@ class Controller extends BaseController
         ]);
     }
 
-    protected function getModel($model, $id)
+    protected function getModel($model, $id, $include = null)
     {
         try {
-            $data = $model::findOrFail($id);
-            return $data;
+            $data = $model::where('id', $id);
+            if (!empty($include)) {
+                $data->with($include);
+            }
+            if (empty($data->count())) {
+                throw new \Exception("$model not found", 1);
+            }
+            return $data->first();
         } catch (\Throwable $th) {
             throw new BadRequestHttpException("$model not found.");
         }

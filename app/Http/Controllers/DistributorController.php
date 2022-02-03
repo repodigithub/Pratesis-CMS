@@ -46,6 +46,11 @@ class DistributorController extends Controller
       $data->where("status_distributor", "ILIKE", $req->query("status"));
     }
 
+    if (!empty($pagination->sort)) {
+      $sort = $pagination->sort;
+      $data->orderBy($sort[0], $sort[1]);
+    }
+
     $data = $data->paginate($pagination->limit, ["*"], "page", $pagination->page);
 
     return $this->response($data);

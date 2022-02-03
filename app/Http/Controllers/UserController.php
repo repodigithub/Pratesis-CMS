@@ -26,9 +26,7 @@ class UserController extends Controller
       "status" => [Rule::in([User::STATUS_APPROVE, User::STATUS_PENDING, User::STATUS_REJECT])]
     ]);
 
-    $page = $req->query("page") ?: 1;
-    $limit = $req->query("limit") ?: 10;
-    $status = $req->query("status");
+    $pagination = $this->getPagination($req);
 
     $data = User::select("*");
 
@@ -44,12 +42,12 @@ class UserController extends Controller
       $data->where("kode_group", $req->query("kode_group"));
     }
 
-    if ($req->filled("sort")) {
-      $sort = explode(",", $req->query("sort"));
+    if (!empty($pagination->sort)) {
+      $sort = $pagination->sort;
       $data->orderBy($sort[0], $sort[1]);
     }
 
-    $data = $data->paginate($limit, ["*"], "page", $page);
+    $data = $data->paginate($pagination->limit, ["*"], "page", $pagination->page);
 
     return $this->response($data);
   }

@@ -7,4 +7,5 @@ $router->group(['prefix' => 'v1'], function () use ($router) {
   include('user.php');
   include('region.php');
   include('user-group.php');
+  include('distributor-group.php');
 });

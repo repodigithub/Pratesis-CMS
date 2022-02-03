@@ -44,8 +44,8 @@ class UserGroupController extends Controller
     //   $data->where("status_distributor", "ILIKE", $req->query("status"));
     // }
 
-    if ($req->filled("sort")) {
-      $sort = explode(",", $req->query("sort"));
+    if (!empty($pagination->sort)) {
+      $sort = $pagination->sort;
       $data->orderBy($sort[0], $sort[1]);
     }
 

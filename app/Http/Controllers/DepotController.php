@@ -30,6 +30,11 @@ class DepotController extends Controller
       $data->where("kode_region", "ILIKE", $req->query("kode_region"));
     }
 
+    if (!empty($pagination->sort)) {
+      $sort = $pagination->sort;
+      $data->orderBy($sort[0], $sort[1]);
+    }
+
     $data = $data->paginate($pagination->limit, ["*"], "page", $pagination->page);
 
     return $this->response($data);

@@ -3,16 +3,16 @@
 namespace App\Http\Controllers;
 
 use App\Imports\RegionsImport;
+use App\Models\DistributorGroup;
 use App\Models\File;
 use App\Models\Region;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
-use Illuminate\Validation\Rule;
 use Maatwebsite\Excel\Facades\Excel;
 use Symfony\Component\HttpKernel\Exception\BadRequestHttpException;
 
-class RegionController extends Controller
+class DistributorGroupController extends Controller
 {
   public function __construct()
   {
@@ -23,12 +23,21 @@ class RegionController extends Controller
   {
     $pagination = $this->getPagination($req);
 
-    $data = Region::select("*");
+    $data = DistributorGroup::select("*");
+
+    if ($req->filled("include")) {
+      $data->with($req->query("include"));
+    }
+
+    if ($req->filled("region")) {
+      $data->where("kode_region", $req->query("region"));
+    }
 
     if ($req->filled("search")) {
       $data->where(function ($query) use ($req) {
-        $query->where("kode_region", "ILIKE", "%{$req->query("search")}%");
-        $query->orWhere("nama_region", "ILIKE", "%{$req->query("search")}%");
+        $query->where("kode_area", "ILIKE", "%{$req->query("search")}%");
+        $query->orWhere("nama_area", "ILIKE", "%{$req->query("search")}%");
+        $query->orWhere("alamat_depo", "ILIKE", "%{$req->query("search")}%");
       });
     }
 
@@ -45,11 +54,14 @@ class RegionController extends Controller
   public function create(Request $req)
   {
     $this->validate($req, [
-      "kode_region" => "required|unique:region",
-      "nama_region" => "required",
+      "kode_area" => "required|unique:area",
+      "nama_area" => "required",
+      "alamat_depo" => "required",
+      "kode_region" => "required|exists:region,kode_region",
+      "koordinat" => "nullable"
     ]);
 
-    $data = Region::create($req->all());
+    $data = DistributorGroup::create($req->all());
 
     return $this->response($data);
   }
@@ -61,12 +73,12 @@ class RegionController extends Controller
     ]);
 
     DB::transaction(function () use ($req) {
-      $file = $req->file('file');
+      $file = $req->file("file");
       $filename = $file->getClientOriginalName();
       if (strpos($filename, Region::FILE_NAME) === false) {
         throw new BadRequestHttpException("Filename must \"" . Region::FILE_NAME . "\"");
       }
-      $timestamp = date('Ymd-Gis');
+      $timestamp = date("Ymd-Gis");
       $path = "/" . implode("/", [Region::FILE_PATH, $timestamp]);
       $storage_path = "/app/public/$path";
       $public_path = "/storage/$path";
@@ -80,7 +92,7 @@ class RegionController extends Controller
       $regions = Excel::toCollection(new RegionsImport, $file)[0];
       $error = true;
       foreach ($regions as $key => $region) {
-        if ($region['kode_region'] == "//END") {
+        if ($region["kode_region"] == "//END") {
           $regions->splice($key);
           $error = false;
           break;
@@ -108,17 +120,21 @@ class RegionController extends Controller
 
   public function show($id, Request $req)
   {
-    $data = $this->getModel(Region::class, $id);
+    $data = $this->getModel(DistributorGroup::class, $id, $req->query("include"));
+
     return $this->response($data);
   }
 
   public function update($id, Request $req)
   {
-    $data = $this->getModel(Region::class, $id);
+    $data = $this->getModel(DistributorGroup::class, $id);
 
     $this->validate($req, [
-      "kode_region" => "required|unique:region,kode_region,$data->id",
-      "nama_region" => "required",
+      "kode_area" => "required|unique:area,kode_area,$data->id",
+      "nama_area" => "required",
+      "alamat_depo" => "required",
+      "kode_region" => "required|exists:region,kode_region",
+      "koordinat" => "nullable"
     ]);
 
     $data->update($req->all());
@@ -128,7 +144,7 @@ class RegionController extends Controller
 
   public function delete($id, Request $req)
   {
-    $data = $this->getModel(Region::class, $id);
+    $data = $this->getModel(DistributorGroup::class, $id);
     $data->delete();
     return $this->response();
   }
