@@ -94,16 +94,21 @@ class DistributorGroupController extends Controller
         ];
       });
 
-      $data = collect();
+      $data = 0;
       foreach ($imported_data as $key => $value) {
         $this->validate(new Request($value), [
-          "kode_sales_workforce" => "required|unique:sales_workforce",
+          "kode_sales_workforce" => "required",
           "nama_sales_workforce" => "required",
         ], [
           "required" => "The :attribute #" . ($key + 1) . " field is required",
           "unique" => "The :attribute #" . ($key + 1) . " with value \":input\" has already been taken.",
         ]);
-        $data->push(DistributorGroup::create($value));
+        DistributorGroup::updateOrCreate([
+          "kode_sales_workforce" => $value['kode_sales_workforce'],
+        ], [
+          "nama_sales_workforce" => $value['nama_sales_workforce'],
+        ]);
+        $data++;
       }
       $file->move(storage_path($file_data->storage_path), $file_data->filename . '.' . $file_data->type);
       return $data;
