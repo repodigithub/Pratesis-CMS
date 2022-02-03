@@ -24,8 +24,8 @@ class DistributorGroupController extends Controller
 
     if ($req->filled("search")) {
       $data->where(function ($query) use ($req) {
-        $query->where("kode_sales_workforce", "ILIKE", "%{$req->query("search")}%");
-        $query->orWhere("nama_sales_workforce", "ILIKE", "%{$req->query("search")}%");
+        $query->where("kode_distributor_group", "ILIKE", "%{$req->query("search")}%");
+        $query->orWhere("nama_distributor_group", "ILIKE", "%{$req->query("search")}%");
       });
     }
 
@@ -42,8 +42,8 @@ class DistributorGroupController extends Controller
   public function create(Request $req)
   {
     $this->validate($req, [
-      "kode_sales_workforce" => "required|unique:sales_workforce",
-      "nama_sales_workforce" => "required",
+      "kode_distributor_group" => "required|unique:distributor_group",
+      "nama_distributor_group" => "required",
     ]);
 
     $data = DistributorGroup::create($req->all());
@@ -89,24 +89,24 @@ class DistributorGroupController extends Controller
 
       $imported_data = $imported_data->map(function ($row) {
         return [
-          "kode_sales_workforce" => $row[0],
-          "nama_sales_workforce" => $row[1],
+          "kode_distributor_group" => $row[0],
+          "nama_distributor_group" => $row[1],
         ];
       });
 
       $data = 0;
       foreach ($imported_data as $key => $value) {
         $this->validate(new Request($value), [
-          "kode_sales_workforce" => "required",
-          "nama_sales_workforce" => "required",
+          "kode_distributor_group" => "required",
+          "nama_distributor_group" => "required",
         ], [
           "required" => "The :attribute #" . ($key + 1) . " field is required",
           "unique" => "The :attribute #" . ($key + 1) . " with value \":input\" has already been taken.",
         ]);
         DistributorGroup::updateOrCreate([
-          "kode_sales_workforce" => $value['kode_sales_workforce'],
+          "kode_distributor_group" => $value['kode_distributor_group'],
         ], [
-          "nama_sales_workforce" => $value['nama_sales_workforce'],
+          "nama_distributor_group" => $value['nama_distributor_group'],
         ]);
         $data++;
       }
@@ -129,8 +129,8 @@ class DistributorGroupController extends Controller
     $data = $this->getModel(DistributorGroup::class, $id);
 
     $this->validate($req, [
-      "kode_sales_workforce" => "required|unique:sales_workforce,kode_sales_workforce,$data->id",
-      "nama_sales_workforce" => "required"
+      "kode_distributor_group" => "required|unique:distributor_group,kode_distributor_group,$data->id",
+      "nama_distributor_group" => "required"
     ]);
 
     $data->update($req->all());
