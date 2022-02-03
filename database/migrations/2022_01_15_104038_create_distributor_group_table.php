@@ -4,7 +4,7 @@ use Database\Factories\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
 
-class CreateSalesWorkforceTable extends Migration
+class CreateDistributorGroupTable extends Migration
 {
     /**
      * Run the migrations.
@@ -13,10 +13,10 @@ class CreateSalesWorkforceTable extends Migration
      */
     public function up()
     {
-        Schema::create('sales_workforce', function (Blueprint $table) {
+        Schema::create('distributor_group', function (Blueprint $table) {
             $table->id();
-            $table->char('kode_sales_workforce', 6)->unique();
-            $table->string('nama_sales_workforce');
+            $table->char('kode_distributor_group', 6)->unique();
+            $table->string('nama_distributor_group');
             $table->timestamps();
         });
     }
@@ -28,6 +28,6 @@ class CreateSalesWorkforceTable extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('sales_workforce');
+        Schema::dropIfExists('distributor_group');
     }
 }

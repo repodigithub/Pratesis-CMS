@@ -31,7 +31,7 @@ class DistributorController extends Controller
     }
 
     if ($req->filled("kode_sales")) {
-      $data->where("kode_sales_workforce", "ILIKE", $req->query("kode_sales"));
+      $data->where("kode_distributor_group", "ILIKE", $req->query("kode_sales"));
     }
 
     if ($req->filled("kode_area")) {

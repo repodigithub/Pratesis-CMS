@@ -11,7 +11,7 @@ class DistributorGroup extends Model
   const WORKSHEET_NAME = "DISTRIBUTOR_GROUPMST";
   const FIELD_NAME = ["Kode Distributor Group", "Nama Distributor Group"];
 
-  protected $table = "sales_workforce";
+  protected $table = "distributor_group";
 
-  public $fillable = ["kode_sales_workforce", "nama_sales_workforce"];
+  public $fillable = ["kode_distributor_group", "nama_distributor_group"];
 }
