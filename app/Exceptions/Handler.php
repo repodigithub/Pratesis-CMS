@@ -63,21 +63,22 @@ class Handler extends ExceptionHandler
         $data = [];
         if ($e instanceof ValidationException) {
             $data = $e->errors();
+            $status_code = $e->status;
         }
         
-        return config('app.debug', false) ? [
-            'code' => $status_code,
-            'message' => $e->getMessage(),
-            'data' => $data,
-            'file' => $e->getFile(),
-            'line' => $e->getLine(),
-            'trace' => collect($e->getTrace())->map(function ($trace) {
-                return Arr::except($trace, ['args']);
+        return config("app.debug", false) ? [
+            "code" => $status_code,
+            "message" => $e->getMessage(),
+            "data" => $data,
+            "file" => $e->getFile(),
+            "line" => $e->getLine(),
+            "trace" => collect($e->getTrace())->map(function ($trace) {
+                return Arr::except($trace, ["args"]);
             })->all(),
         ] : [
-            'code' => $status_code,
-            'message' => $this->isHttpException($e) ? $e->getMessage() : 'Server Error',
-            'data' => $data,
+            "code" => $status_code,
+            "message" => $this->isHttpException($e) ? $e->getMessage() : "Server Error",
+            "data" => $data,
         ];
     }
 }

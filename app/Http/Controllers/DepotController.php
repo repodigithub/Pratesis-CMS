@@ -9,7 +9,7 @@ class DepotController extends Controller
 {
   public function __construct()
   {
-    $this->middleware('auth:api');
+    $this->middleware("auth:api");
   }
 
   public function index(Request $req)
@@ -28,6 +28,11 @@ class DepotController extends Controller
 
     if ($req->filled("kode_region")) {
       $data->where("kode_region", "ILIKE", $req->query("kode_region"));
+    }
+
+    if (!empty($pagination->sort)) {
+      $sort = $pagination->sort;
+      $data->orderBy($sort[0], $sort[1]);
     }
 
     $data = $data->paginate($pagination->limit, ["*"], "page", $pagination->page);

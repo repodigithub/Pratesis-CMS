@@ -20,7 +20,7 @@ class CreateDistributorTable extends Migration
             $table->char('kode_sales_workforce', 6);
             $table->char('kode_area', 6);
             $table->char('kode_region', 6);
-            $table->enum('status_distributor', ['aktif', 'tidak_aktif']);
+            $table->string('status_distributor');
             $table->timestamps();
 
             $table->foreign('kode_sales_workforce')->references('kode_sales_workforce')->on('sales_workforce')

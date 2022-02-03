@@ -10,13 +10,13 @@ class DistributorController extends Controller
 {
   public function __construct()
   {
-    $this->middleware('auth:api', ['except' => ['index']]);
+    $this->middleware("auth:api");
   }
 
   public function index(Request $req)
   {
     $this->validate($req, [
-      'status' => [Rule::in([Distributor::STATUS_ACTIVE, Distributor::STATUS_NON_ACTIVE])]
+      "status" => [Rule::in([Distributor::STATUS_ACTIVE, Distributor::STATUS_NON_ACTIVE])]
     ]);
 
     $pagination = $this->getPagination($req);
@@ -44,6 +44,11 @@ class DistributorController extends Controller
 
     if ($req->filled("status")) {
       $data->where("status_distributor", "ILIKE", $req->query("status"));
+    }
+
+    if (!empty($pagination->sort)) {
+      $sort = $pagination->sort;
+      $data->orderBy($sort[0], $sort[1]);
     }
 
     $data = $data->paginate($pagination->limit, ["*"], "page", $pagination->page);

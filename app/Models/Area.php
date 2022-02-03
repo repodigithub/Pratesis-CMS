@@ -6,6 +6,17 @@ use Illuminate\Database\Eloquent\Model;
 
 class Area extends Model
 {
-  public $fillable = ['kode_area', 'nama_area','alamat_depo','kode_region'];
-  public $hidden = ['created_at','updated_at'];
+  const FILE_PATH = "area";
+  const FILE_NAME = "MSTAREA";
+  const WORKSHEET_NAME = "AREAMST";
+  const FIELD_NAME = ["Kode Area", "Nama Area", "Alamat", "Titik Koordinat", "Kode Region"];
+
+  protected $table = "area";
+
+  public $fillable = ["kode_area", "nama_area", "alamat_depo", "kode_region", "koordinat"];
+
+  public function region()
+  {
+    return $this->belongsTo(Region::class, 'kode_region', 'kode_region');
+  }
 }

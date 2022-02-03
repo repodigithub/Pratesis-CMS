@@ -4,16 +4,16 @@ namespace App\Http\Controllers;
 
 use App\Imports\MasterDataImport;
 use App\Imports\RegionsImport;
-use App\Models\Area;
 use App\Models\File;
 use App\Models\Region;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Validation\Rule;
 use Maatwebsite\Excel\Facades\Excel;
 use Symfony\Component\HttpKernel\Exception\BadRequestHttpException;
 
-class AreaController extends Controller
+class RegionController extends Controller
 {
   public function __construct()
   {
@@ -24,21 +24,12 @@ class AreaController extends Controller
   {
     $pagination = $this->getPagination($req);
 
-    $data = Area::select("*");
-
-    if ($req->filled("include")) {
-      $data->with($req->query("include"));
-    }
-
-    if ($req->filled("region")) {
-      $data->where("kode_region", $req->query("region"));
-    }
+    $data = Region::select("*");
 
     if ($req->filled("search")) {
       $data->where(function ($query) use ($req) {
-        $query->where("kode_area", "ILIKE", "%{$req->query("search")}%");
-        $query->orWhere("nama_area", "ILIKE", "%{$req->query("search")}%");
-        $query->orWhere("alamat_depo", "ILIKE", "%{$req->query("search")}%");
+        $query->where("kode_region", "ILIKE", "%{$req->query("search")}%");
+        $query->orWhere("nama_region", "ILIKE", "%{$req->query("search")}%");
       });
     }
 
@@ -55,14 +46,11 @@ class AreaController extends Controller
   public function create(Request $req)
   {
     $this->validate($req, [
-      "kode_area" => "required|unique:area",
-      "nama_area" => "required",
-      "alamat_depo" => "required",
-      "kode_region" => "required|exists:region,kode_region",
-      "koordinat" => "nullable"
+      "kode_region" => "required|unique:region",
+      "nama_region" => "required",
     ]);
 
-    $data = Area::create($req->all());
+    $data = Region::create($req->all());
 
     return $this->response($data);
   }
@@ -73,18 +61,17 @@ class AreaController extends Controller
       "file" => "required|file|mimes:xlsx"
     ]);
 
-
     $data = DB::transaction(function () use ($req) {
       $file = $req->file('file');
-      $file_data = $this->storeFile(Area::class, $file);
+      $file_data = $this->storeFile(Region::class, $file);
 
       $import = new MasterDataImport();
-      $import->onlySheets(Area::WORKSHEET_NAME);
+      $import->onlySheets(Region::WORKSHEET_NAME);
 
-      $imported_data = Excel::toCollection($import, $file)[Area::WORKSHEET_NAME];
+      $imported_data = Excel::toCollection($import, $file)[Region::WORKSHEET_NAME];
 
       $data = $imported_data[0];
-      foreach (Area::FIELD_NAME as $key => $field) {
+      foreach (Region::FIELD_NAME as $key => $field) {
         if ($data[$key] != $field) {
           throw new BadRequestHttpException("#{$key}_column_error");
         }
@@ -106,33 +93,21 @@ class AreaController extends Controller
 
       $imported_data = $imported_data->map(function ($row) {
         return [
-          "kode_area" => $row[0],
-          "nama_area" => $row[1],
-          "alamat_depo" => $row[2],
-          "kode_region" => $row[3],
-          "koordinat" => $row[4],
+          "kode_region" => $row[0],
+          "nama_region" => $row[1],
         ];
       });
 
       $data = collect();
       foreach ($imported_data as $key => $value) {
         $this->validate(new Request($value), [
-          "kode_area" => "required|unique:area",
-          "nama_area" => "required",
-          "alamat_depo" => "required",
-          "kode_region" => "required|exists:region,kode_region",
-          "koordinat" => "nullable"
+          "kode_region" => "required|unique:region",
+          "nama_region" => "required",
         ], [
           "required" => "The :attribute #" . ($key + 1) . " field is required",
           "unique" => "The :attribute #" . ($key + 1) . " with value \":input\" has already been taken.",
-        ], [
-          "kode_area" => "Kode Area", 
-          "nama_area" => "Nama Area", 
-          "alamat_depo" => "Alamat", 
-          "kode_region" => "Kode Region", 
-          "koordinat" => "Titik Koordinat", 
         ]);
-        $data->push(Area::create($value));
+        $data->push(Region::create($value));
       }
       $file->move(storage_path($file_data->storage_path), $file_data->filename . '.' . $file_data->type);
       return $data;
@@ -143,21 +118,17 @@ class AreaController extends Controller
 
   public function show($id, Request $req)
   {
-    $data = $this->getModel(Area::class, $id, $req->query("include"));
-
+    $data = $this->getModel(Region::class, $id);
     return $this->response($data);
   }
 
   public function update($id, Request $req)
   {
-    $data = $this->getModel(Area::class, $id);
+    $data = $this->getModel(Region::class, $id);
 
     $this->validate($req, [
-      "kode_area" => "required|unique:area,kode_area,$data->id",
-      "nama_area" => "required",
-      "alamat_depo" => "required",
-      "kode_region" => "required|exists:region,kode_region",
-      "koordinat" => "nullable"
+      "kode_region" => "required|unique:region,kode_region,$data->id",
+      "nama_region" => "required",
     ]);
 
     $data->update($req->all());
@@ -167,7 +138,7 @@ class AreaController extends Controller
 
   public function delete($id, Request $req)
   {
-    $data = $this->getModel(Area::class, $id);
+    $data = $this->getModel(Region::class, $id);
     $data->delete();
     return $this->response();
   }

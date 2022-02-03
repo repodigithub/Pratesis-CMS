@@ -37,7 +37,7 @@ class Authenticate
     public function handle($request, Closure $next, $guard = null)
     {
         if ($this->auth->guard($guard)->guest()) {
-            throw new UnauthorizedHttpException('', 'Unauthorized.');
+            throw new UnauthorizedHttpException("", "Unauthorized.");
         }
 
         return $next($request);

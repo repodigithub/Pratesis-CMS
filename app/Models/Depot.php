@@ -6,7 +6,7 @@ use Illuminate\Database\Eloquent\Model;
 
 class Depot extends Model
 {
-  protected $table = 'area';
+  protected $table = "area";
 
-  public $fillable = ['kode_area', 'nama_area', 'alamat_depo', 'kode_region'];
+  public $fillable = ["kode_area", "nama_area", "alamat_depo", "kode_region"];
 }
