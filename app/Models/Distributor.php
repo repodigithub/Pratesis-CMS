@@ -14,7 +14,7 @@ class Distributor extends Model
   public $fillable = [
     "kode_distributor",
     "nama_distributor",
-    "kode_sales_workforce",
+    "kode_distributor_group",
     "kode_area",
     "kode_region",
     "status_distributor",

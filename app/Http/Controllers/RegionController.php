@@ -3,13 +3,9 @@
 namespace App\Http\Controllers;
 
 use App\Imports\MasterDataImport;
-use App\Imports\RegionsImport;
-use App\Models\File;
 use App\Models\Region;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
-use Illuminate\Validation\Rule;
 use Maatwebsite\Excel\Facades\Excel;
 use Symfony\Component\HttpKernel\Exception\BadRequestHttpException;
 
@@ -98,16 +94,20 @@ class RegionController extends Controller
         ];
       });
 
-      $data = collect();
+      $data = 0;
       foreach ($imported_data as $key => $value) {
         $this->validate(new Request($value), [
-          "kode_region" => "required|unique:region",
+          "kode_region" => "required",
           "nama_region" => "required",
         ], [
           "required" => "The :attribute #" . ($key + 1) . " field is required",
           "unique" => "The :attribute #" . ($key + 1) . " with value \":input\" has already been taken.",
         ]);
-        $data->push(Region::create($value));
+
+        Region::updateOrCreate([
+          "kode_region" => $value['kode_region'],
+        ], $value);
+        $data++;
       }
       $file->move(storage_path($file_data->storage_path), $file_data->filename . '.' . $file_data->type);
       return $data;

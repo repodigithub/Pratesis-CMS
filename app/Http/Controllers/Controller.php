@@ -2,13 +2,12 @@
 
 namespace App\Http\Controllers;
 
+use stdClass;
 use App\Models\File;
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
 use Illuminate\Support\Facades\Auth;
-use Illuminate\Support\Facades\Http;
 use Laravel\Lumen\Routing\Controller as BaseController;
-use stdClass;
 use Symfony\Component\HttpKernel\Exception\BadRequestHttpException;
 
 class Controller extends BaseController

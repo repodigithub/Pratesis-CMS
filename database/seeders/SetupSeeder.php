@@ -94,8 +94,8 @@ class SetupSeeder extends Seeder
             // Buat sales
             DistributorGroup::truncate();
             $sales = DistributorGroup::create([
-                'kode_sales_workforce' => 'TEST01',
-                'nama_sales_workforce' => 'Tes sales',
+                'kode_distributor_group' => 'TEST01',
+                'nama_distributor_group' => 'Tes sales',
             ]);
 
             // Buat kode distributor
@@ -103,7 +103,7 @@ class SetupSeeder extends Seeder
             $distributor = Distributor::create([
                 'kode_distributor' => 'TEST01',
                 'nama_distributor' => 'Test distributor',
-                'kode_sales_workforce' => $sales->kode_sales_workforce,
+                'kode_distributor_group' => $sales->kode_distributor_group,
                 'kode_area' => $depot->kode_area,
                 'kode_region' => $region->kode_region,
                 'status_distributor' => Distributor::STATUS_ACTIVE,

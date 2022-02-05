@@ -114,10 +114,10 @@ class AreaController extends Controller
         ];
       });
 
-      $data = collect();
+      $data = 0;
       foreach ($imported_data as $key => $value) {
         $this->validate(new Request($value), [
-          "kode_area" => "required|unique:area",
+          "kode_area" => "required",
           "nama_area" => "required",
           "alamat_depo" => "required",
           "kode_region" => "required|exists:region,kode_region",
@@ -126,13 +126,16 @@ class AreaController extends Controller
           "required" => "The :attribute #" . ($key + 1) . " field is required",
           "unique" => "The :attribute #" . ($key + 1) . " with value \":input\" has already been taken.",
         ], [
-          "kode_area" => "Kode Area", 
-          "nama_area" => "Nama Area", 
-          "alamat_depo" => "Alamat", 
-          "kode_region" => "Kode Region", 
-          "koordinat" => "Titik Koordinat", 
+          "kode_area" => "Kode Area",
+          "nama_area" => "Nama Area",
+          "alamat_depo" => "Alamat",
+          "kode_region" => "Kode Region",
+          "koordinat" => "Titik Koordinat",
         ]);
-        $data->push(Area::create($value));
+        Area::updateOrCreate([
+          "kode_area" => $value["kode_area"]
+        ], $value);
+        $data++;
       }
       $file->move(storage_path($file_data->storage_path), $file_data->filename . '.' . $file_data->type);
       return $data;

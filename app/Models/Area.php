@@ -15,8 +15,15 @@ class Area extends Model
 
   public $fillable = ["kode_area", "nama_area", "alamat_depo", "kode_region", "koordinat"];
 
+  public $appends = ["nama_region"];
+
   public function region()
   {
     return $this->belongsTo(Region::class, 'kode_region', 'kode_region');
+  }
+
+  public function getNamaRegionAttribute()
+  {
+    return $this->region()->first()->nama_region;
   }
 }
