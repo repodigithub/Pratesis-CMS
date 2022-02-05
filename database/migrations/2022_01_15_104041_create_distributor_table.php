@@ -17,13 +17,13 @@ class CreateDistributorTable extends Migration
             $table->id();
             $table->char('kode_distributor', 8)->unique();
             $table->string('nama_distributor');
-            $table->char('kode_sales_workforce', 6);
+            $table->char('kode_distributor_group', 6);
             $table->char('kode_area', 6);
             $table->char('kode_region', 6);
             $table->string('status_distributor');
             $table->timestamps();
 
-            $table->foreign('kode_sales_workforce')->references('kode_sales_workforce')->on('sales_workforce')
+            $table->foreign('kode_distributor_group')->references('kode_distributor_group')->on('distributor_group')
                 ->onDelete('cascade')->onUpdate('cascade');
             $table->foreign('kode_area')->references('kode_area')->on('area')
                 ->onDelete('cascade')->onUpdate('cascade');

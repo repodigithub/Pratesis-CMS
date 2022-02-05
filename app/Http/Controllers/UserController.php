@@ -31,7 +31,7 @@ class UserController extends Controller
     $data = User::select("*");
 
     if ($req->filled("status")) {
-      $data->whereStatus($status);
+      $data->whereStatus($req->query("status"));
     }
 
     if ($req->filled("kode_pengguna")) {

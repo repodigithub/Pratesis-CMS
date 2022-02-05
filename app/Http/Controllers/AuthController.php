@@ -112,6 +112,15 @@ class AuthController extends Controller
     return $this->response(Auth::user());
   }
 
+  public function refresh()
+  {
+    $token = Auth::refresh();
+    $user = Auth::user();
+    $user->token = $token;
+
+    return $this->response($user);
+  }
+
   public function updateProfile(Request $req)
   {
     $profile = Auth::user();
