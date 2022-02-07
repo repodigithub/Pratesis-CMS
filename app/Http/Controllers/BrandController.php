@@ -12,9 +12,9 @@ class BrandController extends MasterDataController
 {
   public function __construct()
   {
-    $this->middleware("auth:api");
     $this->model = Brand::class;
     $this->model_key = "kode_brand";
+    $this->middleware("auth:api");
   }
 
   protected function onFilter(Builder $query, Request $req)

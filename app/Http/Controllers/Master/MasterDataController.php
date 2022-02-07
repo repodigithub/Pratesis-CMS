@@ -86,7 +86,7 @@ class MasterDataController extends Controller
         $this->validate(new Request($value), $this->rules($value[$this->model_key]), [
           "required" => "The :attribute #" . ($key + 1) . " field is required",
           "unique" => "The :attribute #" . ($key + 1) . " with value \":input\" has already been taken.",
-          "exists" => "The :attribute #" . ($key + 1) . " invalid.",
+          "exists" => "The :attribute #" . ($key + 1) . " with value \":input\" is invalid.",
         ]);
         $this->model::updateOrCreate([
           $this->model_key => $value[$this->model_key]
