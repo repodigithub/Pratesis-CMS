@@ -59,7 +59,7 @@ class AreaController extends Controller
       "nama_area" => "required",
       "alamat_depo" => "required",
       "kode_region" => "required|exists:region,kode_region",
-      "koordinat" => "nullable"
+      "titik_koordinat" => "nullable"
     ]);
 
     $data = Area::create($req->all());
@@ -110,7 +110,7 @@ class AreaController extends Controller
           "nama_area" => $row[1],
           "alamat_depo" => $row[2],
           "kode_region" => $row[3],
-          "koordinat" => $row[4],
+          "titik_koordinat" => $row[4],
         ];
       });
 
@@ -121,7 +121,7 @@ class AreaController extends Controller
           "nama_area" => "required",
           "alamat_depo" => "required",
           "kode_region" => "required|exists:region,kode_region",
-          "koordinat" => "nullable"
+          "titik_koordinat" => "nullable"
         ], [
           "required" => "The :attribute #" . ($key + 1) . " field is required",
           "unique" => "The :attribute #" . ($key + 1) . " with value \":input\" has already been taken.",
@@ -130,7 +130,7 @@ class AreaController extends Controller
           "nama_area" => "Nama Area",
           "alamat_depo" => "Alamat",
           "kode_region" => "Kode Region",
-          "koordinat" => "Titik Koordinat",
+          "titik_koordinat" => "Titik Koordinat",
         ]);
         Area::updateOrCreate([
           "kode_area" => $value["kode_area"]
@@ -160,7 +160,7 @@ class AreaController extends Controller
       "nama_area" => "required",
       "alamat_depo" => "required",
       "kode_region" => "required|exists:region,kode_region",
-      "koordinat" => "nullable"
+      "titik_koordinat" => "nullable"
     ]);
 
     $data->update($req->all());

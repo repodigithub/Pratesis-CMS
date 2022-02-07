@@ -19,15 +19,14 @@ class CreateDistributorTable extends Migration
             $table->string('nama_distributor');
             $table->char('kode_distributor_group', 6);
             $table->char('kode_area', 6);
-            $table->char('kode_region', 6);
+            $table->string('alamat')->nullable();
+            $table->string('titik_koordinat')->nullable();
             $table->string('status_distributor');
             $table->timestamps();
 
             $table->foreign('kode_distributor_group')->references('kode_distributor_group')->on('distributor_group')
                 ->onDelete('cascade')->onUpdate('cascade');
             $table->foreign('kode_area')->references('kode_area')->on('area')
-                ->onDelete('cascade')->onUpdate('cascade');
-            $table->foreign('kode_region')->references('kode_region')->on('region')
                 ->onDelete('cascade')->onUpdate('cascade');
         });
     }

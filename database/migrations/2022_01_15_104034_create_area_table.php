@@ -19,7 +19,7 @@ class CreateAreaTable extends Migration
             $table->string('nama_area');
             $table->text('alamat_depo');
             $table->char('kode_region', 6);
-            $table->string('koordinat')->nullable();
+            $table->string('titik_koordinat')->nullable();
             $table->timestamps();
 
             $table->foreign('kode_region')->references('kode_region')->on('region')
