@@ -6,6 +6,7 @@ use App\Imports\Sheet\SheetImport;
 use App\Models\Area;
 use App\Models\Distributor;
 use App\Models\DistributorGroup;
+use App\Models\Product;
 use App\Models\Region;
 use App\Models\SubBrand;
 use Maatwebsite\Excel\Concerns\WithConditionalSheets;
@@ -23,6 +24,7 @@ class MasterDataImport implements WithMultipleSheets
       DistributorGroup::WORKSHEET_NAME => new SheetImport(),
       Region::WORKSHEET_NAME => new SheetImport(),
       SubBrand::WORKSHEET_NAME => new SheetImport(),
+      Product::WORKSHEET_NAME => new SheetImport(),
     ];
   }
 }
