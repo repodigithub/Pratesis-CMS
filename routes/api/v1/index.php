@@ -5,6 +5,7 @@ $router->group(['prefix' => 'v1'], function () use ($router) {
   include('auth.php');
   include('brand.php');
   include('category.php');
+  include('divisi.php');
   include('distributor-group.php');
   include('distributor.php');
   include('product.php');

@@ -8,6 +8,7 @@ use App\Models\Brand;
 use App\Models\Category;
 use App\Models\Distributor;
 use App\Models\DistributorGroup;
+use App\Models\Divisi;
 use App\Models\Product;
 use App\Models\Region;
 use App\Models\SubBrand;
@@ -29,6 +30,7 @@ class MasterDataImport implements WithMultipleSheets
       SubBrand::WORKSHEET_NAME => new SheetImport(),
       Product::WORKSHEET_NAME => new SheetImport(),
       Category::WORKSHEET_NAME => new SheetImport(),
+      Divisi::WORKSHEET_NAME => new SheetImport(),
     ];
   }
 }
