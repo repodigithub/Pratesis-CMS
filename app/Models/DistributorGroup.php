@@ -3,9 +3,11 @@
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Factories\HasFactory;
 
 class DistributorGroup extends Model
 {
+  use HasFactory;
   const FILE_PATH = "distributor-group";
   const FILE_NAME = "MSTDISTRIBUTOR_GROUP";
   const WORKSHEET_NAME = "DISTRIBUTOR_GROUPMST";
