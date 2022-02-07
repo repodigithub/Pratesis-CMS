@@ -2,7 +2,7 @@
 
 namespace Database\Seeders;
 
-use App\Models\Depot;
+use App\Models\Area;
 use App\Models\Distributor;
 use App\Models\Permission\Group;
 use App\Models\Permission\Permission;
@@ -83,8 +83,8 @@ class SetupSeeder extends Seeder
             ]);
 
             // Buat kode depot / area
-            Depot::truncate();
-            $depot = Depot::create([
+            Area::truncate();
+            $area = Area::create([
                 'kode_area' => 'TEST01',
                 'nama_area' => 'Tes area',
                 'alamat_depo' => 'Alamat tes area',
@@ -104,11 +104,12 @@ class SetupSeeder extends Seeder
                 'kode_distributor' => 'TEST01',
                 'nama_distributor' => 'Test distributor',
                 'kode_distributor_group' => $sales->kode_distributor_group,
-                'kode_area' => $depot->kode_area,
-                'kode_region' => $region->kode_region,
+                'kode_area' => $area->kode_area,
+                'alamat' => 'alamat',
+                'titik_koordinat' => null,
                 'status_distributor' => Distributor::STATUS_ACTIVE,
             ]);
-
+            
             // Buat admin
             User::truncate();
             $user = User::create([

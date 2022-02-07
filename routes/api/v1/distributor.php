@@ -6,4 +6,5 @@ $router->group(['prefix' => 'distributor'], function () use ($router) {
   $router->post('/upload', ['uses' => 'DistributorController@upload']);
   $router->get('/{id}', ['uses' => 'DistributorController@show']);
   $router->put('/{id}', ['uses' => 'DistributorController@update']);
+  $router->delete('/{id}', ['uses' => 'DistributorController@delete']);
 });
