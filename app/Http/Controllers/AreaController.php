@@ -109,8 +109,8 @@ class AreaController extends Controller
           "kode_area" => $row[0],
           "nama_area" => $row[1],
           "alamat_depo" => $row[2],
-          "kode_region" => $row[3],
-          "titik_koordinat" => $row[4],
+          "titik_koordinat" => $row[3],
+          "kode_region" => $row[4],
         ];
       });
 
@@ -120,8 +120,8 @@ class AreaController extends Controller
           "kode_area" => "required",
           "nama_area" => "required",
           "alamat_depo" => "required",
+          "titik_koordinat" => "nullable",
           "kode_region" => "required|exists:region,kode_region",
-          "titik_koordinat" => "nullable"
         ], [
           "required" => "The :attribute #" . ($key + 1) . " field is required",
           "unique" => "The :attribute #" . ($key + 1) . " with value \":input\" has already been taken.",
