@@ -3,14 +3,14 @@
 namespace App\Http\Controllers;
 
 use App\Imports\MasterDataImport;
-use App\Models\Distributor;
+use App\Models\SubBrand;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Validation\Rule;
 use Maatwebsite\Excel\Facades\Excel;
 use Symfony\Component\HttpKernel\Exception\BadRequestHttpException;
 
-class DistributorController extends Controller
+class SubBrandController extends Controller
 {
   public function __construct()
   {
@@ -19,31 +19,15 @@ class DistributorController extends Controller
 
   public function index(Request $req)
   {
-    $this->validate($req, [
-      "status" => [Rule::in([Distributor::STATUS_ACTIVE, Distributor::STATUS_NON_ACTIVE])]
-    ]);
-
     $pagination = $this->getPagination($req);
 
-    $data = Distributor::select("*");
+    $data = SubBrand::select("*");
 
     if ($req->filled("search")) {
       $data->where(function ($query) use ($req) {
-        $query->where("kode_distributor", "ILIKE", "%{$req->query("search")}%");
-        $query->orWhere("nama_distributor", "ILIKE", "%{$req->query("search")}%");
+        $query->where("kode_sub_brand", "ILIKE", "%{$req->query("search")}%");
+        $query->orWhere("nama_sub_brand", "ILIKE", "%{$req->query("search")}%");
       });
-    }
-
-    if ($req->filled("kode_distributor_group")) {
-      $data->where("kode_distributor_group", "ILIKE", $req->query("kode_distributor_group"));
-    }
-
-    if ($req->filled("kode_area")) {
-      $data->where("kode_area", "ILIKE", $req->query("kode_area"));
-    }
-
-    if ($req->filled("status")) {
-      $data->where("status_distributor", "ILIKE", $req->query("status"));
     }
 
     if (!empty($pagination->sort)) {
@@ -60,7 +44,7 @@ class DistributorController extends Controller
   {
     $this->validate($req, $this->rules());
 
-    $data = Distributor::create($req->all());
+    $data = SubBrand::create($req->all());
 
     return $this->response($data);
   }
@@ -73,15 +57,15 @@ class DistributorController extends Controller
 
     $data = DB::transaction(function () use ($req) {
       $file = $req->file('file');
-      $file_data = $this->storeFile(Distributor::class, $file);
+      $file_data = $this->storeFile(SubBrand::class, $file);
 
       $import = new MasterDataImport();
-      $import->onlySheets(Distributor::WORKSHEET_NAME);
+      $import->onlySheets(SubBrand::WORKSHEET_NAME);
 
-      $imported_data = Excel::toCollection($import, $file)[Distributor::WORKSHEET_NAME];
+      $imported_data = Excel::toCollection($import, $file)[SubBrand::WORKSHEET_NAME];
 
       $data = $imported_data[0];
-      foreach (Distributor::FIELD_NAME as $key => $field) {
+      foreach (SubBrand::FIELD_NAME as $key => $field) {
         if ($data[$key] != $field) {
           throw new BadRequestHttpException("#{$key}_column_error");
         }
@@ -103,26 +87,21 @@ class DistributorController extends Controller
 
       $imported_data = $imported_data->map(function ($row) {
         return [
-          "kode_distributor" => $row[0],
-          "nama_distributor" => $row[1],
-          "kode_distributor_group" => $row[2],
-          "kode_area" => $row[3],
-          "alamat" => $row[4],
-          "titik_koordinat" => $row[5],
-          "status_distributor" => $row[6],
+          "kode_sub_brand" => $row[0],
+          "nama_sub_brand" => $row[1],
         ];
       });
 
       $data = 0;
       foreach ($imported_data as $key => $value) {
-        $this->validate(new Request($value), $this->rules($value["kode_distributor"]), [
+        $this->validate(new Request($value), $this->rules($value["kode_sub_brand"]), [
           "required" => "The :attribute #" . ($key + 1) . " field is required",
           "unique" => "The :attribute #" . ($key + 1) . " with value \":input\" has already been taken.",
           "exists" => "The :attribute #" . ($key + 1) . " invalid.",
         ]);
 
-        Distributor::updateOrCreate([
-          "kode_distributor" => $value['kode_distributor'],
+        SubBrand::updateOrCreate([
+          "kode_sub_brand" => $value['kode_sub_brand'],
         ], $value);
         $data++;
       }
@@ -135,14 +114,14 @@ class DistributorController extends Controller
 
   public function show($id, Request $req)
   {
-    $data = $this->getModel(Distributor::class, $id);
+    $data = $this->getModel(SubBrand::class, $id);
 
     return $this->response($data);
   }
 
   public function update($id, Request $req)
   {
-    $data = $this->getModel(Distributor::class, $id);
+    $data = $this->getModel(SubBrand::class, $id);
 
     $this->validate($req, $this->rules($data));
 
@@ -153,7 +132,7 @@ class DistributorController extends Controller
 
   public function delete($id, Request $req)
   {
-    $data = $this->getModel(Distributor::class, $id);
+    $data = $this->getModel(SubBrand::class, $id);
     $data->delete();
     return $this->response();
   }
@@ -163,22 +142,17 @@ class DistributorController extends Controller
     $rules = [];
     if (!empty($data)) {
       if (empty($data->id)) {
-        $data = Distributor::where("kode_distributor", $data)->first();
+        $data = SubBrand::where("kode_sub_brand", $data)->first();
       }
       if (!empty($data)) {
-        $rules["kode_distributor"] = "required|unique:distributor,kode_distributor,$data->id";
+        $rules["kode_sub_brand"] = "required|unique:sub_brand,kode_sub_brand,$data->id";
       } else {
-        $rules["kode_distributor"] = "required|unique:distributor";
+        $rules["kode_sub_brand"] = "required|unique:sub_brand";
       }
     } else {
-      $rules["kode_distributor"] = "required|unique:distributor";
+      $rules["kode_sub_brand"] = "required|unique:sub_brand";
     }
-    $rules["nama_distributor"] = "required";
-    $rules["kode_distributor_group"] = "required|exists:distributor_group,kode_distributor_group";
-    $rules["kode_area"] = "required|exists:area,kode_area";
-    $rules["alamat"] = "required";
-    $rules["titik_koordinat"] = "nullable";
-    $rules["status_distributor"] = ["required", Rule::in([Distributor::STATUS_ACTIVE, Distributor::STATUS_NON_ACTIVE])];
+    $rules["nama_sub_brand"] = "required";
     return $rules;
   }
 }
