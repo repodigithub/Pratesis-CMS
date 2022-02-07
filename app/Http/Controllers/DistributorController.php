@@ -120,7 +120,7 @@ class DistributorController extends Controller
           "unique" => "The :attribute #" . ($key + 1) . " with value \":input\" has already been taken.",
           "exists" => "The :attribute #" . ($key + 1) . " invalid.",
         ]);
-        
+
         Distributor::updateOrCreate([
           "kode_distributor" => $value['kode_distributor'],
         ], $value);
@@ -163,9 +163,13 @@ class DistributorController extends Controller
     $rules = [];
     if (!empty($data)) {
       if (empty($data->id)) {
-        $data = Distributor::where("kode_distributor", $data)->firstOrFail();
+        $data = Distributor::where("kode_distributor", $data)->first();
       }
-      $rules["kode_distributor"] = "required|unique:distributor,kode_distributor,$data->id";
+      if (!empty($data)) {
+        $rules["kode_distributor"] = "required|unique:distributor,kode_distributor,$data->id";
+      } else {
+        $rules["kode_distributor"] = "required|unique:distributor";
+      }
     } else {
       $rules["kode_distributor"] = "required|unique:distributor";
     }
