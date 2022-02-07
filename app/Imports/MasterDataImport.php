@@ -4,6 +4,7 @@ namespace App\Imports;
 
 use App\Imports\Sheet\SheetImport;
 use App\Models\Area;
+use App\Models\Brand;
 use App\Models\Distributor;
 use App\Models\DistributorGroup;
 use App\Models\Product;
@@ -23,6 +24,7 @@ class MasterDataImport implements WithMultipleSheets
       Distributor::WORKSHEET_NAME => new SheetImport(),
       DistributorGroup::WORKSHEET_NAME => new SheetImport(),
       Region::WORKSHEET_NAME => new SheetImport(),
+      Brand::WORKSHEET_NAME => new SheetImport(),
       SubBrand::WORKSHEET_NAME => new SheetImport(),
       Product::WORKSHEET_NAME => new SheetImport(),
     ];

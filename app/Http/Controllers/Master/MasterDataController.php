@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Master;
 
 use App\Http\Controllers\Controller;
 use App\Imports\MasterDataImport;
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Http\Request;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\DB;
@@ -13,11 +14,7 @@ use Symfony\Component\HttpKernel\Exception\BadRequestHttpException;
 class MasterDataController extends Controller
 {
   protected $model;
-
-  public function __construct()
-  {
-    $this->middleware("auth:api");
-  }
+  protected $model_key;
 
   public function index(Request $req)
   {
@@ -25,14 +22,7 @@ class MasterDataController extends Controller
 
     $data = $this->model::select("*");
 
-    if ($req->filled("search")) {
-      $data->where(function ($query) use ($req) {
-        $query->where("kode_sub_brand", "ILIKE", "%{$req->query("search")}%");
-        $query->orWhere("nama_sub_brand", "ILIKE", "%{$req->query("search")}%");
-      });
-    }
-
-    $this->onIndex();
+    $data = $this->onFilter($data, $req);
 
     if (!empty($pagination->sort)) {
       $sort = $pagination->sort;
@@ -89,19 +79,21 @@ class MasterDataController extends Controller
         throw new BadRequestHttpException("no_end_tag_error");
       }
 
-      $imported_data = $this->map($imported_data);
+      $imported_data = $this->getImportedData($imported_data);
 
       $data = 0;
       foreach ($imported_data as $key => $value) {
-        $this->validate(new Request($value), $this->rules($value["kode_sub_brand"]), [
+        $this->validate(new Request($value), $this->rules($value[$this->model_key]), [
           "required" => "The :attribute #" . ($key + 1) . " field is required",
           "unique" => "The :attribute #" . ($key + 1) . " with value \":input\" has already been taken.",
           "exists" => "The :attribute #" . ($key + 1) . " invalid.",
         ]);
-        $this->model::updateOrCreate($this->key($value), $value);
+        $this->model::updateOrCreate([
+          $this->model_key => $value[$this->model_key]
+        ], $value);
         $data++;
       }
-      $file->move(storage_path($file_data->storage_path), $file_data->filename . '.' . $file_data->type);
+      $file->move(storage_path($file_data->storage_path), $file_data->title);
       return $data;
     });
 
@@ -135,41 +127,26 @@ class MasterDataController extends Controller
 
   // reuseable
 
-  protected function onIndex() {
-
+  protected function onFilter(Builder $query, Request $req)
+  {
+    return $query;
   }
 
-  protected function map(Collection $array)
+  protected function getImportedData(Collection $collect)
   {
-    return $array->map(function ($row) {
-      return [
-        "kode_sub_brand" => $row[0],
-        "nama_sub_brand" => $row[1],
-      ];
+    $model = new $this->model;
+    return $collect->map(function ($value) use ($model) {
+      $data = [];
+      foreach ($model->fillable as $index => $key) {
+        $data[$key] = $value[$index];
+      }
+      return $data;
     });
-  }
-
-  public function key($data)
-  {
-    return [];
   }
 
   protected function rules($data = null)
   {
     $rules = [];
-    if (!empty($data)) {
-      if (empty($data->id)) {
-        $data = $this->model::where("kode_sub_brand", $data)->first();
-      }
-      if (!empty($data)) {
-        $rules["kode_sub_brand"] = "required|unique:sub_brand,kode_sub_brand,$data->id";
-      } else {
-        $rules["kode_sub_brand"] = "required|unique:sub_brand";
-      }
-    } else {
-      $rules["kode_sub_brand"] = "required|unique:sub_brand";
-    }
-    $rules["nama_sub_brand"] = "required";
     return $rules;
   }
 }
