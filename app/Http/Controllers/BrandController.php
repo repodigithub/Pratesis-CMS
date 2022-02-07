@@ -31,7 +31,7 @@ class BrandController extends MasterDataController
   protected function rules($data = null)
   {
     $rules = [];
-    if (!empty($data->id) || !empty($data = Brand::where("kode_brand", $data)->first())) {
+    if (!empty($data->id) || !empty($data = $this->model::where("kode_brand", $data)->first())) {
       $rules["kode_brand"] = "required|unique:brand,kode_brand,$data->id";
     } else {
       $rules["kode_brand"] = "required|unique:brand";
