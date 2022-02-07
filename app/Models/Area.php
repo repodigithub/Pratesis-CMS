@@ -13,7 +13,7 @@ class Area extends Model
 
   protected $table = "area";
 
-  public $fillable = ["kode_area", "nama_area", "alamat_depo", "kode_region", "koordinat"];
+  public $fillable = ["kode_area", "nama_area", "alamat_depo", "kode_region", "titik_koordinat"];
 
   public $appends = ["nama_region"];
 
