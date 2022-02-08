@@ -1,6 +1,7 @@
 <?php
 
 $router->group(['prefix' => 'v1'], function () use ($router) {
+  include('alasan.php');
   include('area.php');
   include('auth.php');
   include('brand.php');

@@ -15,6 +15,7 @@ class CreateAlasanTable extends Migration
     {
         Schema::create('alasan', function (Blueprint $table) {
             $table->id();
+            $table->char("kode_alasan")->unique();
             $table->text('deskripsi_alasan');
             $table->timestamps();
         });
