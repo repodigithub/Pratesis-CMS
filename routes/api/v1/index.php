@@ -10,6 +10,7 @@ $router->group(['prefix' => 'v1'], function () use ($router) {
   include('divisi.php');
   include('distributor-group.php');
   include('distributor.php');
+  include('document-claim.php');
   include('product.php');
   include('region.php');
   include('sub-brand.php');
