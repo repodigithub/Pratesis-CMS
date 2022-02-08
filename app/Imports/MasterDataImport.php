@@ -6,6 +6,7 @@ use App\Imports\Sheet\SheetImport;
 use App\Models\Alasan;
 use App\Models\Area;
 use App\Models\Brand;
+use App\Models\BudgetHolder;
 use App\Models\Category;
 use App\Models\Distributor;
 use App\Models\DistributorGroup;
@@ -33,6 +34,7 @@ class MasterDataImport implements WithMultipleSheets
       Category::WORKSHEET_NAME => new SheetImport(),
       Divisi::WORKSHEET_NAME => new SheetImport(),
       Alasan::WORKSHEET_NAME => new SheetImport(),
+      BudgetHolder::WORKSHEET_NAME => new SheetImport(),
     ];
   }
 }
