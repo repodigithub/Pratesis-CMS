@@ -16,6 +16,7 @@ use App\Models\Investment;
 use App\Models\Product;
 use App\Models\Region;
 use App\Models\SubBrand;
+use App\Models\Tax;
 use Maatwebsite\Excel\Concerns\WithConditionalSheets;
 use Maatwebsite\Excel\Concerns\WithMultipleSheets;
 
@@ -26,19 +27,20 @@ class MasterDataImport implements WithMultipleSheets
   public function conditionalSheets(): array
   {
     return [
+      Alasan::WORKSHEET_NAME => new SheetImport(),
       Area::WORKSHEET_NAME => new SheetImport(),
+      Brand::WORKSHEET_NAME => new SheetImport(),
+      BudgetHolder::WORKSHEET_NAME => new SheetImport(),
+      Category::WORKSHEET_NAME => new SheetImport(),
       Distributor::WORKSHEET_NAME => new SheetImport(),
       DistributorGroup::WORKSHEET_NAME => new SheetImport(),
-      Region::WORKSHEET_NAME => new SheetImport(),
-      Brand::WORKSHEET_NAME => new SheetImport(),
-      SubBrand::WORKSHEET_NAME => new SheetImport(),
-      Product::WORKSHEET_NAME => new SheetImport(),
-      Category::WORKSHEET_NAME => new SheetImport(),
       Divisi::WORKSHEET_NAME => new SheetImport(),
-      Alasan::WORKSHEET_NAME => new SheetImport(),
-      BudgetHolder::WORKSHEET_NAME => new SheetImport(),
       DocumentClaim::WORKSHEET_NAME => new SheetImport(),
       Investment::WORKSHEET_NAME => new SheetImport(),
+      Product::WORKSHEET_NAME => new SheetImport(),
+      Region::WORKSHEET_NAME => new SheetImport(),
+      SubBrand::WORKSHEET_NAME => new SheetImport(),
+      Tax::WORKSHEET_NAME => new SheetImport(),
     ];
   }
 }
