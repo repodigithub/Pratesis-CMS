@@ -12,6 +12,7 @@ use App\Models\Distributor;
 use App\Models\DistributorGroup;
 use App\Models\Divisi;
 use App\Models\DocumentClaim;
+use App\Models\Investment;
 use App\Models\Product;
 use App\Models\Region;
 use App\Models\SubBrand;
@@ -37,6 +38,7 @@ class MasterDataImport implements WithMultipleSheets
       Alasan::WORKSHEET_NAME => new SheetImport(),
       BudgetHolder::WORKSHEET_NAME => new SheetImport(),
       DocumentClaim::WORKSHEET_NAME => new SheetImport(),
+      Investment::WORKSHEET_NAME => new SheetImport(),
     ];
   }
 }
