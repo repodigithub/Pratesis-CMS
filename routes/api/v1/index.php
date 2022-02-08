@@ -14,7 +14,7 @@ $router->group(['prefix' => 'v1'], function () use ($router) {
   include('investment.php');
   include('product.php');
   include('region.php');
-  include('spend-type.php');
+  include('spend.php');
   include('sub-brand.php');
   include('tax.php');
   include('user-group.php');

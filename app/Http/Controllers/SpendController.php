@@ -3,15 +3,15 @@
 namespace App\Http\Controllers;
 
 use App\Http\Controllers\Master\MasterDataController;
-use App\Models\SpendType;
+use App\Models\Spend;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Http\Request;
 
-class SpendTypeController extends MasterDataController
+class SpendController extends MasterDataController
 {
   public function __construct()
   {
-    $this->model = SpendType::class;
+    $this->model = Spend::class;
     $this->model_key = "kode_spend_type";
     $this->middleware("auth:api");
   }

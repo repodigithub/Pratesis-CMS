@@ -4,7 +4,7 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
 
-class SpendType extends Model
+class Spend extends Model
 {
   const FILE_PATH = "spend-type";
   const FILE_NAME = "MSTSPENDTYPE";
