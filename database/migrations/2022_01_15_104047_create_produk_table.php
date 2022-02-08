@@ -29,8 +29,8 @@ class CreateProdukTable extends Migration
 
         Schema::create('kategori', function (Blueprint $table) {
             $table->id();
-            $table->char('kode_category', 8)->unique();
-            $table->string('nama_category');
+            $table->char('kode_kategori', 8)->unique();
+            $table->string('nama_kategori');
             $table->timestamps();
         });
 
@@ -55,7 +55,7 @@ class CreateProdukTable extends Migration
                 ->nullOnDelete()->onUpdate('cascade');
             $table->foreign('kode_sub_brand')->references('kode_sub_brand')->on('sub_brand')
                 ->nullOnDelete()->onUpdate('cascade');
-            $table->foreign('kode_kategori')->references('kode_category')->on('kategori')
+            $table->foreign('kode_kategori')->references('kode_kategori')->on('kategori')
                 ->nullOnDelete()->onUpdate('cascade');
             $table->foreign('kode_divisi')->references('kode_divisi')->on('divisi')
                 ->nullOnDelete()->onUpdate('cascade');

@@ -12,7 +12,7 @@ class CategoryController extends MasterDataController
   public function __construct()
   {
     $this->model = Category::class;
-    $this->model_key = "kode_category";
+    $this->model_key = "kode_kategori";
     $this->middleware("auth:api");
   }
 
@@ -20,8 +20,8 @@ class CategoryController extends MasterDataController
   {
     if ($req->filled("search")) {
       $query->where(function ($query) use ($req) {
-        $query->where("kode_category", "ILIKE", "%{$req->query("search")}%");
-        $query->orWhere("nama_category", "ILIKE", "%{$req->query("search")}%");
+        $query->where("kode_kategori", "ILIKE", "%{$req->query("search")}%");
+        $query->orWhere("nama_kategori", "ILIKE", "%{$req->query("search")}%");
       });
     }
     return $query;
@@ -30,12 +30,12 @@ class CategoryController extends MasterDataController
   protected function rules($data = null)
   {
     $rules = [];
-    if (!empty($data->id) || !empty($data = $this->model::where("kode_category", $data)->first())) {
-      $rules["kode_category"] = "required|unique:kategori,kode_category,$data->id";
+    if (!empty($data->id) || !empty($data = $this->model::where("kode_kategori", $data)->first())) {
+      $rules["kode_kategori"] = "required|unique:kategori,kode_kategori,$data->id";
     } else {
-      $rules["kode_category"] = "required|unique:kategori";
+      $rules["kode_kategori"] = "required|unique:kategori";
     }
-    $rules["nama_category"] = "required";
+    $rules["nama_kategori"] = "required";
     return $rules;
   }
 }

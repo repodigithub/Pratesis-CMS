@@ -13,5 +13,5 @@ class Category extends Model
 
   protected $table = "kategori";
 
-  public $fillable = ["kode_category", "nama_category"];
+  public $fillable = ["kode_kategori", "nama_kategori"];
 }

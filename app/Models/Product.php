@@ -13,5 +13,25 @@ class Product extends Model
 
   protected $table = "produk";
 
-  public $fillable = ["kode_produk", "nama_produk", "kode_sub_brand", "kode_brand", "kode_category", "kode_divisi"];
+  public $fillable = ["kode_produk", "nama_produk", "kode_sub_brand", "kode_brand", "kode_kategori", "kode_divisi"];
+
+  public function subBrand()
+  {
+    return $this->belongsTo(SubBrand::class, "kode_sub_brand", "kode_sub_brand");
+  }
+
+  public function brand()
+  {
+    return $this->belongsTo(Brand::class, "kode_brand", "kode_brand");
+  }
+
+  public function category()
+  {
+    return $this->belongsTo(Category::class, "kode_kategori", "kode_kategori");
+  }
+
+  public function divisi()
+  {
+    return $this->belongsTo(Divisi::class, "kode_divisi", "kode_divisi");
+  }
 }
