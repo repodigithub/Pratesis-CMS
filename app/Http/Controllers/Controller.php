@@ -9,6 +9,7 @@ use Illuminate\Http\Response;
 use Illuminate\Support\Facades\Auth;
 use Laravel\Lumen\Routing\Controller as BaseController;
 use Symfony\Component\HttpKernel\Exception\BadRequestHttpException;
+use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 
 class Controller extends BaseController
 {
@@ -33,7 +34,7 @@ class Controller extends BaseController
             }
             return $data->first();
         } catch (\Throwable $th) {
-            throw new BadRequestHttpException("$model not found.");
+            throw new NotFoundHttpException("$model not found.");
         }
     }
 

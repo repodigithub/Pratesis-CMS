@@ -15,8 +15,9 @@ class CreateDokumenKlaimTable extends Migration
     {
         Schema::create('dokumen_klaim', function (Blueprint $table) {
             $table->id();
-            $table->char('kode_dokumen', 4)->unique();
+            $table->char('kode_dokumen')->unique();
             $table->string('nama_dokumen');
+            $table->string('sumber_dokumen');
             $table->timestamps();
         });
     }
