@@ -22,9 +22,9 @@ class AreaFactory extends Factory
     public function definition()
     {
         return [
-            'kode_area' => $this->faker->numerify('TEST##'),
-            'nama_area' => $this->faker->name,
-            'alamat_depo' => $this->faker->name,
+            'kode_area' => $this->faker->numerify('#T##ES'),
+            'nama_area' => $this->faker->name(),
+            'alamat_depo' => $this->faker->name(),
             'kode_region' => 'TEST01',
         ];
     }

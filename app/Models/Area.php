@@ -3,9 +3,11 @@
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Factories\HasFactory;
 
 class Area extends Model
 {
+  use HasFactory;
   const FILE_PATH = "area";
   const FILE_NAME = "MSTAREA";
   const WORKSHEET_NAME = "AREAMST";
