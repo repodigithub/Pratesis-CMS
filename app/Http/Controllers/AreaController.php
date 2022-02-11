@@ -13,7 +13,8 @@ class AreaController extends MasterDataController
   {
     $this->model = Area::class;
     $this->model_key = "kode_area";
-    $this->middleware("auth:api");
+    $this->middleware("auth:api", ["except" => "index"]);
+    $this->middleware("signature", ["only" => "index"]);
   }
 
   protected function onFilter(Builder $query, Request $req)

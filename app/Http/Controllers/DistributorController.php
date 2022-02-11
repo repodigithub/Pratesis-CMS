@@ -12,7 +12,8 @@ class DistributorController extends MasterDataController
   {
     $this->model = Distributor::class;
     $this->model_key = "kode_distributor";
-    $this->middleware("auth:api");
+    $this->middleware("auth:api", ["except" => "index"]);
+    $this->middleware("signature", ["only" => "index"]);
   }
 
   protected function onFilter($data, $req)
