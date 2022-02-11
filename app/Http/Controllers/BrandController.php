@@ -25,6 +25,15 @@ class BrandController extends MasterDataController
         $query->orWhere("nama_brand", "ILIKE", "%{$req->query("search")}%");
       });
     }
+
+    if ($req->filled("kode_brand")) {
+      $query->where("kode_brand", "ILIKE", "%{$req->query("kode_brand")}%");
+    }
+
+    if ($req->filled("nama_brand")) {
+      $query->where("nama_brand", "ILIKE", "%{$req->query("nama_brand")}%");
+    }
+
     return $query;
   }
 

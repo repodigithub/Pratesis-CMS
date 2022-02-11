@@ -38,12 +38,12 @@ class Controller extends BaseController
         }
     }
 
-    protected function getPagination(Request $req)
+    protected function getPagination(Request $req, $default = ["created_at", "desc"])
     {
         $pagination = new stdClass();
         $pagination->page = $req->query("page") ?: 1;
         $pagination->limit = $req->query("limit") ?: 10;
-        $pagination->sort = ["created_at", "desc"];
+        $pagination->sort = $default;
         if ($req->filled("sort")) {
             $pagination->sort = explode(",", $req->query("sort"));
         }

@@ -82,11 +82,12 @@ $app->alias('mailer', Illuminate\Contracts\Mail\MailQueue::class);
 */
 
 $app->middleware([
-    App\Http\Middleware\CorsMiddleware::class
+    App\Http\Middleware\CorsMiddleware::class,
 ]);
 
 $app->routeMiddleware([
     'auth' => App\Http\Middleware\Authenticate::class,
+    'signature' => App\Http\Middleware\SignatureMiddleware::class
     // 'permission' => App\Http\Middleware\Permission::class
 ]);
 

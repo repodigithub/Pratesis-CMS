@@ -6,6 +6,7 @@
     "type": "project",
     "require": {
         "php": "^7.3|^8.0",
+        "dees040/jwt-auth": "^1.0",
         "flipbox/lumen-generator": "^8.2",
         "google/cloud-recaptcha-enterprise": "^1.1",
         "guzzlehttp/guzzle": "^7.4",
@@ -13,8 +14,7 @@
         "illuminate/notifications": "^8.80",
         "laravel/lumen-framework": "^8.3.1",
         "maatwebsite/excel": "^3.1",
-        "ramsey/uuid": "^4.2",
-        "tymon/jwt-auth": "^1.0"
+        "ramsey/uuid": "^4.2"
     },
     "require-dev": {
         "fakerphp/faker": "^1.9.1",

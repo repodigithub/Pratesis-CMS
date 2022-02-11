@@ -24,6 +24,15 @@ class DivisiController extends MasterDataController
         $query->orWhere("nama_divisi", "ILIKE", "%{$req->query("search")}%");
       });
     }
+
+    if ($req->filled("kode_divisi")) {
+      $query->where("kode_divisi", "ILIKE", "%{$req->query("kode_divisi")}%");
+    }
+
+    if ($req->filled("nama_divisi")) {
+      $query->where("nama_divisi", "ILIKE", "%{$req->query("nama_divisi")}%");
+    }
+
     return $query;
   }
 

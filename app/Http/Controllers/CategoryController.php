@@ -24,6 +24,15 @@ class CategoryController extends MasterDataController
         $query->orWhere("nama_kategori", "ILIKE", "%{$req->query("search")}%");
       });
     }
+
+    if ($req->filled("kode_kategori")) {
+      $query->where("kode_kategori", "ILIKE", "%{$req->query("kode_kategori")}%");
+    }
+
+    if ($req->filled("nama_kategori")) {
+      $query->where("nama_kategori", "ILIKE", "%{$req->query("nama_kategori")}%");
+    }
+
     return $query;
   }
 
