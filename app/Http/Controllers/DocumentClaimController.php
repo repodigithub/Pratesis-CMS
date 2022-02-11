@@ -26,6 +26,18 @@ class DocumentClaimController extends MasterDataController
       });
     }
 
+    if ($req->filled("kode_dokumen")) {
+      $query->where("kode_dokumen", "ILIKE", "%{$req->query("kode_dokumen")}%");
+    }
+
+    if ($req->filled("nama_dokumen")) {
+      $query->where("nama_dokumen", "ILIKE", "%{$req->query("nama_dokumen")}%");
+    }
+
+    if ($req->filled("sumber_dokumen")) {
+      $query->where("sumber_dokumen", "ILIKE", "%{$req->query("sumber_dokumen")}%");
+    }
+
     return $query;
   }
 

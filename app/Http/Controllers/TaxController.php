@@ -25,6 +25,26 @@ class TaxController extends MasterDataController
       });
     }
 
+    if ($req->filled("kode_pajak")) {
+      $query->where("kode_pajak", "ILIKE", "%{$req->query("kode_pajak")}%");
+    }
+
+    if ($req->filled("nama_pajak")) {
+      $query->where("nama_pajak", "ILIKE", "%{$req->query("nama_pajak")}%");
+    }
+
+    if ($req->filled("tipe_pajak")) {
+      $query->where("tipe_pajak", "ILIKE", "%{$req->query("tipe_pajak")}%");
+    }
+
+    if ($req->filled("presentase_pajak")) {
+      $query->where("presentase_pajak", "ILIKE", "%{$req->query("presentase_pajak")}%");
+    }
+
+    if ($req->filled("reference_tax")) {
+      $query->where("reference_tax", "ILIKE", "%{$req->query("reference_tax")}%");
+    }
+
     return $query;
   }
 

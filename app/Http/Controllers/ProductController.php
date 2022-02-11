@@ -25,20 +25,28 @@ class ProductController extends MasterDataController
       });
     }
 
+    if ($req->filled("kode_produk")) {
+      $query->where("kode_produk", "ILIKE", "%{$req->query("kode_produk")}%");
+    }
+
+    if ($req->filled("nama_produk")) {
+      $query->where("nama_produk", "ILIKE", "%{$req->query("nama_produk")}%");
+    }
+
     if ($req->filled("kode_sub_brand")) {
-      $query->where("kode_sub_brand", $req->query("kode_sub_brand"));
+      $query->where("kode_sub_brand", "ILIKE", "%{$req->query("kode_sub_brand")}%");
     }
 
     if ($req->filled("kode_brand")) {
-      $query->where("kode_brand", $req->query("kode_brand"));
+      $query->where("kode_brand", "ILIKE", "%{$req->query("kode_brand")}%");
     }
 
     if ($req->filled("kode_kategori")) {
-      $query->where("kode_kategori", $req->query("kode_kategori"));
+      $query->where("kode_kategori", "ILIKE", "%{$req->query("kode_kategori")}%");
     }
 
     if ($req->filled("kode_divisi")) {
-      $query->where("kode_divisi", $req->query("kode_divisi"));
+      $query->where("kode_divisi", "ILIKE", "%{$req->query("kode_divisi")}%");
     }
 
     return $query;

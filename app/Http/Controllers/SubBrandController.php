@@ -30,6 +30,14 @@ class SubBrandController extends MasterDataController
       });
     }
 
+    if ($req->filled("kode_sub_brand")) {
+      $query->where("kode_sub_brand", "ILIKE", "%{$req->query("kode_sub_brand")}%");
+    }
+
+    if ($req->filled("nama_sub_brand")) {
+      $query->where("nama_sub_brand", "ILIKE", "%{$req->query("nama_sub_brand")}%");
+    }
+
     return $query;
   }
 
