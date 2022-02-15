@@ -11,6 +11,8 @@ class DocumentClaim extends Model
   const WORKSHEET_NAME = "DOCUMENT_CLAIMMST";
   const FIELD_NAME = ["Kode Dokumen", "Nama Dokumen", "Sumber Dokumen"];
 
+  protected $hidden = ["pivot"];
+  
   protected $table = "dokumen_klaim";
 
   public $fillable = ["kode_dokumen", "nama_dokumen", "sumber_dokumen"];

@@ -88,9 +88,10 @@ class MasterDataController extends Controller
           "unique" => "The :attribute #" . ($key + 1) . " with value \":input\" has already been taken.",
           "exists" => "The :attribute #" . ($key + 1) . " with value \":input\" is invalid.",
         ]);
-        $this->model::updateOrCreate([
+        $model = $this->model::updateOrCreate([
           $this->model_key => $value[$this->model_key]
         ], $value);
+        $this->afterUpdateOrCreate($model, $value);
         $data++;
       }
       $file->move(storage_path($file_data->storage_path), $file_data->title);
@@ -142,6 +143,10 @@ class MasterDataController extends Controller
       }
       return $data;
     });
+  }
+
+  protected function afterUpdateOrCreate($model, $value)
+  {
   }
 
   protected function rules($data = null)
