@@ -27,7 +27,7 @@ class Distributor extends Model
     "status_distributor",
   ];
 
-  public $appends = ["nama_region"];
+  public $appends = ["kode_region", "nama_region"];
 
   public function distributorGroup()
   {
@@ -42,6 +42,11 @@ class Distributor extends Model
   public function region()
   {
     return $this->area()->first()->region();
+  }
+
+  public function getKodeRegionAttribute()
+  {
+    return $this->region()->first()->kode_region;
   }
 
   public function getNamaRegionAttribute()
