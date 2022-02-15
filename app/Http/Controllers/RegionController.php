@@ -11,7 +11,7 @@ class RegionController extends MasterDataController
 {
   public function __construct()
   {
-    $this->middleware("auth:api");
+    $this->middleware("auth:api",['except' => ['index']]);
     $this->model = Region::class;
     $this->model_key = "kode_region";
   }
