@@ -11,21 +11,26 @@ class UserGroupController extends Controller
 {
   public function __construct()
   {
-    $this->middleware("auth:api",['except' => ['index']]);
+    $this->middleware("auth:api", ['except' => 'index']);
+    $this->middleware("signature", ["only" => "index"]);
   }
 
   public function index(Request $req)
   {
 
-    $pagination = $this->getPagination($req);
+    $pagination = $this->getPagination($req, ["id", "asc"]);
 
-    $data = Group::with("permissions");
+    $data = Group::select();
 
     if ($req->filled("search")) {
       $data->where(function ($query) use ($req) {
         $query->where("kode_group", "ILIKE", "%{$req->query("search")}%");
         $query->orWhere("nama_group", "ILIKE", "%{$req->query("search")}%");
       });
+    }
+
+    if ($req->filled('include')) {
+      $data->with($req->query('include'));
     }
 
     // if ($req->filled("kode_sales")) {

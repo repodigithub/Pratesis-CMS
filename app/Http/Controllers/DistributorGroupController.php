@@ -28,6 +28,14 @@ class DistributorGroupController extends MasterDataController
       });
     }
 
+    if ($req->filled("kode_distributor_group")) {
+      $data->where("kode_distributor_group", "ILIKE", "%{$req->query("kode_distributor_group")}%");
+    }
+
+    if ($req->filled("nama_distributor_group")) {
+      $data->where("nama_distributor_group", "ILIKE", "%{$req->query("nama_distributor_group")}%");
+    }
+
     return $data;
   }
 

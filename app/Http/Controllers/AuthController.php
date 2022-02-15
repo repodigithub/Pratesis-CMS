@@ -31,8 +31,9 @@ class AuthController extends Controller
       "email" => "email|required|unique:user",
       "password" => "required",
       "username" => "required|unique:user",
-      "kode_distributor" => "nullable",
-      "kode_area" => "nullable",
+      "kode_group" => "nullable|exists:user_group,kode_group",
+      "kode_distributor" => "nullable|exists:distributor,kode_distributor",
+      "kode_area" => "nullable|exists:area,kode_area",
       "g-recaptcha-response" => "required"
     ]);
 
@@ -47,6 +48,7 @@ class AuthController extends Controller
       $user->password = Hash::make($req->input("password"));
       $user->kode_distributor = $req->input("kode_distributor");
       $user->kode_area = $req->input("kode_area");
+      $user->kode_group = $req->input("kode_group");
       $user->save();
 
       // Send mail
@@ -61,10 +63,10 @@ class AuthController extends Controller
     $this->validate($req, [
       "email" => "email|required",
       "password" => "required",
-      // "g-recaptcha-response" => "required"
+      "g-recaptcha-response" => "required"
     ]);
 
-    // $this->verifyCaptcha($req->input("g-recaptcha-response"));
+    $this->verifyCaptcha($req->input("g-recaptcha-response"));
 
     $credentials = $req->only(["email", "password"]);
 

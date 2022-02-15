@@ -24,6 +24,15 @@ class RegionController extends MasterDataController
         $q->orWhere("nama_region", "ILIKE", "%{$req->query("search")}%");
       });
     }
+
+    if ($req->filled("kode_region")) {
+      $query->where("kode_region", "ILIKE", "%{$req->query("kode_region")}%");
+    }
+
+    if ($req->filled("nama_region")) {
+      $query->where("nama_region", "ILIKE", "%{$req->query("nama_region")}%");
+    }
+
     return $query;
   }
 

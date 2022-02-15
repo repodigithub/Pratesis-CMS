@@ -13,7 +13,8 @@ class AreaController extends MasterDataController
   {
     $this->model = Area::class;
     $this->model_key = "kode_area";
-    $this->middleware("auth:api",['except' => ['index']]);
+    $this->middleware("auth:api", ["except" => "index"]);
+    $this->middleware("signature", ["only" => "index"]);
   }
 
   protected function onFilter(Builder $query, Request $req)
@@ -22,16 +23,28 @@ class AreaController extends MasterDataController
       $query->with($req->query("include"));
     }
 
-    if ($req->filled("region")) {
-      $query->where("kode_region", $req->query("region"));
-    }
-
     if ($req->filled("search")) {
       $query->where(function ($q) use ($req) {
         $q->where("kode_area", "ILIKE", "%{$req->query("search")}%");
         $q->orWhere("nama_area", "ILIKE", "%{$req->query("search")}%");
         $q->orWhere("alamat_depo", "ILIKE", "%{$req->query("search")}%");
       });
+    }
+
+    if ($req->filled("region")) {
+      $query->where("kode_region", $req->query("region"));
+    }
+
+    if ($req->filled("kode_area")) {
+      $query->where("kode_area", $req->query("kode_area"));
+    }
+
+    if ($req->filled("nama_area")) {
+      $query->where("nama_area", $req->query("nama_area"));
+    }
+
+    if ($req->filled("alamat_depo")) {
+      $query->where("alamat_depo", $req->query("alamat_depo"));
     }
 
     return $query;

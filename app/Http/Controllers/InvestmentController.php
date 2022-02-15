@@ -25,6 +25,14 @@ class InvestmentController extends MasterDataController
       });
     }
 
+    if ($req->filled("kode_investment")) {
+      $query->where("kode_investment", "ILIKE", "%{$req->query("kode_investment")}%");
+    }
+
+    if ($req->filled("nama_investment")) {
+      $query->where("nama_investment", "ILIKE", "%{$req->query("nama_investment")}%");
+    }
+
     return $query;
   }
 

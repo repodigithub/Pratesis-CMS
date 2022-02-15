@@ -27,6 +27,27 @@ class SpendController extends MasterDataController
         $query->orWhere("condition_type", "ILIKE", "%{$req->query("search")}%");
       });
     }
+
+    if ($req->filled("kode_spend_type")) {
+      $query->where("kode_spend_type", "ILIKE", "%{$req->query("kode_spend_type")}%");
+    }
+
+    if ($req->filled("kode_investment")) {
+      $query->where("kode_investment", "ILIKE", "%{$req->query("kode_investment")}%");
+    }
+
+    if ($req->filled("fund_type")) {
+      $query->where("fund_type", "ILIKE", "%{$req->query("fund_type")}%");
+    }
+
+    if ($req->filled("reference_tax")) {
+      $query->where("reference_tax", "ILIKE", "%{$req->query("reference_tax")}%");
+    }
+
+    if ($req->filled("condition_type")) {
+      $query->where("condition_type", "ILIKE", "%{$req->query("condition_type")}%");
+    }
+
     return $query;
   }
 

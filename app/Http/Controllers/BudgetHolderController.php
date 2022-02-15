@@ -25,6 +25,14 @@ class BudgetHolderController extends MasterDataController
       });
     }
 
+    if ($req->filled("kode_budget_holder")) {
+      $query->where("kode_budget_holder", "ILIKE", "%{$req->query("kode_budget_holder")}%");
+    }
+
+    if ($req->filled("nama_budget_holder")) {
+      $query->where("nama_budget_holder", "ILIKE", "%{$req->query("nama_budget_holder")}%");
+    }
+
     return $query;
   }
 

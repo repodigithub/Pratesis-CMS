@@ -25,6 +25,14 @@ class AlasanController extends MasterDataController
       });
     }
 
+    if ($req->filled("kode_alasan")) {
+      $query->where("kode_alasan", "ILIKE", "%{$req->query("kode_alasan")}%");
+    }
+
+    if ($req->filled("deskripsi_alasan")) {
+      $query->where("deskripsi_alasan", "ILIKE", "%{$req->query("deskripsi_alasan")}%");
+    }
+
     return $query;
   }
 
