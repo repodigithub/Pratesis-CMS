@@ -38,12 +38,12 @@ class Controller extends BaseController
         }
     }
 
-    protected function getPagination(Request $req, $default = ["created_at", "desc"])
+    protected function getPagination(Request $req, $sort = ["created_at", "desc"])
     {
         $pagination = new stdClass();
         $pagination->page = $req->query("page") ?: 1;
         $pagination->limit = $req->query("limit") ?: 10;
-        $pagination->sort = $default;
+        $pagination->sort = $sort;
         if ($req->filled("sort")) {
             $pagination->sort = explode(",", $req->query("sort"));
         }
@@ -57,8 +57,8 @@ class Controller extends BaseController
         if (strpos($filename, $model::FILE_NAME) === false) {
             throw new BadRequestHttpException("Filename must \"" . $model::FILE_NAME . "\"");
         }
-        $timestamp = date('Ymd-His');
-        $path = "/" . implode("/", [$model::FILE_PATH, $timestamp]);
+        $timestamp = date('Ymd/His');
+        $path = implode("/", [$model::FILE_PATH, $timestamp]);
         $storage_path = "/app/public/$path";
         $public_path = "/storage/$path";
         $file_data = File::create([
