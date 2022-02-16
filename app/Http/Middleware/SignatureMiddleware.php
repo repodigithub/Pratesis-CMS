@@ -22,10 +22,16 @@ class SignatureMiddleware
 
         // Post-Middleware Action
         $url = $request->url();
-        $timestamp = time();
-        $encrypted = hash_hmac("sha256", "$url|$timestamp", env("HMAC_SECRET"));
+        $signatures = collect();
+        $timeout = ini_get('max_execution_time');
+
+        for ($i = 0; $i < $timeout; $i++) {
+            $timestamp = strtotime("-$i seconds");
+            $signatures->push(hash_hmac("sha256", "$url|$timestamp", env("HMAC_SECRET")));
+        }
+        
         $authorization = $request->header("Authorization");
-        if ($encrypted != $authorization) {
+        if ($signatures->search($authorization) === false) {
             throw new UnauthorizedHttpException("", "Signature invalid.");
         }
 
