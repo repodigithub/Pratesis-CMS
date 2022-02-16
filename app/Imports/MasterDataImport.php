@@ -18,6 +18,7 @@ use App\Models\Region;
 use App\Models\Spend;
 use App\Models\SubBrand;
 use App\Models\Tax;
+use App\Models\TipePromo;
 use Maatwebsite\Excel\Concerns\WithConditionalSheets;
 use Maatwebsite\Excel\Concerns\WithMultipleSheets;
 
@@ -43,6 +44,7 @@ class MasterDataImport implements WithMultipleSheets
       Spend::WORKSHEET_NAME => new SheetImport(),
       SubBrand::WORKSHEET_NAME => new SheetImport(),
       Tax::WORKSHEET_NAME => new SheetImport(),
+      TipePromo::WORKSHEET_NAME => new SheetImport(),
     ];
   }
 }

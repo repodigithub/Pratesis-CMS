@@ -39,6 +39,7 @@ class MasterDataController extends Controller
     $this->validate($req, $this->rules());
 
     $data = $this->model::create($req->all());
+    $data = $this->afterUpdateOrCreate($data, $req);
 
     return $this->response($data);
   }
@@ -88,9 +89,10 @@ class MasterDataController extends Controller
           "unique" => "The :attribute #" . ($key + 1) . " with value \":input\" has already been taken.",
           "exists" => "The :attribute #" . ($key + 1) . " with value \":input\" is invalid.",
         ]);
-        $this->model::updateOrCreate([
+        $model = $this->model::updateOrCreate([
           $this->model_key => $value[$this->model_key]
         ], $value);
+        $model = $this->afterUpdateOrCreate($model, new Request($value));
         $data++;
       }
       $file->move(storage_path($file_data->storage_path), $file_data->title);
@@ -114,6 +116,7 @@ class MasterDataController extends Controller
     $this->validate($req, $this->rules($data));
 
     $data->update($req->all());
+    $data = $this->afterUpdateOrCreate($data, $req);
 
     return $this->response($data);
   }
@@ -142,6 +145,11 @@ class MasterDataController extends Controller
       }
       return $data;
     });
+  }
+
+  protected function afterUpdateOrCreate($model, Request $req)
+  {
+    return $model;
   }
 
   protected function rules($data = null)

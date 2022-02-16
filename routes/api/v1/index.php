@@ -12,11 +12,13 @@ $router->group(['prefix' => 'v1'], function () use ($router) {
   include('divisi.php');
   include('document-claim.php');
   include('investment.php');
+  include('master-data.php');
   include('product.php');
   include('region.php');
   include('spend.php');
   include('sub-brand.php');
   include('tax.php');
+  include('tipe-promo.php');
   include('user-group.php');
   include('user.php');
 });
