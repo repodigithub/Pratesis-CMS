@@ -58,10 +58,11 @@ class TipePromoController extends MasterDataController
     });
   }
 
-  protected function afterUpdateOrCreate($model, $value)
+  protected function afterUpdateOrCreate($model, $req)
   {
-    $model->spendTypes()->sync($value['spend_types']);
-    $model->documents()->sync($value['documents']);
+    $model->spendTypes()->sync($req->input('spend_types'));
+    $model->documents()->sync($req->input('documents'));
+    return $this->getModel($this->model, $model->id);
   }
 
   public function rules($data = null)
