@@ -3,9 +3,11 @@
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Factories\HasFactory;
 
 class Spend extends Model
 {
+  use HasFactory;
   const FILE_PATH = "spend-type";
   const FILE_NAME = "MSTSPENDTYPE";
   const WORKSHEET_NAME = "SPENDTYPEMST";

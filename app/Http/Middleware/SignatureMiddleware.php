@@ -26,7 +26,7 @@ class SignatureMiddleware
         $encrypted = hash_hmac("sha256", "$url|$timestamp", env("HMAC_SECRET"));
         $authorization = $request->header("Authorization");
         if ($encrypted != $authorization) {
-            throw new UnauthorizedHttpException("", "Signature invalid.");
+            return response()->json(['status'=>'auth failed','auth'=>$authorization,'encrypt'=>$encrypted,'timestamp'=>$timestamp,'url'=>$url], 401);
         }
 
         return $response;
