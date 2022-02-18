@@ -23,7 +23,7 @@ class SpendFactory extends Factory
     {
         return [
             'kode_spend_type' => $this->faker->lexify('C??'),
-            'kode_investment' => 'ivvb',
+            'kode_investment' => 'ivlk',
             'fund_type' => $this->faker->randomNumber(2, true),
             'reference_tax' => $this->faker->lexify(),
             'condition_type' => $this->faker->lexify(),
