@@ -26,7 +26,7 @@ class MasterDataController extends Controller
 
     if (!empty($pagination->sort)) {
       $sort = $pagination->sort;
-      $data->orderBy($sort[0], $sort[1]);
+      $data->orderBy((new $this->model())->getTable().'.'.$sort[0], $sort[1]);
     }
 
     $data = $data->paginate($pagination->limit, ["*"], "page", $pagination->page);
@@ -104,7 +104,12 @@ class MasterDataController extends Controller
 
   public function show($id, Request $req)
   {
-    $data = $this->getModel($this->model, $id);
+    $include = null;
+    if ($req->filled('include')) {
+      $include = $req->query('include');
+    }
+
+    $data = $this->getModel($this->model, $id, $include);
 
     return $this->response($data);
   }

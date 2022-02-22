@@ -12,6 +12,7 @@ use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Facades\Password;
+use Symfony\Component\HttpKernel\Exception\BadRequestHttpException;
 use Symfony\Component\HttpKernel\Exception\HttpException;
 
 class AuthController extends Controller
@@ -63,10 +64,10 @@ class AuthController extends Controller
     $this->validate($req, [
       "email" => "email|required",
       "password" => "required",
-      // "g-recaptcha-response" => "required"
+      "g-recaptcha-response" => "required"
     ]);
 
-    // $this->verifyCaptcha($req->input("g-recaptcha-response"));
+    $this->verifyCaptcha($req->input("g-recaptcha-response"));
 
     $credentials = $req->only(["email", "password"]);
 
@@ -75,9 +76,19 @@ class AuthController extends Controller
     }
 
     $user = Auth::user();
+    if ($user->status != User::STATUS_APPROVE) {
+      Auth::logout();
+      throw new BadRequestHttpException("user_status_not_approved");
+    }
     $user->token = $token;
 
     return $this->response($user);
+  }
+
+  public function logout()
+  {
+    Auth::logout();
+    return $this->response([], 'Logged out');
   }
 
   public function forgetPassword(Request $req)

@@ -36,7 +36,7 @@ class TipePromo extends Model
     "Kode Dokumen 9",
     "Kode Dokumen 10",
   ];
-  
+
   protected $hidden = ["pivot"];
 
   protected $table = "tipe_promo";
@@ -50,6 +50,27 @@ class TipePromo extends Model
     "kode_investment",
     "file_dokumen",
   ];
+
+  public $appends = ['nama_investment', 'persentase_ppn', 'persentase_pph'];
+
+  public function getNamaInvestmentAttribute()
+  {
+    try {
+      return $this->investment()->first()->nama_investment;
+    } catch (\Throwable $th) {
+      return null;
+    }
+  }
+
+  public function getPersentasePpnAttribute()
+  {
+    return $this->ppn()->first()->presentase_pajak;
+  }
+
+  public function getPersentasePphAttribute()
+  {
+    return $this->pph()->first()->presentase_pajak;
+  }
 
   // ppn
   public function ppn()
