@@ -7,5 +7,6 @@ $router->group(['prefix' => 'auth'], function () use ($router) {
   $router->post('reset-password/{token}', ['uses' => 'AuthController@resetPassword']);
   $router->get('me', ['uses' => 'AuthController@me']);
   $router->get('refresh', ['uses' => 'AuthController@refresh']);
+  $router->get('logout', ['uses' => 'AuthController@logout']);
   $router->put('profile', ['uses' => 'AuthController@updateProfile']);
 });

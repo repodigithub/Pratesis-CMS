@@ -17,6 +17,28 @@ class Product extends Model
 
   public $fillable = ["kode_produk", "nama_produk", "kode_sub_brand", "kode_brand", "kode_kategori", "kode_divisi"];
 
+  public $appends = ['nama_sub_brand', 'nama_brand', 'nama_kategori', 'nama_divisi'];
+
+  public function getNamaSubBrandAttribute()
+  {
+    return $this->subBrand()->first()->nama_sub_brand;
+  }
+
+  public function getNamaBrandAttribute()
+  {
+    return $this->brand()->first()->nama_brand;
+  }
+
+  public function getNamaKategoriAttribute()
+  {
+    return $this->category()->first()->nama_kategori;
+  }
+
+  public function getNamaDivisiAttribute()
+  {
+    return $this->divisi()->first()->nama_divisi;
+  }
+
   public function subBrand()
   {
     return $this->belongsTo(SubBrand::class, "kode_sub_brand", "kode_sub_brand");
