@@ -3,9 +3,11 @@
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Factories\HasFactory;
 
 class Product extends Model
 {
+  use HasFactory;
   const FILE_PATH = "product";
   const FILE_NAME = "MSTPRODUCT";
   const WORKSHEET_NAME = "PRODUCTMST";
