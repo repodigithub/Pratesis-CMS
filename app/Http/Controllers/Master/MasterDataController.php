@@ -104,7 +104,12 @@ class MasterDataController extends Controller
 
   public function show($id, Request $req)
   {
-    $data = $this->getModel($this->model, $id);
+    $include = null;
+    if ($req->filled('include')) {
+      $include = $req->query('include');
+    }
+
+    $data = $this->getModel($this->model, $id, $include);
 
     return $this->response($data);
   }

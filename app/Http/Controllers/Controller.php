@@ -27,14 +27,14 @@ class Controller extends BaseController
         try {
             $data = $model::where('id', $id);
             if (!empty($include)) {
-                $data->with($include);
+                $data->with(explode(';', $include));
             }
             if (empty($data->count())) {
-                throw new \Exception("$model not found", 1);
+                throw new NotFoundHttpException("$model not found.");
             }
             return $data->first();
         } catch (\Throwable $th) {
-            throw new NotFoundHttpException("$model not found.");
+            throw new BadRequestHttpException($th->getMessage());
         }
     }
 
