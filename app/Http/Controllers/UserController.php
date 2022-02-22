@@ -93,7 +93,7 @@ class UserController extends Controller
       "kode_group" => "nullable",
       "kode_area" => "nullable",
       "kode_distributor" => "nullable",
-      "status" => ["required", Rule::in([User::STATUS_APPROVE, User::STATUS_REJECT])],
+      "status" => ["required", Rule::in([User::STATUS_APPROVE, User::STATUS_REJECT, User::STATUS_PENDING])],
     ]);
 
     $data->update($req->only([
