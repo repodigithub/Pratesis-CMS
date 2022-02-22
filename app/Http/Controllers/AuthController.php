@@ -80,6 +80,12 @@ class AuthController extends Controller
     return $this->response($user);
   }
 
+  public function logout()
+  {
+    Auth::logout();
+    return $this->response([], 'Logged out');
+  }
+
   public function forgetPassword(Request $req)
   {
     $this->validate($req, [
