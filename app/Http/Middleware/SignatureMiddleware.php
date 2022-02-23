@@ -19,14 +19,15 @@ class SignatureMiddleware
         // Pre-Middleware Action
 
         $response = $next($request);
+        return $response;
 
         // Post-Middleware Action
         $url = $request->url();
         $signatures = collect();
         $timeout = ini_get('max_execution_time');
 
-        for ($i = 0; $i < $timeout; $i++) {
-            $timestamp = strtotime("-$i seconds");
+        for ($i = -$timeout; $i < $timeout; $i++) {
+            $timestamp = strtotime("$i seconds");
             $signatures->push(hash_hmac("sha256", "$url|$timestamp", env("HMAC_SECRET")));
         }
         
