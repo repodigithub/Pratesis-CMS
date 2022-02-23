@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\User;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Hash;
 use Illuminate\Validation\Rule;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 
@@ -50,6 +51,33 @@ class UserController extends Controller
     $data = $data->paginate($pagination->limit, ["*"], "page", $pagination->page);
 
     return $this->response($data);
+  }
+
+  public function create(Request $req)
+  {
+    $this->validate($req, [
+      "user_id" => "required|unique:user",
+      "full_name" => "required",
+      "email" => "email|required|unique:user",
+      "username" => "required|unique:user",
+      "kode_group" => "nullable|exists:user_group,kode_group",
+      "kode_distributor" => "nullable|exists:distributor,kode_distributor",
+      "kode_area" => "nullable|exists:area,kode_area",
+    ]);
+
+
+    $user = new User();
+    $user->user_id = $req->input("user_id");
+    $user->full_name = $req->input("full_name");
+    $user->email = $req->input("email");
+    $user->password = Hash::make('123456');
+    $user->username = $req->input("username");
+    $user->kode_distributor = $req->input("kode_distributor");
+    $user->kode_area = $req->input("kode_area");
+    $user->kode_group = $req->input("kode_group");
+    $user->save();
+
+    return $this->response($user);
   }
 
   public function action(Request $req)
