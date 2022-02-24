@@ -103,7 +103,12 @@ class UserController extends Controller
 
   public function show($id, Request $req)
   {
-    $data = $this->getModel(User::class, $id);
+    $include = null;
+    if ($req->filled('include')) {
+      $include = $req->query('include');
+    }
+
+    $data = $this->getModel(User::class, $id, $include);
 
     return $this->response($data);
   }
