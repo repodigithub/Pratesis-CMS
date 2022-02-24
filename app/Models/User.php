@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use App\Models\Permission\Group;
 use Illuminate\Auth\Authenticatable;
 use Illuminate\Contracts\Auth\Access\Authorizable as AuthorizableContract;
 use Illuminate\Contracts\Auth\Authenticatable as AuthenticatableContract;
@@ -67,5 +68,20 @@ class User extends Model implements AuthenticatableContract, AuthorizableContrac
     public function getJWTCustomClaims()
     {
         return [];
+    }
+
+    public function userGroup()
+    {
+        return $this->belongsTo(Group::class, 'kode_group', 'kode_group');
+    }
+
+    public function area()
+    {
+        return $this->belongsTo(Area::class, 'kode_area', 'kode_area');
+    }
+
+    public function distributor()
+    {
+        return $this->belongsTo(Distributor::class, 'kode_distributor', 'kode_distributor');
     }
 }
