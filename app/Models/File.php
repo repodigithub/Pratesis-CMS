@@ -16,4 +16,9 @@ class File extends Model
   {
     return url($this->public_path . '/' . $this->title);
   }
+
+  public function uploader()
+  {
+    return $this->belongsTo(User::class, "uploader_id", "id");
+  }
 }
