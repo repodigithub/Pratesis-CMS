@@ -65,7 +65,7 @@ class MasterDataController extends Controller
   {
     $pagination = $this->getPagination($req, ["public_path", "asc"]);
 
-    $data = File::with('uploader:id,full_name')->select("*")->where("public_path", "ILIKE", "%/{$type}%");
+    $data = File::with('uploader:id,full_name')->select("*")->where("public_path", "ILIKE", "%{$type}/%");
 
     if ($req->filled('search')) {
       $data->where(function ($q) use ($req) {
