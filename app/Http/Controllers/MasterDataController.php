@@ -65,19 +65,47 @@ class MasterDataController extends Controller
   {
     $pagination = $this->getPagination($req, ["public_path", "asc"]);
 
-    $data = File::select("*")->where("public_path", "ILIKE", "%/{$type}/%");
+    $data = File::with('uploader:id,full_name')->select("*")->where("public_path", "ILIKE", "%/{$type}/%");
 
     if ($req->filled('search')) {
-      $data->where("public_path", "ILIKE", "%{$req->query("search")}%");
+      $data->where(function ($q) use ($req) {
+        $q->where("public_path", "ILIKE", "%{$req->query("search")}%");
+        $q->orWhere("title", "ILIKE", "%{$req->query("search")}%");
+      });
     }
+
+    $query = clone $data;
 
     if (!empty($pagination->sort)) {
       $sort = $pagination->sort;
       $data->orderBy($sort[0], $sort[1]);
     }
 
-    $data = $data->paginate($pagination->limit, ["*"], "page", $pagination->page);
+    $data_page = $data->paginate($pagination->limit, ["*"], "page", $pagination->page);
+    $data_group = [
+      Alasan::FILE_PATH => (clone $query)->where("public_path", "ILIKE", "%/" . Alasan::FILE_PATH . "/%")->count(),
+      Area::FILE_PATH => (clone $query)->where("public_path", "ILIKE", "%/" . Area::FILE_PATH . "/%")->count(),
+      Brand::FILE_PATH => (clone $query)->where("public_path", "ILIKE", "%/" . Brand::FILE_PATH . "/%")->count(),
+      BudgetHolder::FILE_PATH => (clone $query)->where("public_path", "ILIKE", "%/" . BudgetHolder::FILE_PATH . "/%")->count(),
+      Category::FILE_PATH => (clone $query)->where("public_path", "ILIKE", "%/" . Category::FILE_PATH . "/%")->count(),
+      Distributor::FILE_PATH => (clone $query)->where("public_path", "ILIKE", "%/" . Distributor::FILE_PATH . "/%")->count(),
+      DistributorGroup::FILE_PATH => (clone $query)->where("public_path", "ILIKE", "%/" . DistributorGroup::FILE_PATH . "/%")->count(),
+      Divisi::FILE_PATH => (clone $query)->where("public_path", "ILIKE", "%/" . Divisi::FILE_PATH . "/%")->count(),
+      DocumentClaim::FILE_PATH => (clone $query)->where("public_path", "ILIKE", "%/" . DocumentClaim::FILE_PATH . "/%")->count(),
+      Investment::FILE_PATH => (clone $query)->where("public_path", "ILIKE", "%/" . Investment::FILE_PATH . "/%")->count(),
+      Product::FILE_PATH => (clone $query)->where("public_path", "ILIKE", "%/" . Product::FILE_PATH . "/%")->count(),
+      Region::FILE_PATH => (clone $query)->where("public_path", "ILIKE", "%/" . Region::FILE_PATH . "/%")->count(),
+      Spend::FILE_PATH => (clone $query)->where("public_path", "ILIKE", "%/" . Spend::FILE_PATH . "/%")->count(),
+      SubBrand::FILE_PATH => (clone $query)->where("public_path", "ILIKE", "%/" . SubBrand::FILE_PATH . "/%")->count(),
+      Tax::FILE_PATH => (clone $query)->where("public_path", "ILIKE", "%/" . Tax::FILE_PATH . "/%")->count(),
+      TipePromo::FILE_PATH => (clone $query)->where("public_path", "ILIKE", "%/" . TipePromo::FILE_PATH . "/%")->count(),
+    ];
 
-    return $this->response($data);
+    return $this->response(compact('data_page', 'data_group'));
+  }
+
+  private function query($query)
+  {
+    return $query;
   }
 }

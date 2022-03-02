@@ -35,6 +35,14 @@ class UserController extends Controller
       $data->whereStatus($req->query("status"));
     }
 
+    if ($req->filled("nama")) {
+      $data->where("full_name", "ILIKE", "%{$req->query("nama")}%");
+    }
+
+    if ($req->filled("email")) {
+      $data->where("email", "ILIKE", "%{$req->query("email")}%");
+    }
+
     if ($req->filled("kode_pengguna")) {
       $data->where("user_id", "ILIKE", "%{$req->query("kode_pengguna")}%");
     }
