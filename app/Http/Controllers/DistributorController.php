@@ -52,7 +52,7 @@ class DistributorController extends MasterDataController
     }
 
     if ($req->filled("status_distributor")) {
-      $data->where("status_distributor", "ILIKE", "%{$req->query("status_distributor")}%");
+      $data->where("status_distributor", $req->query("status_distributor"));
     }
 
     return $data;
