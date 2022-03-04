@@ -20,6 +20,8 @@ use App\Models\SubBrand;
 use App\Models\Tax;
 use App\Models\TipePromo;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\File as FacadesFile;
+use Illuminate\Support\Facades\Storage;
 
 class MasterDataController extends Controller
 {
@@ -104,8 +106,11 @@ class MasterDataController extends Controller
     return $this->response(compact('data_page', 'data_group'));
   }
 
-  private function query($query)
+  public function delete($id, Request $req)
   {
-    return $query;
+    $data = $this->getModel(File::class, $id);
+    FacadesFile::delete(storage_path($data->storage_path . '/' . $data->title));
+    $data->delete();
+    return $this->response();
   }
 }
