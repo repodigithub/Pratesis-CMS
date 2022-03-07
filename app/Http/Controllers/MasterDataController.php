@@ -19,6 +19,7 @@ use App\Models\Spend;
 use App\Models\SubBrand;
 use App\Models\Tax;
 use App\Models\TipePromo;
+use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\File as FacadesFile;
 use Illuminate\Support\Facades\Storage;
@@ -67,13 +68,26 @@ class MasterDataController extends Controller
   {
     $pagination = $this->getPagination($req, ["public_path", "asc"]);
 
-    $data = File::with('uploader:id,full_name')->select("*")->where("public_path", "ILIKE", "%{$type}/%");
+    $data = File::where("public_path", "ILIKE", "%{$type}/%");
 
     if ($req->filled('search')) {
       $data->where(function ($q) use ($req) {
         $q->where("public_path", "ILIKE", "%{$req->query("search")}%");
         $q->orWhere("title", "ILIKE", "%{$req->query("search")}%");
       });
+    }
+
+    if ($req->filled("date")) {
+      $data->where("created_at", date('Y-m-d', strtotime($req->query("date"))));
+    }
+
+    if ($req->filled("type")) {
+      $data->where("type", $req->query('type'));
+    }
+
+    if ($req->filled("uploader")) {
+      $ids = User::where('full_name', 'ILIKE', "%{$req->query('uploader')}%")->get('id')->pluck('id');
+      $data->whereIn("uploader_id", $ids);
     }
 
     $query = clone $data;
@@ -109,8 +123,39 @@ class MasterDataController extends Controller
   public function delete($id, Request $req)
   {
     $data = $this->getModel(File::class, $id);
-    FacadesFile::delete(storage_path($data->storage_path . '/' . $data->title));
     $data->delete();
+    try {
+      FacadesFile::delete(storage_path($data->storage_path . '/' . $data->title));
+    } catch (\Throwable $th) {
+      //throw $th;
+    }
     return $this->response();
+  }
+
+  public function deleteBatch(Request $req)
+  {
+    $this->validate($req, [
+      'ids' => 'required|array'
+    ]);
+    $count = 0;
+    $message = [];
+    foreach ($req->input('ids') as $id) {
+      try {
+        $data = $this->getModel(File::class, $id);
+        FacadesFile::delete(storage_path($data->storage_path . '/' . $data->title));
+        $data->delete();
+        $message[] = [
+          'id' => $id,
+          'success' => true
+        ];
+        $count++;
+      } catch (\Throwable $th) {
+        $message[] = [
+          'id' => $id,
+          'error' => $th->getMessage()
+        ];
+      }
+    }
+    return $this->response($count, $message);
   }
 }
