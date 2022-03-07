@@ -109,8 +109,39 @@ class MasterDataController extends Controller
   public function delete($id, Request $req)
   {
     $data = $this->getModel(File::class, $id);
-    FacadesFile::delete(storage_path($data->storage_path . '/' . $data->title));
     $data->delete();
+    try {
+      FacadesFile::delete(storage_path($data->storage_path . '/' . $data->title));
+    } catch (\Throwable $th) {
+      //throw $th;
+    }
     return $this->response();
+  }
+
+  public function deleteBatch(Request $req)
+  {
+    $this->validate($req, [
+      'ids' => 'required|array'
+    ]);
+    $count = 0;
+    $message = [];
+    foreach ($req->input('ids') as $id) {
+      try {
+        $data = $this->getModel(File::class, $id);
+        FacadesFile::delete(storage_path($data->storage_path . '/' . $data->title));
+        $data->delete();
+        $message[] = [
+          'id' => $id,
+          'success' => true
+        ];
+        $count++;
+      } catch (\Throwable $th) {
+        $message[] = [
+          'id' => $id,
+          'error' => $th->getMessage()
+        ];
+      }
+    }
+    return $this->response($count, $message);
   }
 }
