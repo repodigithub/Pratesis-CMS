@@ -10,11 +10,16 @@ class File extends Model
 
   public $fillable = ["title", "type", "storage_path", "public_path", "uploader_id"];
 
-  public $appends = ['link'];
+  public $appends = ['link','uploader_name'];
 
   public function getLinkAttribute()
   {
     return url($this->public_path . '/' . $this->title);
+  }
+
+  public function getUploaderNameAttribute()
+  {
+    return $this->uploader()->first()->full_name;
   }
 
   public function uploader()
