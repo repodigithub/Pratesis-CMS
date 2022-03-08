@@ -78,7 +78,7 @@ class MasterDataController extends Controller
     }
 
     if ($req->filled("date")) {
-      $data->where("created_at", date('Y-m-d', strtotime($req->query("date"))));
+      $data->whereDate("created_at", date('Y-m-d', strtotime($req->query("date"))));
     }
 
     if ($req->filled("type")) {
