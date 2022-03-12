@@ -8,6 +8,7 @@ use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Http\Request;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Log;
 use Maatwebsite\Excel\Facades\Excel;
 use Symfony\Component\HttpKernel\Exception\BadRequestHttpException;
 
@@ -132,6 +133,11 @@ class MasterDataController extends Controller
   {
     $data = $this->getModel($this->model, $id);
     $data->delete();
+    try {
+      $this->afterDelete($data);
+    } catch (\Throwable $th) {
+      Log::error($th->getMessage());
+    }
     return $this->response();
   }
 
@@ -162,6 +168,10 @@ class MasterDataController extends Controller
   protected function afterUpdateOrCreate($model, Request $req)
   {
     return $model;
+  }
+
+  protected function afterDelete($data)
+  {
   }
 
   protected function rules($data = null)

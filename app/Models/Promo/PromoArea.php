@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Models;
+namespace App\Models\Promo;
 
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Validation\Rule;

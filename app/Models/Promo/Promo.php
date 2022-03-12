@@ -1,9 +1,8 @@
 <?php
 
-namespace App\Models;
+namespace App\Models\Promo;
 
 use Illuminate\Database\Eloquent\Model;
-use Illuminate\Validation\Rule;
 
 class Promo extends Model
 {
@@ -13,6 +12,8 @@ class Promo extends Model
   const STATUS_DRAFT = 'draft';
 
   protected $table = "promo";
+
+  public $dates = ['start_date', 'end_date'];
 
   public $fillable = [
     'opso_id',
@@ -27,11 +28,11 @@ class Promo extends Model
     'file',
   ];
 
-  public $hidden = ['file'];
+  // public $hidden = ['file'];
 
-  public $appends = ['link'];
+  public $appends = ['document'];
 
-  public function getLinkAttribute()
+  public function getDocumentAttribute()
   {
     return url($this->file);
   }

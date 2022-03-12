@@ -16,9 +16,9 @@ class CreatePromoImageTable extends Migration
         Schema::create('promo_image', function (Blueprint $table) {
             $table->id();
             $table->string('opso_id');
-            $table->string('image_promo');
+            $table->string('file');
             $table->timestamps();
-            
+
             $table->foreign('opso_id')->references('opso_id')->on('promo')
                 ->onDelete('cascade')->onUpdate('cascade');
         });

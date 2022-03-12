@@ -3,10 +3,11 @@
 namespace App\Http\Controllers;
 
 use App\Http\Controllers\Master\MasterDataController;
-use App\Models\Promo;
+use App\Models\Promo\Promo;
 use Illuminate\Validation\Rule;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\File;
 
 class PromoController extends MasterDataController
 {
@@ -38,10 +39,6 @@ class PromoController extends MasterDataController
 
   protected function onFilter(Builder $query, Request $req)
   {
-    // filter
-    // - start_date
-    // - end_date
-
     if ($req->filled("nama")) {
       $query->where("nama_promo", "ILIKE", "%{$req->query("nama")}%");
     }
@@ -113,5 +110,10 @@ class PromoController extends MasterDataController
     }
 
     return new Request($data);
+  }
+
+  protected function afterDelete($data)
+  {
+    File::delete(storage_path(str_replace('storage', 'app/public', $data->file)));
   }
 }
