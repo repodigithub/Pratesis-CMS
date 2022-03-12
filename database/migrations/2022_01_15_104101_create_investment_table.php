@@ -15,7 +15,7 @@ class CreateInvestmentTable extends Migration
     {
         Schema::create('investment', function (Blueprint $table) {
             $table->id();
-            $table->char('kode_investment', 4)->unique();
+            $table->string('kode_investment')->unique();
             $table->string('nama_investment');
             $table->timestamps();
         });

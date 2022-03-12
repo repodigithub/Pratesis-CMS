@@ -15,12 +15,12 @@ class CreateTipePromoTable extends Migration
     {
         Schema::create('tipe_promo', function (Blueprint $table) {
             $table->id();
-            $table->char('kode_kegiatan')->unique();
+            $table->string('kode_kegiatan')->unique();
             $table->string('nama_kegiatan');
             $table->text('deskripsi_kegiatan');
-            $table->char('kode_ppn')->nullable();
-            $table->char('kode_pph')->nullable();
-            $table->char('kode_investment', 4)->nullable();
+            $table->string('kode_ppn')->nullable();
+            $table->string('kode_pph')->nullable();
+            $table->string('kode_investment')->nullable();
             $table->string('file_dokumen')->nullable();
             $table->timestamps();
 
@@ -33,8 +33,8 @@ class CreateTipePromoTable extends Migration
         });
 
         Schema::create('tipe_promo_dokumen_klaim', function (Blueprint $table) {
-            $table->char('kode_kegiatan');
-            $table->char('kode_dokumen');
+            $table->string('kode_kegiatan');
+            $table->string('kode_dokumen');
             $table->timestamps();
 
             $table->primary(['kode_kegiatan', 'kode_dokumen']);
@@ -45,8 +45,8 @@ class CreateTipePromoTable extends Migration
         });
 
         Schema::create('tipe_promo_spend_type', function (Blueprint $table) {
-            $table->char('kode_kegiatan');
-            $table->char('kode_spend_type');
+            $table->string('kode_kegiatan');
+            $table->string('kode_spend_type');
             $table->timestamps();
 
             $table->primary(['kode_kegiatan', 'kode_spend_type']);

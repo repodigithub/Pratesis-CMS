@@ -15,10 +15,10 @@ class CreatePromoProductTable extends Migration
     {
         Schema::create('promo_product', function (Blueprint $table) {
             $table->id();
-            $table->char('opso_id', 8);
-            $table->char('kode_brand', 15);
+            $table->string('opso_id');
+            $table->string('kode_brand');
             $table->string('nama_brand');
-            $table->char('kode_produk', 8);
+            $table->string('kode_produk');
             $table->integer('budget_produk');
             $table->timestamps();
 

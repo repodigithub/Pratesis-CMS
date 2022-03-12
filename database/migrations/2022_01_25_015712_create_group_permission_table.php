@@ -15,8 +15,8 @@ class CreateGroupPermissionTable extends Migration
     {
         Schema::create('group_permission', function (Blueprint $table) {
             $table->id();
-            $table->char('kode_group');
-            $table->char('kode_permission');
+            $table->string('kode_group');
+            $table->string('kode_permission');
 
             $table->foreign('kode_group')->references('kode_group')->on('user_group')
                 ->cascadeOnDelete()->cascadeOnUpdate();

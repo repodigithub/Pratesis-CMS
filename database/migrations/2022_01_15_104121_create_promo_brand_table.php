@@ -15,8 +15,8 @@ class CreatePromoBrandTable extends Migration
     {
         Schema::create('promo_brand', function (Blueprint $table) {
             $table->id();
-            $table->char('opso_id', 8);
-            $table->char('kode_brand', 15);
+            $table->string('opso_id');
+            $table->string('kode_brand');
             $table->string('nama_brand');
             $table->integer('budget_brand');
             $table->timestamps();

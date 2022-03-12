@@ -15,10 +15,10 @@ class CreateAreaTable extends Migration
     {
         Schema::create('area', function (Blueprint $table) {
             $table->id();
-            $table->char('kode_area', 6)->unique();
+            $table->string('kode_area')->unique();
             $table->string('nama_area');
             $table->text('alamat_depo');
-            $table->char('kode_region', 6);
+            $table->string('kode_region');
             $table->string('titik_koordinat')->nullable();
             $table->timestamps();
 

@@ -22,8 +22,8 @@ class CreatePromoTable extends Migration
             $table->date('start_date');
             $table->date('end_date');
             $table->integer('claim');
-            $table->char('kode_spend_type');
-            $table->char('kode_budget_holder');
+            $table->string('kode_spend_type');
+            $table->string('kode_budget_holder');
             $table->string('file');
             $table->timestamps();
 

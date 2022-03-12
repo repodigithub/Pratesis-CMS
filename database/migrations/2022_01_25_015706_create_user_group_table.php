@@ -15,7 +15,7 @@ class CreateUserGroupTable extends Migration
     {
         Schema::create('user_group', function (Blueprint $table) {
             $table->id();
-            $table->char('kode_group')->unique();
+            $table->string('kode_group')->unique();
             $table->string('nama_group');
         });
     }

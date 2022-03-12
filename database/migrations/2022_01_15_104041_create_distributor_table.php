@@ -15,10 +15,10 @@ class CreateDistributorTable extends Migration
     {
         Schema::create('distributor', function (Blueprint $table) {
             $table->id();
-            $table->char('kode_distributor', 8)->unique();
+            $table->string('kode_distributor')->unique();
             $table->string('nama_distributor');
-            $table->char('kode_distributor_group', 6);
-            $table->char('kode_area', 6);
+            $table->string('kode_distributor_group');
+            $table->string('kode_area');
             $table->string('alamat')->nullable();
             $table->string('titik_koordinat')->nullable();
             $table->string('status_distributor');
