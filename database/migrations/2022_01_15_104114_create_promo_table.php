@@ -17,7 +17,7 @@ class CreatePromoTable extends Migration
             $table->id();
             $table->string('opso_id')->unique();
             $table->string('nama_promo');
-            $table->string('budget');
+            $table->bigInteger('budget');
             $table->string('status');
             $table->date('start_date');
             $table->date('end_date');

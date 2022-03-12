@@ -17,12 +17,13 @@ class CreatePromoBrandTable extends Migration
             $table->id();
             $table->string('opso_id');
             $table->string('kode_brand');
-            $table->string('nama_brand');
-            $table->integer('budget_brand');
+            $table->bigInteger('budget_brand');
             $table->timestamps();
 
             $table->foreign('opso_id')->references('opso_id')->on('promo')
-                ->onDelete('cascade')->onUpdate('cascade');
+                ->cascadeOnDelete()->cascadeOnUpdate();
+            $table->foreign('kode_brand')->references('kode_brand')->on('brand')
+                ->cascadeOnDelete()->cascadeOnUpdate();
         });
     }
 

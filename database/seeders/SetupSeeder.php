@@ -3,14 +3,19 @@
 namespace Database\Seeders;
 
 use App\Models\Area;
+use App\Models\Brand;
 use App\Models\BudgetHolder;
+use App\Models\Category;
 use App\Models\Distributor;
 use App\Models\Permission\Group;
 use App\Models\Permission\Permission;
 use App\Models\Region;
 use App\Models\DistributorGroup;
+use App\Models\Divisi;
 use App\Models\Investment;
+use App\Models\Product;
 use App\Models\Spend;
+use App\Models\SubBrand;
 use App\Models\User;
 use Illuminate\Database\Seeder;
 use Illuminate\Support\Facades\DB;
@@ -143,6 +148,30 @@ class SetupSeeder extends Seeder
                 "kode_budget_holder" => "TEST",
                 "nama_budget_holder" => "Test budget"
             ]);
+            SubBrand::create([
+                "kode_sub_brand" => "TEST", "nama_sub_brand" => "Test sub brand"
+            ]);
+            Brand::create([
+                "kode_brand" => "TEST", "nama_brand" => "Test brand"
+            ]);
+            Category::create([
+                "kode_kategori" => "TEST",
+                "nama_kategori" => "Test kategori"
+            ]);
+            Divisi::create([
+                "kode_divisi" => "TEST",
+                "nama_divisi" => "Test divisi"
+            ]);
+            for ($i = 0; $i < 5; $i++) {
+                Product::create([
+                    "kode_produk" => "TEST" . str_pad(($i + 1), 2, 0, STR_PAD_LEFT),
+                    "nama_produk" => trim("Test produk " . ($i + 1)),
+                    "kode_sub_brand" => "TEST",
+                    "kode_brand" => "TEST",
+                    "kode_kategori" => "TEST",
+                    "kode_divisi" => "TEST"
+                ]);
+            }
         });
     }
 }

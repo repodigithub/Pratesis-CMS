@@ -42,6 +42,7 @@ class MasterDataController extends Controller
     $req = $this->beforeUpdateOrCreate($req);
     $data = $this->model::create($req->all());
     $data = $this->afterUpdateOrCreate($data, $req);
+    $data = $this->getModel($this->model, $data->id);
 
     return $this->response($data);
   }
@@ -125,6 +126,7 @@ class MasterDataController extends Controller
     $req = $this->beforeUpdateOrCreate($req);
     $data->update($req->all());
     $data = $this->afterUpdateOrCreate($data, $req);
+    $data = $this->getModel($this->model, $id);
 
     return $this->response($data);
   }

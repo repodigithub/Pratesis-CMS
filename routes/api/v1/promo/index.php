@@ -12,5 +12,6 @@ $router->group(['prefix' => 'promo'], function () use ($router) {
     $router->put('/status', ['uses' => 'PromoController@updateStatus']);
 
     include('image.php');
+    include('product.php');
   });
 });

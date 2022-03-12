@@ -28,7 +28,7 @@ class Promo extends Model
     'file',
   ];
 
-  // public $hidden = ['file'];
+  public $hidden = ['file'];
 
   public $appends = ['document'];
 
@@ -37,7 +37,24 @@ class Promo extends Model
     return url($this->file);
   }
 
-  public function promoArea()
+  public function getStatisticsAttribute()
+  {
+    return [
+      "budget" => $this->budget,
+      "budget_update" => 0,
+      "budget_left" => 0,
+      "claim" => 0,
+      "outstanding_claim" => 0,
+      "budget_area" => 0,
+    ];
+  }
+
+  public function promoProducts()
+  {
+    return $this->hasMany(PromoBrand::class, 'opso_id', 'opso_id');
+  }
+
+  public function promoAreas()
   {
     return $this->hasMany(PromoArea::class, 'opso_id', 'opso_id');
   }
