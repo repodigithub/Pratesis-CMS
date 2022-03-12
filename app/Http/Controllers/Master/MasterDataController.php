@@ -26,7 +26,7 @@ class MasterDataController extends Controller
 
     if (!empty($pagination->sort)) {
       $sort = $pagination->sort;
-      $data->orderBy((new $this->model())->getTable().'.'.$sort[0], $sort[1]);
+      $data->orderBy((new $this->model())->getTable() . '.' . $sort[0], $sort[1]);
     }
 
     $data = $data->paginate($pagination->limit, ["*"], "page", $pagination->page);
@@ -38,6 +38,7 @@ class MasterDataController extends Controller
   {
     $this->validate($req, $this->rules());
 
+    $req = $this->beforeUpdateOrCreate($req);
     $data = $this->model::create($req->all());
     $data = $this->afterUpdateOrCreate($data, $req);
 
@@ -120,6 +121,7 @@ class MasterDataController extends Controller
 
     $this->validate($req, $this->rules($data));
 
+    $req = $this->beforeUpdateOrCreate($req);
     $data->update($req->all());
     $data = $this->afterUpdateOrCreate($data, $req);
 
@@ -150,6 +152,11 @@ class MasterDataController extends Controller
       }
       return $data;
     });
+  }
+
+  protected function beforeUpdateOrCreate(Request $req)
+  {
+    return $req;
   }
 
   protected function afterUpdateOrCreate($model, Request $req)

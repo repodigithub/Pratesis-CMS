@@ -7,45 +7,37 @@ use Illuminate\Validation\Rule;
 
 class Promo extends Model
 {
-  const FILE_PATH = "distributor";
-  const FILE_NAME = "MSTDISTRIBUTOR";
-  const WORKSHEET_NAME = "DISTRIBUTORMST";
-  const FIELD_NAME = ["Kode Distributor", "Nama distributor", "Kode Distributor Group", "Kode Area", "Alamat", "Titik Koordinat", "Status"];
+  const STATUS_APPROVE = 'approve';
+  const STATUS_NEED_APPROVAL = 'need_approval';
+  const STATUS_REJECT = 'reject';
+  const STATUS_DRAFT = 'draft';
 
-  const STATUS_ACTIVE = "aktif";
-  const STATUS_NON_ACTIVE = "tidak-aktif";
-
-  protected $table = "distributor";
+  protected $table = "promo";
 
   public $fillable = [
-    "kode_distributor",
-    "nama_distributor",
-    "kode_distributor_group",
-    "kode_area",
-    "alamat",
-    "titik_koordinat",
-    "status_distributor",
+    'opso_id',
+    'nama_promo',
+    'budget',
+    'status',
+    'start_date',
+    'end_date',
+    'claim',
+    'kode_spend_type',
+    'kode_budget_holder',
+    'file',
   ];
 
-  public $appends = ["nama_region"];
+  public $hidden = ['file'];
 
-  public function distributorGroup()
+  public $appends = ['link'];
+
+  public function getLinkAttribute()
   {
-    return $this->belongsTo(DistributorGroup::class, "kode_distributor_group", "kode_distributor_group");
+    return url($this->file);
   }
 
-  public function area()
+  public function promoArea()
   {
-    return $this->belongsTo(Area::class, "kode_area", "kode_area");
-  }
-
-  public function region()
-  {
-    return $this->area()->first()->region();
-  }
-
-  public function getNamaRegionAttribute()
-  {
-    return $this->region()->first()->nama_region;
+    return $this->hasMany(PromoArea::class, 'opso_id', 'opso_id');
   }
 }
