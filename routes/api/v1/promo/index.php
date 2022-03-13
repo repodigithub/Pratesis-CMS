@@ -13,5 +13,6 @@ $router->group(['prefix' => 'promo'], function () use ($router) {
 
     include('image.php');
     include('product.php');
+    include('area.php');
   });
 });

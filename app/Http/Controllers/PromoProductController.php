@@ -11,12 +11,17 @@ use Symfony\Component\HttpFoundation\Exception\BadRequestException;
 
 class PromoProductController extends Controller
 {
+    function __construct()
+    {
+        $this->middleware("auth:api");
+    }
+
     public function index($id, Request $req)
     {
         $data = $this->getModel(Promo::class, $id);
         $pagination = $this->getPagination($req);
 
-        $data = PromoBrand::select("*");
+        $data = $data->promoProducts();
 
         if (!empty($pagination->sort)) {
             $sort = $pagination->sort;

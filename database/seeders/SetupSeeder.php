@@ -14,6 +14,7 @@ use App\Models\DistributorGroup;
 use App\Models\Divisi;
 use App\Models\Investment;
 use App\Models\Product;
+use App\Models\Promo\Promo;
 use App\Models\Spend;
 use App\Models\SubBrand;
 use App\Models\User;
@@ -86,14 +87,14 @@ class SetupSeeder extends Seeder
             // Buat region
             Region::truncate();
             $region = Region::create([
-                'kode_region' => 'TEST01',
+                'kode_region' => 'TEST',
                 'nama_region' => 'Tes region',
             ]);
 
             // Buat kode depot / area
             Area::truncate();
             $area = Area::create([
-                'kode_area' => 'TEST01',
+                'kode_area' => 'TEST',
                 'nama_area' => 'Tes area',
                 'alamat_depo' => 'Alamat tes area',
                 'kode_region' => $region->kode_region,
@@ -102,14 +103,14 @@ class SetupSeeder extends Seeder
             // Buat sales
             DistributorGroup::truncate();
             $sales = DistributorGroup::create([
-                'kode_distributor_group' => 'TEST01',
+                'kode_distributor_group' => 'TEST',
                 'nama_distributor_group' => 'Tes sales',
             ]);
 
             // Buat kode distributor
             Distributor::truncate();
             $distributor = Distributor::create([
-                'kode_distributor' => 'TEST01',
+                'kode_distributor' => 'TEST',
                 'nama_distributor' => 'Test distributor',
                 'kode_distributor_group' => $sales->kode_distributor_group,
                 'kode_area' => $area->kode_area,
@@ -172,6 +173,18 @@ class SetupSeeder extends Seeder
                     "kode_divisi" => "TEST"
                 ]);
             }
+            Promo::create([
+                "status"=> Promo::STATUS_DRAFT,
+                "opso_id" => "22030001",
+                "nama_promo" => "Promo Ramadhan",
+                "budget" => "100000000",
+                "start_date" => "2022-04-01",
+                "end_date" => "2022-05-01",
+                "claim" => "7",
+                "kode_spend_type" => "TEST",
+                "kode_budget_holder" => "TEST",
+                "file" => "/storage/promo/20220312/174427/quotation.pdf"
+            ]);
         });
     }
 }

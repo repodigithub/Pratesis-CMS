@@ -17,7 +17,7 @@ class CreatePromoAreaTable extends Migration
             $table->id();
             $table->string('opso_id');
             $table->string('kode_area');
-            $table->string('budget');
+            $table->bigInteger('budget');
             $table->timestamps();
 
             $table->foreign('opso_id')->references('opso_id')->on('promo')
