@@ -21,4 +21,5 @@ $router->group(['prefix' => 'v1'], function () use ($router) {
   include('tipe-promo.php');
   include('user-group.php');
   include('user.php');
+  include('promo/index.php');
 });

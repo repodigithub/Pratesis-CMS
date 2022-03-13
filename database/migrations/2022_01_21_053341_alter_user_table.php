@@ -15,14 +15,14 @@ class AlterUserTable extends Migration
     {
         //
         Schema::table('user', function (Blueprint $table) {
-            $table->char('user_id')->unique();
+            $table->string('user_id')->unique();
             $table->string('full_name');
             $table->string('email')->unique();
             $table->string('username')->unique();
             $table->string('password');
             $table->string('status')->default('waiting_approval');
-            $table->char('kode_distributor', 8)->nullable();
-            $table->char('kode_area', 6)->nullable();
+            $table->string('kode_distributor')->nullable();
+            $table->string('kode_area')->nullable();
 
             $table->foreign('kode_distributor')->references('kode_distributor')->on('distributor')->nullOnDelete();
             $table->foreign('kode_area')->references('kode_area')->on('area')->nullOnDelete();

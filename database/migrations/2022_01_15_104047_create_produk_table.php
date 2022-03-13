@@ -15,37 +15,37 @@ class CreateProdukTable extends Migration
     {
         Schema::create('sub_brand', function (Blueprint $table) {
             $table->id();
-            $table->char('kode_sub_brand', 15)->unique();
+            $table->string('kode_sub_brand')->unique();
             $table->string('nama_sub_brand');
             $table->timestamps();
         });
 
         Schema::create('brand', function (Blueprint $table) {
             $table->id();
-            $table->char('kode_brand', 8)->unique();
+            $table->string('kode_brand')->unique();
             $table->string('nama_brand');
             $table->timestamps();
         });
 
         Schema::create('kategori', function (Blueprint $table) {
             $table->id();
-            $table->char('kode_kategori', 8)->unique();
+            $table->string('kode_kategori')->unique();
             $table->string('nama_kategori');
             $table->timestamps();
         });
 
         Schema::create('divisi', function (Blueprint $table) {
             $table->id();
-            $table->char('kode_divisi', 8)->unique();
+            $table->string('kode_divisi')->unique();
             $table->string('nama_divisi');
             $table->timestamps();
         });
 
         Schema::create('produk', function (Blueprint $table) {
             $table->id();
-            $table->char('kode_produk', 8)->unique();
+            $table->string('kode_produk')->unique();
             $table->string('nama_produk');
-            $table->char('kode_sub_brand', 15)->nullable();
+            $table->string('kode_sub_brand')->nullable();
             $table->string('kode_brand')->nullable();
             $table->string('kode_kategori')->nullable();
             $table->string('kode_divisi')->nullable();
