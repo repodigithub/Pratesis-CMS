@@ -20,9 +20,13 @@ use App\Models\SubBrand;
 use App\Models\Tax;
 use App\Models\TipePromo;
 use App\Models\User;
+use Error;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Facade;
 use Illuminate\Support\Facades\File as FacadesFile;
 use Illuminate\Support\Facades\Storage;
+use ZipArchive;
 
 class MasterDataController extends Controller
 {
@@ -120,30 +124,54 @@ class MasterDataController extends Controller
     return $this->response(compact('data_page', 'data_group'));
   }
 
+  public function download(Request $req)
+  {
+    $this->validate($req, ['ids' => 'required|array', 'ids.*' => 'required|distinct|exists:upload_log,id']);
+
+    $zip = new ZipArchive();
+    $filename = 'master-data_' . date('ymd_His') . '.zip';
+    $path = str_replace('/', DIRECTORY_SEPARATOR, '/app/local/master-data/');
+    $status = $zip->open(storage_path($path . $filename), ZipArchive::CREATE);
+
+    if ($status === TRUE) {
+      $files = File::whereIn('id', $req->input('ids'))->get();
+      foreach ($files as $file) {
+        $name = substr($file->title, 0,  strripos($file->title, '.')) . ' ' . date('ymd_His', strtotime($file->created_at)) . '.' . $file->type;
+        $zip->addFile(storage_path($file->storage_path . DIRECTORY_SEPARATOR . $file->title), $name);
+      }
+      $zip->close();
+    } else {
+      throw new Error("Cannot create zip: $status");
+    }
+
+    return response()->download(storage_path($path . $filename));
+  }
+
   public function delete($id, Request $req)
   {
-    $data = $this->getModel(File::class, $id);
-    $data->delete();
-    try {
+    DB::transaction(function () use ($id) {
+      $data = $this->getModel(File::class, $id);
+      $data->delete();
       FacadesFile::delete(storage_path($data->storage_path . '/' . $data->title));
-    } catch (\Throwable $th) {
-      //throw $th;
-    }
+      FacadesFile::deleteDirectory(storage_path($data->storage_path));
+    });
     return $this->response();
   }
 
   public function deleteBatch(Request $req)
   {
     $this->validate($req, [
-      'ids' => 'required|array'
+      'ids' => 'required|array',
+      'ids.*' => 'required|distinct|exists:upload_log,id'
     ]);
     $count = 0;
     $message = [];
     foreach ($req->input('ids') as $id) {
       try {
         $data = $this->getModel(File::class, $id);
-        FacadesFile::delete(storage_path($data->storage_path . '/' . $data->title));
         $data->delete();
+        FacadesFile::delete(storage_path($data->storage_path . '/' . $data->title));
+        FacadesFile::deleteDirectory(storage_path($data->storage_path));
         $message[] = [
           'id' => $id,
           'success' => true
