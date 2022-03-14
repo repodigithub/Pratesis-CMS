@@ -8,6 +8,7 @@ use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Http\Request;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Log;
 use Maatwebsite\Excel\Facades\Excel;
 use Symfony\Component\HttpKernel\Exception\BadRequestHttpException;
 
@@ -26,7 +27,7 @@ class MasterDataController extends Controller
 
     if (!empty($pagination->sort)) {
       $sort = $pagination->sort;
-      $data->orderBy((new $this->model())->getTable().'.'.$sort[0], $sort[1]);
+      $data->orderBy((new $this->model())->getTable() . '.' . $sort[0], $sort[1]);
     }
 
     $data = $data->paginate($pagination->limit, ["*"], "page", $pagination->page);
@@ -38,8 +39,10 @@ class MasterDataController extends Controller
   {
     $this->validate($req, $this->rules());
 
+    $req = $this->beforeUpdateOrCreate($req);
     $data = $this->model::create($req->all());
     $data = $this->afterUpdateOrCreate($data, $req);
+    $data = $this->getModel($this->model, $data->id);
 
     return $this->response($data);
   }
@@ -120,8 +123,10 @@ class MasterDataController extends Controller
 
     $this->validate($req, $this->rules($data));
 
+    $req = $this->beforeUpdateOrCreate($req);
     $data->update($req->all());
     $data = $this->afterUpdateOrCreate($data, $req);
+    $data = $this->getModel($this->model, $id);
 
     return $this->response($data);
   }
@@ -130,6 +135,11 @@ class MasterDataController extends Controller
   {
     $data = $this->getModel($this->model, $id);
     $data->delete();
+    try {
+      $this->afterDelete($data);
+    } catch (\Throwable $th) {
+      Log::error($th->getMessage());
+    }
     return $this->response();
   }
 
@@ -152,9 +162,18 @@ class MasterDataController extends Controller
     });
   }
 
+  protected function beforeUpdateOrCreate(Request $req)
+  {
+    return $req;
+  }
+
   protected function afterUpdateOrCreate($model, Request $req)
   {
     return $model;
+  }
+
+  protected function afterDelete($data)
+  {
   }
 
   protected function rules($data = null)

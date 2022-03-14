@@ -15,7 +15,7 @@ class CreateBudgetHolderTable extends Migration
     {
         Schema::create('budget_holder', function (Blueprint $table) {
             $table->id();
-            $table->char('kode_budget_holder')->unique();
+            $table->string('kode_budget_holder')->unique();
             $table->string('nama_budget_holder');
             $table->timestamps();
         });

@@ -7,6 +7,7 @@ use App\Models\File;
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Log;
 use Laravel\Lumen\Routing\Controller as BaseController;
 use Symfony\Component\HttpKernel\Exception\BadRequestHttpException;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
@@ -34,7 +35,8 @@ class Controller extends BaseController
             }
             return $data->first();
         } catch (\Throwable $th) {
-            throw new BadRequestHttpException($th->getMessage());
+            Log::error($th->getMessage());
+            throw new NotFoundHttpException("$model not found.");
         }
     }
 

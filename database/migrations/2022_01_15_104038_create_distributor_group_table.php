@@ -15,7 +15,7 @@ class CreateDistributorGroupTable extends Migration
     {
         Schema::create('distributor_group', function (Blueprint $table) {
             $table->id();
-            $table->char('kode_distributor_group', 6)->unique();
+            $table->string('kode_distributor_group')->unique();
             $table->string('nama_distributor_group');
             $table->timestamps();
         });
