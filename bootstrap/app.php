@@ -87,7 +87,9 @@ $app->middleware([
 
 $app->routeMiddleware([
     'auth' => App\Http\Middleware\Authenticate::class,
-    'signature' => App\Http\Middleware\SignatureMiddleware::class
+    'signature' => App\Http\Middleware\SignatureMiddleware::class,
+    'group' => App\Http\Middleware\GroupMiddleware::class,
+    'permission' => App\Http\Middleware\PermissionMiddleware::class
     // 'permission' => App\Http\Middleware\Permission::class
 ]);
 

@@ -66,7 +66,7 @@ class SetupSeeder extends Seeder
             foreach ($objects as $object) {
                 foreach ($actions as $action) {
                     $permissions[] = [
-                        "kode_permission" => "$object:$action",
+                        "kode_permission" => "$action:$object",
                         "nama_permission" => "Can $action $object",
                     ];
                 }
@@ -134,10 +134,12 @@ class SetupSeeder extends Seeder
             ]);
             $this->command->info(sprintf("Create admin %s", $user));
 
+            Investment::truncate();
             Investment::create([
                 "kode_investment" => "TEST",
                 "nama_investment" => "Test investment"
             ]);
+            Spend::truncate();
             Spend::create([
                 "kode_spend_type" => "TEST",
                 "kode_investment" => "TEST",
@@ -145,24 +147,30 @@ class SetupSeeder extends Seeder
                 "reference_tax" => "#",
                 "condition_type" => "10"
             ]);
+            BudgetHolder::truncate();
             BudgetHolder::create([
                 "kode_budget_holder" => "TEST",
                 "nama_budget_holder" => "Test budget"
             ]);
+            SubBrand::truncate();
             SubBrand::create([
                 "kode_sub_brand" => "TEST", "nama_sub_brand" => "Test sub brand"
             ]);
+            Brand::truncate();
             Brand::create([
                 "kode_brand" => "TEST", "nama_brand" => "Test brand"
             ]);
+            Category::truncate();
             Category::create([
                 "kode_kategori" => "TEST",
                 "nama_kategori" => "Test kategori"
             ]);
+            Divisi::truncate();
             Divisi::create([
                 "kode_divisi" => "TEST",
                 "nama_divisi" => "Test divisi"
             ]);
+            Product::truncate();
             for ($i = 0; $i < 5; $i++) {
                 Product::create([
                     "kode_produk" => "TEST" . str_pad(($i + 1), 2, 0, STR_PAD_LEFT),
@@ -173,8 +181,9 @@ class SetupSeeder extends Seeder
                     "kode_divisi" => "TEST"
                 ]);
             }
+            Promo::truncate();
             Promo::create([
-                "status"=> Promo::STATUS_DRAFT,
+                "status" => Promo::STATUS_DRAFT,
                 "opso_id" => "22030001",
                 "nama_promo" => "Promo Ramadhan",
                 "budget" => "100000000",
