@@ -3,6 +3,7 @@
 namespace App\Models\Promo;
 
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Support\Facades\DB;
 
 class Promo extends Model
 {
@@ -28,9 +29,9 @@ class Promo extends Model
     'file',
   ];
 
-  public $hidden = ['file'];
+  public $hidden = ['file', 'statistics'];
 
-  public $appends = ['document'];
+  public $appends = ['document', 'statistics'];
 
   public function getDocumentAttribute()
   {
@@ -39,13 +40,15 @@ class Promo extends Model
 
   public function getStatisticsAttribute()
   {
+    $bu = (integer) $this->promoProducts()->select(DB::raw('SUM(budget_brand)'))->getQuery()->first()->sum;
+    $ba = (integer) $this->promoAreas()->select(DB::raw('SUM(budget)'))->getQuery()->first()->sum;
     return [
       "budget" => $this->budget,
-      "budget_update" => 0,
-      "budget_left" => 0,
+      "budget_update" => $bu,
+      "budget_left" => $this->budget - $bu,
       "claim" => 0,
       "outstanding_claim" => 0,
-      "budget_area" => 0,
+      "budget_area" => $ba,
     ];
   }
 

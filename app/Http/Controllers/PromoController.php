@@ -17,6 +17,18 @@ class PromoController extends MasterDataController
     $this->middleware("auth:api");
   }
 
+  public function show($id, Request $req)
+  {
+    $include = null;
+    if ($req->filled('include')) {
+      $include = $req->query('include');
+    }
+
+    $data = $this->getModel($this->model, $id, $include, ['statistics']);
+
+    return $this->response($data);
+  }
+
   public function generateID()
   {
     $opso_id = date('y') . date('m') . str_pad(Promo::count() + 1, 4, 0, STR_PAD_LEFT);
