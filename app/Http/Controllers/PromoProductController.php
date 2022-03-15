@@ -108,11 +108,11 @@ class PromoProductController extends Controller
         }, 0);
 
         if ($budget_left < $budget_promo) {
-            throw new BadRequestException("Error budget");
+            throw new BadRequestException("error_excess_budget");
         }
 
         if ($budget_promo != $budget_input) {
-            throw new BadRequestException("Error budget");
+            throw new BadRequestException("error_budget_difference");
         }
 
         // delete all promo product by promo brand first
