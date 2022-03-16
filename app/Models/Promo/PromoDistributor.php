@@ -29,9 +29,8 @@ class PromoDistributor extends Model
       "required",
       "exists:distributor,kode_distributor",
       Rule::unique("promo_distributor")->where(function ($query) use ($pa, $pd) {
-        if (!empty($pd)) $query->where("id", "!=", $pd->id);
         return $query->where("promo_area_id", "!=", $pa->id);
-      })
+      })->ignore(!empty($pd) ? $pd->id : null)
     ];
     $rules["budget"] = ["required", "numeric", "max:$budget"];
     return $rules;

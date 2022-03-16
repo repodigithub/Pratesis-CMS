@@ -9,30 +9,33 @@ use Illuminate\Validation\Rule;
 
 class PromoArea extends Model
 {
-  const STATUS_NEW_PROMO = 'new_promo';
-  const STATUS_NEED_APPROVAL = 'need_approval';
-  const STATUS_APPROVE = 'approve';
-  const STATUS_REJECT = 'reject';
+  const STATUS_NEW_PROMO = "new_promo";
+  const STATUS_NEED_APPROVAL = "need_approval";
+  const STATUS_APPROVE = "approve";
+  const STATUS_REJECT = "reject";
 
   protected $table = "promo_area";
 
-  public $fillable = ['opso_id', 'kode_area', 'budget', 'status'];
+  public $fillable = ["opso_id", "kode_area", "budget", "status"];
 
-  public $appends = ['nama_area', 'region', 'alamat', 'persentase', 'statistics'];
+  public $appends = ["nama_area", "region", "alamat", "persentase", "statistics"];
 
-  public $hidden = ['statistics', 'budget_distributor'];
+  public $hidden = ["statistics", "budget_distributor"];
 
-  public static function rules($opso_id = null)
+  public static function rules(Promo $promo, PromoArea $pa = null)
   {
+    $budget = $promo->budget - $promo->budget_area;
+    if (!empty($pb)) $budget += $pa->budget;
+
     $rules = [];
-    $rules['kode_area'] = [
-      'required',
-      'exists:area,kode_area',
-      Rule::unique('promo_area')->where(function ($query) use ($opso_id) {
-        return $query->where('opso_id', '!=', $opso_id);
-      })
+    $rules["kode_area"] = [
+      "required",
+      "exists:area,kode_area",
+      Rule::unique("promo_area")->where(function ($query) use ($promo) {
+        return $query->where("opso_id", "!=", $promo->opso_id);
+      })->ignore(!empty($pa) ? $pa->id : null)
     ];
-    $rules['budget'] = ['required', 'numeric'];
+    $rules["budget"] = ["required", "numeric", "min:0", "max:$budget"];
     return $rules;
   }
 
@@ -49,7 +52,7 @@ class PromoArea extends Model
   public function getBudgetDistributorAttribute()
   {
     try {
-      return $this->promoDistributors()->select(DB::raw('SUM(budget)'))->getQuery()->first()->sum ?: 0;
+      return $this->promoDistributors()->select(DB::raw("SUM(budget)"))->getQuery()->first()->sum ?: 0;
     } catch (\Throwable $th) {
       return 0;
     }
@@ -82,16 +85,16 @@ class PromoArea extends Model
 
   public function promo()
   {
-    return $this->belongsTo(Promo::class, 'opso_id', 'opso_id');
+    return $this->belongsTo(Promo::class, "opso_id", "opso_id");
   }
 
   public function area()
   {
-    return $this->belongsTo(Area::class, 'kode_area', 'kode_area');
+    return $this->belongsTo(Area::class, "kode_area", "kode_area");
   }
 
   public function promoDistributors()
   {
-    return $this->hasMany(PromoDistributor::class, 'promo_area_id');
+    return $this->hasMany(PromoDistributor::class, "promo_area_id");
   }
 }

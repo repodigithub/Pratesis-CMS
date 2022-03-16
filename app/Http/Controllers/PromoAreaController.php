@@ -40,12 +40,12 @@ class PromoAreaController extends Controller
 
     public function create($id, Request $req)
     {
-        $data = $this->getModel(Promo::class, $id);
+        $promo = $this->getModel(Promo::class, $id);
 
-        $this->validate($req, PromoArea::rules());
+        $this->validate($req, PromoArea::rules($promo));
 
         // $req->merge(['status' => PromoArea::STATUS_NEW_PROMO]);
-        $data = $data->promoAreas()->create($req->all());
+        $data = $promo->promoAreas()->create($req->all());
 
         $data = $this->getModel(PromoArea::class, $data->id);
 
@@ -71,7 +71,7 @@ class PromoAreaController extends Controller
 
         $data = $this->getModel(PromoArea::class, $area);
 
-        $this->validate($req, PromoArea::rules($promo->opso_id));
+        $this->validate($req, PromoArea::rules($promo));
 
         $data->update($req->all());
 

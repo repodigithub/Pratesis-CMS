@@ -182,9 +182,11 @@ class SetupSeeder extends Seeder
             ]);
             $this->command->info("create sub brand");
             Brand::truncate();
-            $brand = Brand::create([
-                "kode_brand" => "TEST", "nama_brand" => "Test brand"
-            ]);
+            for ($i = 1; $i <= 5; $i++) {
+                Brand::create([
+                    "kode_brand" => "TEST0$i", "nama_brand" => "Test brand 0$i"
+                ]);
+            }
             $this->command->info("create brand");
             Category::truncate();
             Category::create([
@@ -199,15 +201,17 @@ class SetupSeeder extends Seeder
             ]);
             $this->command->info("create divisi");
             Product::truncate();
-            for ($i = 0; $i < 5; $i++) {
-                Product::create([
-                    "kode_produk" => "TEST" . str_pad(($i + 1), 2, 0, STR_PAD_LEFT),
-                    "nama_produk" => trim("Test produk " . ($i + 1)),
-                    "kode_sub_brand" => "TEST",
-                    "kode_brand" => "TEST",
-                    "kode_kategori" => "TEST",
-                    "kode_divisi" => "TEST"
-                ]);
+            foreach (Brand::all() as $index => $brand) {
+                for ($i = 0; $i < 5; $i++) {
+                    Product::create([
+                        "kode_produk" => "TEST" . str_pad(($index * 5 + $i + 1), 2, 0, STR_PAD_LEFT),
+                        "nama_produk" => trim("Test produk " . ($i + 1)),
+                        "kode_sub_brand" => "TEST",
+                        "kode_brand" => $brand->kode_brand,
+                        "kode_kategori" => "TEST",
+                        "kode_divisi" => "TEST"
+                    ]);
+                }
             }
             $this->command->info("create produk");
             Promo::truncate();
