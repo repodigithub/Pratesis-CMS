@@ -4,7 +4,7 @@ use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
 
-class CreatePromoAreaTable extends Migration
+class CreatePromoDistributorTable extends Migration
 {
     /**
      * Run the migrations.
@@ -13,17 +13,17 @@ class CreatePromoAreaTable extends Migration
      */
     public function up()
     {
-        Schema::create('promo_area', function (Blueprint $table) {
+        Schema::create('promo_distributor', function (Blueprint $table) {
             $table->id();
-            $table->string('opso_id');
-            $table->string('kode_area');
+            $table->unsignedBigInteger('promo_area_id');
+            $table->string('kode_distributor');
             $table->bigInteger('budget');
             $table->string('status')->nullable();
             $table->timestamps();
 
-            $table->foreign('opso_id')->references('opso_id')->on('promo')
+            $table->foreign('promo_area_id')->references('id')->on('promo_area')
                 ->onDelete('cascade')->onUpdate('cascade');
-            $table->foreign('kode_area')->references('kode_area')->on('area')
+            $table->foreign('kode_distributor')->references('kode_distributor')->on('distributor')
                 ->onDelete('cascade')->onUpdate('cascade');
         });
     }
@@ -35,6 +35,6 @@ class CreatePromoAreaTable extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('promo_area');
+        Schema::dropIfExists('promo_distributor');
     }
 }

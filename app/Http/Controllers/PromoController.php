@@ -94,7 +94,7 @@ class PromoController extends MasterDataController
       $rules['file'] = 'required|file';
     }
     $rules['nama_promo'] = 'required';
-    $rules['budget'] = 'required|numeric';
+    $rules['budget'] = 'required|numeric|min:0';
     $rules['status'] = ['nullable', Rule::in([Promo::STATUS_APPROVE, Promo::STATUS_DRAFT, Promo::STATUS_NEED_APPROVAL, Promo::STATUS_REJECT])];
     $rules['start_date'] = 'required|date|before:end_date';
     $rules['end_date'] = 'required|date|after:start_date';

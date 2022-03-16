@@ -7,10 +7,10 @@ use Illuminate\Support\Facades\DB;
 
 class Promo extends Model
 {
-  const STATUS_APPROVE = 'approve';
-  const STATUS_NEED_APPROVAL = 'need_approval';
-  const STATUS_REJECT = 'reject';
   const STATUS_DRAFT = 'draft';
+  const STATUS_NEED_APPROVAL = 'need_approval';
+  const STATUS_APPROVE = 'approve';
+  const STATUS_REJECT = 'reject';
 
   protected $table = "promo";
 
@@ -29,9 +29,19 @@ class Promo extends Model
     'file',
   ];
 
-  public $hidden = ['file', 'statistics'];
+  public $hidden = ['file', 'statistics', 'budget_product', 'budget_area'];
 
   public $appends = ['document', 'statistics'];
+
+  public function getBudgetProductAttribute()
+  {
+    return (int) $this->promoProducts()->select(DB::raw('SUM(budget_brand)'))->getQuery()->first()->sum;
+  }
+
+  public function getBudgetAreaAttribute()
+  {
+    return (int) $this->promoAreas()->select(DB::raw('SUM(budget)'))->getQuery()->first()->sum;
+  }
 
   public function getDocumentAttribute()
   {
@@ -40,16 +50,19 @@ class Promo extends Model
 
   public function getStatisticsAttribute()
   {
-    $bu = (integer) $this->promoProducts()->select(DB::raw('SUM(budget_brand)'))->getQuery()->first()->sum;
-    $ba = (integer) $this->promoAreas()->select(DB::raw('SUM(budget)'))->getQuery()->first()->sum;
     return [
       "budget" => $this->budget,
-      "budget_update" => $bu,
-      "budget_left" => $this->budget - $bu,
+      "budget_update" => $this->budget_product,
+      "budget_left" => $this->budget - $this->budget_product,
       "claim" => 0,
       "outstanding_claim" => 0,
-      "budget_area" => $ba,
+      "budget_area" => $this->budget_area,
     ];
+  }
+
+  public function promoImages()
+  {
+    return $this->hasMany(PromoImage::class, 'opso_id', 'opso_id');
   }
 
   public function promoProducts()

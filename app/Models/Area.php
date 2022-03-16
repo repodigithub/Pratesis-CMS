@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use App\Models\Promo\PromoArea;
 use Illuminate\Database\Eloquent\Model;
 
 class Area extends Model
@@ -20,6 +21,11 @@ class Area extends Model
   public function region()
   {
     return $this->belongsTo(Region::class, 'kode_region', 'kode_region');
+  }
+
+  public function promos()
+  {
+    return $this->hasMany(PromoArea::class, 'kode_area', 'kode_area');
   }
 
   public function getNamaRegionAttribute()
