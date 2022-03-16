@@ -16,3 +16,17 @@ $router->group(['prefix' => 'promo'], function () use ($router) {
     include('area.php');
   });
 });
+
+$router->group(['prefix' => 'promo-depot'], function () use ($router) {
+  $router->get('/', ['uses' => 'PromoAreaController@index']);
+
+  $router->group(['prefix' => '{id}'], function () use ($router) {
+    $router->get('/', ['uses' => 'PromoAreaController@show']);
+    $router->get('/image', ['uses' => 'PromoImageController@index']);
+    $router->get('/product', ['uses' => 'PromoProductController@index']);
+    $router->get('/product/{product}', ['uses' => 'PromoProductController@show']);
+    $router->put('/status', ['uses' => 'PromoAreaController@updateStatus']);
+
+    include('distributor.php');
+  });
+});

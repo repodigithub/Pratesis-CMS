@@ -4,15 +4,23 @@ namespace App\Models\Promo;
 
 use App\Models\Area;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Validation\Rule;
 
 class PromoArea extends Model
 {
+  const STATUS_NEW_PROMO = 'new_promo';
+  const STATUS_NEED_APPROVAL = 'need_approval';
+  const STATUS_APPROVE = 'approve';
+  const STATUS_REJECT = 'reject';
+
   protected $table = "promo_area";
 
-  public $fillable = ['opso_id', 'kode_area', 'budget'];
+  public $fillable = ['opso_id', 'kode_area', 'budget', 'status'];
 
-  public $appends = ['nama_area', 'region', 'alamat', 'persentase'];
+  public $appends = ['nama_area', 'region', 'alamat', 'persentase', 'statistics'];
+
+  public $hidden = ['statistics', 'budget_distributor'];
 
   public static function rules($opso_id = null)
   {
@@ -26,6 +34,25 @@ class PromoArea extends Model
     ];
     $rules['budget'] = ['required', 'numeric'];
     return $rules;
+  }
+
+  public function getStatisticsAttribute()
+  {
+    return [
+      "budget" => $this->budget,
+      "claim" => 0,
+      "outstanding_claim" => 0,
+      "budget_distributor" => $this->budget_distributor,
+    ];
+  }
+
+  public function getBudgetDistributorAttribute()
+  {
+    try {
+      return $this->promoDistributors()->select(DB::raw('SUM(budget)'))->getQuery()->first()->sum ?: 0;
+    } catch (\Throwable $th) {
+      return 0;
+    }
   }
 
   public function getNamaAreaAttribute()
@@ -61,5 +88,10 @@ class PromoArea extends Model
   public function area()
   {
     return $this->belongsTo(Area::class, 'kode_area', 'kode_area');
+  }
+
+  public function promoDistributors()
+  {
+    return $this->hasMany(PromoDistributor::class, 'promo_area_id');
   }
 }

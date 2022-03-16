@@ -8,12 +8,16 @@ use Illuminate\Validation\Rule;
 
 class PromoBrand extends Model
 {
+  const METHOD_MANUAL = 'manual';
+  const METHOD_AUTO = 'otomatis';
+  
   protected $table = "promo_brand";
 
   public $fillable = [
     'opso_id',
     'kode_brand',
     'budget_brand',
+    'method'
   ];
 
   public $appends = ['nama_brand', 'produk_aktif', 'persentase'];
@@ -29,6 +33,7 @@ class PromoBrand extends Model
       })
     ];
     $rules['budget_brand'] = 'required|numeric';
+    $rules['method'] = ['required', Rule::in([self::METHOD_AUTO, self::METHOD_MANUAL])];
     $rules['products'] = 'required|array';
     $rules['products.*.status'] = 'required|boolean';
     $rules['products.*.kode_produk'] = 'required|exists:produk,kode_produk|distinct';
@@ -54,7 +59,6 @@ class PromoBrand extends Model
   public function getNamaBrandAttribute()
   {
     try {
-      //code...
       return $this->brand()->first()->nama_brand;
     } catch (\Throwable $th) {
       return '';

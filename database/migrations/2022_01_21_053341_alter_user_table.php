@@ -24,8 +24,10 @@ class AlterUserTable extends Migration
             $table->string('kode_distributor')->nullable();
             $table->string('kode_area')->nullable();
 
-            $table->foreign('kode_distributor')->references('kode_distributor')->on('distributor')->nullOnDelete();
-            $table->foreign('kode_area')->references('kode_area')->on('area')->nullOnDelete();
+            $table->foreign('kode_distributor')->references('kode_distributor')->on('distributor')
+                ->nullOnDelete()->cascadeOnUpdate();
+            $table->foreign('kode_area')->references('kode_area')->on('area')
+                ->nullOnDelete()->cascadeOnUpdate();
         });
     }
 
