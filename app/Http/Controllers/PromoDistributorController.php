@@ -56,7 +56,7 @@ class PromoDistributorController extends Controller
             $data = $this->getModel(PromoDistributor::class, $dis);
         }
 
-        return $this->response($data);
+        return $this->response($data->makeVisible(['statistics']));
     }
 
     public function update($id, $dis, Request $req)
