@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\Promo\Promo;
 use App\Models\Promo\PromoArea;
 use App\Models\Promo\PromoBrand;
+use App\Models\Promo\PromoDistributor;
 use App\Models\Promo\PromoProduct;
 use App\Models\User;
 use Illuminate\Http\Request;
@@ -22,10 +23,14 @@ class PromoProductController extends Controller
     public function index($id, Request $req)
     {
         $is_from_depot = strpos($req->getPathInfo(), 'promo-depot') !== false;
+        $is_from_distributor = strpos($req->getPathInfo(), 'promo-distributor') !== false;
 
         if ($is_from_depot) {
             if (!auth()->user()->hasRole(User::ROLE_DISTRIBUTOR)) throw new NotFoundHttpException("path_not_found");
             $data = $this->getModel(PromoArea::class, $id)->promo->promoProducts();
+        } else if ($is_from_distributor) {
+            if (!auth()->user()->hasRole(User::ROLE_DISTRIBUTOR)) throw new NotFoundHttpException("path_not_found");
+            $data = $this->getModel(PromoDistributor::class, $id)->promo->promoProducts();
         } else {
             $data = $this->getModel(Promo::class, $id)->promoProducts();
         }
@@ -38,7 +43,7 @@ class PromoProductController extends Controller
 
         $data = $data->paginate($pagination->limit, ["*"], "page", $pagination->page);
 
-        if ($is_from_depot) {
+        if ($is_from_depot || $is_from_distributor) {
             $data->setCollection($data->getCollection()->makeHidden(['budget_brand']));
         }
 
@@ -64,16 +69,24 @@ class PromoProductController extends Controller
     public function show($id, $product, Request $req)
     {
         $is_from_depot = strpos($req->getPathInfo(), 'promo-depot') !== false;
+        $is_from_distributor = strpos($req->getPathInfo(), 'promo-distributor') !== false;
+
+        $data = $this->getModel(PromoBrand::class, $product, 'products');
+
         if ($is_from_depot) {
+            if (!auth()->user()->hasRole(User::ROLE_DISTRIBUTOR)) throw new NotFoundHttpException("path_not_found");
             $promo_area = $this->getModel(PromoArea::class, $id);
+            $data->budget = $promo_area->budget * $data->persentase / 100;
+        } else if ($is_from_distributor) {
+            if (!auth()->user()->hasRole(User::ROLE_DISTRIBUTOR)) throw new NotFoundHttpException("path_not_found");
+            $promo_distributor = $this->getModel(PromoDistributor::class, $req->route('id'));
+            $data->budget = $promo_distributor->budget * $data->persentase / 100;
         } else {
             $data = $this->getModel(Promo::class, $id);
         }
 
-        $data = $this->getModel(PromoBrand::class, $product, 'products');
-        if ($is_from_depot) {
+        if ($is_from_depot || $is_from_distributor) {
             $data->makeHidden('budget_brand');
-            $data->budget = $promo_area->budget * $data->persentase / 100;
             $data->products->makeHidden('budget_produk');
         }
 

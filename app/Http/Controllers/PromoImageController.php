@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Http\Controllers\Master\MasterDataController;
 use App\Models\Promo\Promo;
 use App\Models\Promo\PromoArea;
+use App\Models\Promo\PromoDistributor;
 use App\Models\Promo\PromoImage;
 use App\Models\User;
 use Illuminate\Database\Eloquent\Builder;
@@ -39,6 +40,9 @@ class PromoImageController extends MasterDataController
         if (strpos($req->getPathInfo(), 'promo-depot') !== false) {
             if (!auth()->user()->hasRole(User::ROLE_DISTRIBUTOR)) throw new NotFoundHttpException("path_not_found");
             $promo = $this->getModel(PromoArea::class, $req->route('id'))->promo;
+        } else if (strpos($req->getPathInfo(), 'promo-distributor') !== false) {
+            if (!auth()->user()->hasRole(User::ROLE_DISTRIBUTOR)) throw new NotFoundHttpException("path_not_found");
+            $promo = $this->getModel(PromoDistributor::class, $req->route('id'))->promo;
         } else {
             $promo = $this->getModel(Promo::class, $req->route('id'));
         }

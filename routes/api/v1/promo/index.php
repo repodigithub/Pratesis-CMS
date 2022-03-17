@@ -30,3 +30,15 @@ $router->group(['prefix' => 'promo-depot'], function () use ($router) {
     include('distributor.php');
   });
 });
+
+$router->group(['prefix' => 'promo-distributor'], function () use ($router) {
+  $router->get('/', ['uses' => 'PromoDistributorController@index']);
+
+  $router->group(['prefix' => '{id}'], function () use ($router) {
+    $router->get('/', ['uses' => 'PromoDistributorController@show']);
+    $router->get('/image', ['uses' => 'PromoImageController@index']);
+    $router->get('/product', ['uses' => 'PromoProductController@index']);
+    $router->get('/product/{product}', ['uses' => 'PromoProductController@show']);
+    $router->put('/status', ['uses' => 'PromoDistributorController@updateStatus']);
+  });
+});

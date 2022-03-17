@@ -3,6 +3,7 @@
 namespace App\Http\Middleware;
 
 use Closure;
+use Symfony\Component\HttpKernel\Exception\AccessDeniedHttpException;
 
 class PermissionMiddleware
 {
@@ -15,12 +16,19 @@ class PermissionMiddleware
      */
     public function handle($request, Closure $next, $p1 = null, $p2 = null, $p3 = null, $p4 = null)
     {
-        // Pre-Middleware Action
-
         $response = $next($request);
-
-        // Post-Middleware Action
-
-        return $response;
+        if (auth()->user()->hasPermission($p1)) {
+            return $response;
+        }
+        if (auth()->user()->hasPermission($p2)) {
+            return $response;
+        }
+        if (auth()->user()->hasPermission($p3)) {
+            return $response;
+        }
+        if (auth()->user()->hasPermission($p4)) {
+            return $response;
+        }
+        throw new AccessDeniedHttpException("Access denied.");
     }
 }
