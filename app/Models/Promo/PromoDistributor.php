@@ -17,7 +17,9 @@ class PromoDistributor extends Model
 
   public $fillable = ["promo_area_id", "kode_distributor", "budget", "status"];
 
-  public $appends = ["nama_distributor", "distributor_group", "persentase"];
+  public $appends = ["nama_distributor", "distributor_group", "persentase", "statistics"];
+
+  public $hidden = ["statistics", "budget_distributor"];
 
   public static function rules(PromoArea $pa, PromoDistributor $pd = null)
   {
@@ -34,6 +36,15 @@ class PromoDistributor extends Model
     ];
     $rules["budget"] = ["required", "numeric", "max:$budget"];
     return $rules;
+  }
+
+  public function getStatisticsAttribute()
+  {
+    return [
+      "budget" => $this->budget,
+      "claim" => 0,
+      "outstanding_claim" => 0,
+    ];
   }
 
   public function getNamaDistributorAttribute()

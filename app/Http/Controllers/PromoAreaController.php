@@ -63,7 +63,7 @@ class PromoAreaController extends Controller
             $data = $this->getModel(PromoArea::class, $area);
         }
 
-        return $this->response($data);
+        return $this->response($data->makeVisible(['statistics']));
     }
 
     public function update($id, $area, Request $req)

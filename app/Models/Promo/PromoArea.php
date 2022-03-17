@@ -52,7 +52,7 @@ class PromoArea extends Model
   public function getBudgetDistributorAttribute()
   {
     try {
-      return $this->promoDistributors()->select(DB::raw("SUM(budget)"))->getQuery()->first()->sum ?: 0;
+      return (int) $this->promoDistributors()->select(DB::raw("SUM(budget)"))->getQuery()->first()->sum ?: 0;
     } catch (\Throwable $th) {
       return 0;
     }
