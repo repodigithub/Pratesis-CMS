@@ -235,21 +235,23 @@ class SetupSeeder extends Seeder
             ]);
             $this->command->info("create promo image");
             PromoBrand::truncate();
-            $promo_brand = PromoBrand::create([
-                'opso_id' => $promo->opso_id,
-                'kode_brand' => $brand->kode_brand,
-                'budget_brand' => $promo->budget * 10 / 100,
-                'method' => PromoBrand::METHOD_AUTO
-            ]);
             PromoProduct::truncate();
-            foreach ($brand->products as $product) {
-                $budget = $promo_brand->budget_brand / $brand->products()->count();
-
-                $promo_brand->products()->create([
-                    'status' => 1,
-                    'kode_produk' => $product->kode_produk,
-                    'budget_produk' => $budget,
+            foreach (Brand::all() as $index => $brand) {
+                $promo_brand = PromoBrand::create([
+                    'opso_id' => $promo->opso_id,
+                    'kode_brand' => $brand->kode_brand,
+                    'budget_brand' => $promo->budget * 10 / 100,
+                    'method' => PromoBrand::METHOD_AUTO
                 ]);
+                foreach ($brand->products as $product) {
+                    $budget = $promo_brand->budget_brand / $brand->products()->count();
+
+                    $promo_brand->products()->create([
+                        'status' => 1,
+                        'kode_produk' => $product->kode_produk,
+                        'budget_produk' => $budget,
+                    ]);
+                }
             }
             $this->command->info("create promo product");
             PromoArea::truncate();
