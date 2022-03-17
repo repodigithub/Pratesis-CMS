@@ -64,6 +64,11 @@ class PromoDistributor extends Model
     }
   }
 
+  public function promo()
+  {
+    return $this->promoArea()->first()->promo();
+  }
+
   public function promoArea()
   {
     return $this->belongsTo(PromoArea::class, "promo_area_id");

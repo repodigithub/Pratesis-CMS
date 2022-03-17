@@ -93,11 +93,11 @@ class User extends Model implements AuthenticatableContract, AuthorizableContrac
 
     public function hasRole($role = null)
     {
-        return $this->userGroup()->first()->kode_group == $role || empty($role);
+        return $this->userGroup()->first()->kode_group == $role;
     }
 
     public function hasPermission($permission = null)
     {
-        return $this->userGroup()->first()->permissions()->where('permission.kode_permission', $permission)->count() > 0 || empty($permission);
+        return $this->userGroup()->first()->permissions()->where('permission.kode_permission', $permission)->count() > 0;
     }
 }

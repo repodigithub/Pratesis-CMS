@@ -14,6 +14,7 @@ class PromoAreaController extends Controller
     function __construct()
     {
         $this->middleware("auth:api");
+        $this->middleware("group:" . User::ROLE_DISTRIBUTOR, ['only' => ['updateStatus']]);
     }
 
     public function index($id = null, Request $req)
@@ -83,12 +84,6 @@ class PromoAreaController extends Controller
 
     public function updateStatus($id, Request $req)
     {
-        if (strpos($req->getPathInfo(), 'promo-depot') !== false) {
-            if (!auth()->user()->hasRole(User::ROLE_DISTRIBUTOR)) throw new NotFoundHttpException("path_not_found");
-            $data = $this->getModel(PromoArea::class, $id);
-        } else {
-            if (!auth()->user()->hasRole(User::ROLE_DISTRIBUTOR)) throw new NotFoundHttpException("path_not_found");
-        }
         $data = $this->getModel(PromoArea::class, $id);
 
         $this->validate($req, [

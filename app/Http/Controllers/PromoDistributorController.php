@@ -6,6 +6,7 @@ use App\Models\Promo\PromoArea;
 use App\Models\Promo\PromoDistributor;
 use App\Models\User;
 use Illuminate\Http\Request;
+use Illuminate\Validation\Rule;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 
 class PromoDistributorController extends Controller
@@ -13,11 +14,17 @@ class PromoDistributorController extends Controller
     function __construct()
     {
         $this->middleware("auth:api");
+        $this->middleware("group:" . User::ROLE_DISTRIBUTOR, ['only' => ['updateStatus']]);
     }
 
     public function index($id = null, Request $req)
     {
-        $data = $this->getModel(PromoArea::class, $id)->promoDistributors();
+        if (strpos($req->getPathInfo(), 'promo-distributor') !== false) {
+            if (!auth()->user()->hasRole(User::ROLE_DISTRIBUTOR)) throw new NotFoundHttpException("path_not_found");
+            $data = auth()->user()->distributor->promos();
+        } else {
+            $data = $this->getModel(PromoArea::class, $id)->promoDistributors();
+        }
         $pagination = $this->getPagination($req);
         if (!empty($pagination->sort)) {
             $sort = $pagination->sort;
@@ -41,8 +48,13 @@ class PromoDistributorController extends Controller
 
     public function show($id = null, $dis = null, Request $req)
     {
-        $data = $this->getModel(PromoArea::class, $id);
-        $data = $this->getModel(PromoDistributor::class, $dis);
+        if (strpos($req->getPathInfo(), 'promo-distributor') !== false) {
+            if (!auth()->user()->hasRole(User::ROLE_DISTRIBUTOR)) throw new NotFoundHttpException("path_not_found");
+            $data = $this->getModel(PromoDistributor::class, $id);
+        } else {
+            $data = $this->getModel(PromoArea::class, $id);
+            $data = $this->getModel(PromoDistributor::class, $dis);
+        }
 
         return $this->response($data);
     }
@@ -58,31 +70,24 @@ class PromoDistributorController extends Controller
         return $this->response($data);
     }
 
-    // public function updateStatus($id, Request $req)
-    // {
-    //     if (strpos($req->getPathInfo(), 'promo-depot') !== false) {
-    //         if (!auth()->user()->hasRole(User::ROLE_DISTRIBUTOR)) throw new NotFoundHttpException("path_not_found");
-    //         $data = $this->getModel(PromoArea::class, $id);
-    //     } else {
-    //         if (!auth()->user()->hasRole(User::ROLE_DISTRIBUTOR)) throw new NotFoundHttpException("path_not_found");
-    //     }
-    //     $data = $this->getModel(PromoArea::class, $id);
+    public function updateStatus($id, Request $req)
+    {
+        $data = $this->getModel(PromoDistributor::class, $id);
 
-    //     $this->validate($req, [
-    //         'status' => ['nullable', Rule::in([
-    //             PromoArea::STATUS_NEW_PROMO,
-    //             PromoArea::STATUS_NEED_APPROVAL,
-    //             PromoArea::STATUS_APPROVE,
-    //             PromoArea::STATUS_REJECT,
-    //         ])]
-    //     ]);
+        $this->validate($req, [
+            'status' => ['nullable', Rule::in([
+                PromoDistributor::STATUS_APPROVE,
+                PromoDistributor::STATUS_CLAIM,
+                PromoDistributor::STATUS_END
+            ])]
+        ]);
 
-    //     $data->status = $req->input('status');
-    //     $data->save();
-    //     $data = $this->getModel(PromoArea::class, $id);
+        $data->status = $req->input('status');
+        $data->save();
+        $data = $this->getModel(PromoDistributor::class, $id);
 
-    //     return $this->response($data);
-    // }
+        return $this->response($data);
+    }
 
     public function delete($id, $dis, Request $req)
     {
