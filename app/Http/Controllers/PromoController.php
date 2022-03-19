@@ -17,6 +17,18 @@ class PromoController extends MasterDataController
     $this->middleware("auth:api");
   }
 
+  public function show($id, Request $req)
+  {
+    $include = null;
+    if ($req->filled('include')) {
+      $include = $req->query('include');
+    }
+
+    $data = $this->getModel($this->model, $id, $include, ['statistics']);
+
+    return $this->response($data);
+  }
+
   public function generateID()
   {
     $opso_id = date('y') . date('m') . str_pad(Promo::count() + 1, 4, 0, STR_PAD_LEFT);
@@ -82,7 +94,7 @@ class PromoController extends MasterDataController
       $rules['file'] = 'required|file';
     }
     $rules['nama_promo'] = 'required';
-    $rules['budget'] = 'required|numeric';
+    $rules['budget'] = 'required|numeric|min:0';
     $rules['status'] = ['nullable', Rule::in([Promo::STATUS_APPROVE, Promo::STATUS_DRAFT, Promo::STATUS_NEED_APPROVAL, Promo::STATUS_REJECT])];
     $rules['start_date'] = 'required|date|before:end_date';
     $rules['end_date'] = 'required|date|after:start_date';

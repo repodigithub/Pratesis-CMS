@@ -22,6 +22,12 @@ class User extends Model implements AuthenticatableContract, AuthorizableContrac
     const STATUS_APPROVE = "approve";
     const STATUS_REJECT = "reject";
 
+    const ROLE_ADMINISTRATOR = "AD";
+    const ROLE_DISTRIBUTOR = "DI";
+    const ROLE_GENERAL_ADMIN = "GA";
+    const ROLE_HEAD_OFFICE = "HO";
+    const ROLE_SALES = "SA";
+
     protected $table = "user";
 
     /**
@@ -83,5 +89,15 @@ class User extends Model implements AuthenticatableContract, AuthorizableContrac
     public function distributor()
     {
         return $this->belongsTo(Distributor::class, 'kode_distributor', 'kode_distributor');
+    }
+
+    public function hasRole($role = null)
+    {
+        return $this->userGroup()->first()->kode_group == $role;
+    }
+
+    public function hasPermission($permission = null)
+    {
+        return $this->userGroup()->first()->permissions()->where('permission.kode_permission', $permission)->count() > 0;
     }
 }

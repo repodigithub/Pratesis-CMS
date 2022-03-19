@@ -3,11 +3,15 @@
 namespace App\Http\Controllers;
 
 use App\Models\Promo\Promo;
+use App\Models\Promo\PromoArea;
 use App\Models\Promo\PromoBrand;
+use App\Models\Promo\PromoDistributor;
 use App\Models\Promo\PromoProduct;
+use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Symfony\Component\HttpFoundation\Exception\BadRequestException;
+use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 
 class PromoProductController extends Controller
 {
@@ -18,10 +22,19 @@ class PromoProductController extends Controller
 
     public function index($id, Request $req)
     {
-        $data = $this->getModel(Promo::class, $id);
-        $pagination = $this->getPagination($req);
+        $is_from_depot = strpos($req->getPathInfo(), 'promo-depot') !== false;
+        $is_from_distributor = strpos($req->getPathInfo(), 'promo-distributor') !== false;
 
-        $data = $data->promoProducts();
+        if ($is_from_depot) {
+            if (!auth()->user()->hasRole(User::ROLE_DISTRIBUTOR)) throw new NotFoundHttpException("path_not_found");
+            $data = $this->getModel(PromoArea::class, $id)->promo->promoProducts();
+        } else if ($is_from_distributor) {
+            if (!auth()->user()->hasRole(User::ROLE_DISTRIBUTOR)) throw new NotFoundHttpException("path_not_found");
+            $data = $this->getModel(PromoDistributor::class, $id)->promo->promoProducts();
+        } else {
+            $data = $this->getModel(Promo::class, $id)->promoProducts();
+        }
+        $pagination = $this->getPagination($req);
 
         if (!empty($pagination->sort)) {
             $sort = $pagination->sort;
@@ -30,6 +43,10 @@ class PromoProductController extends Controller
 
         $data = $data->paginate($pagination->limit, ["*"], "page", $pagination->page);
 
+        if ($is_from_depot || $is_from_distributor) {
+            $data->setCollection($data->getCollection()->makeHidden(['budget_brand']));
+        }
+
         return $this->response($data);
     }
 
@@ -37,15 +54,10 @@ class PromoProductController extends Controller
     {
         $promo = $this->getModel(Promo::class, $id);
 
-        $this->validate($req, PromoBrand::rules());
+        $this->validate($req, PromoBrand::rules($promo));
 
         $data = DB::transaction(function () use ($req, $promo) {
-            $data = PromoBrand::create([
-                'opso_id' => $promo->opso_id,
-                'kode_brand' => $req->input('kode_brand'),
-                'budget_brand' => $req->input('budget_brand'),
-            ]);
-
+            $data = $promo->promoProducts()->create($req->all());
             $this->fillProducts($data, $req);
             return $data;
         });
@@ -56,8 +68,27 @@ class PromoProductController extends Controller
 
     public function show($id, $product, Request $req)
     {
-        $data = $this->getModel(Promo::class, $id);
+        $is_from_depot = strpos($req->getPathInfo(), 'promo-depot') !== false;
+        $is_from_distributor = strpos($req->getPathInfo(), 'promo-distributor') !== false;
+
         $data = $this->getModel(PromoBrand::class, $product, 'products');
+
+        if ($is_from_depot) {
+            if (!auth()->user()->hasRole(User::ROLE_DISTRIBUTOR)) throw new NotFoundHttpException("path_not_found");
+            $promo_area = $this->getModel(PromoArea::class, $id);
+            $data->budget = $promo_area->budget * $data->persentase / 100;
+        } else if ($is_from_distributor) {
+            if (!auth()->user()->hasRole(User::ROLE_DISTRIBUTOR)) throw new NotFoundHttpException("path_not_found");
+            $promo_distributor = $this->getModel(PromoDistributor::class, $req->route('id'));
+            $data->budget = $promo_distributor->budget * $data->persentase / 100;
+        } else {
+            $data = $this->getModel(Promo::class, $id);
+        }
+
+        if ($is_from_depot || $is_from_distributor) {
+            $data->makeHidden('budget_brand');
+            $data->products->makeHidden('budget_produk');
+        }
 
         return $this->response($data);
     }
@@ -68,13 +99,10 @@ class PromoProductController extends Controller
 
         $data = $this->getModel(PromoBrand::class, $product);
 
-        $this->validate($req, PromoBrand::rules($promo->opso_id));
+        $this->validate($req, PromoBrand::rules($promo, $data));
 
         $data = DB::transaction(function () use ($req, $data) {
-            $data->kode_brand = $req->input('kode_brand');
-            $data->budget_brand = $req->input('budget_brand');
-            $data->save();
-
+            $data->update($req->all());
             $this->fillProducts($data, $req);
             return $data;
         });
@@ -101,18 +129,13 @@ class PromoProductController extends Controller
         $input_products = collect($req->input('products'));
 
         $budget = $promo->budget;
-        $budget_left = $budget - DB::table('promo_brand')->select(DB::raw('SUM(budget_brand)'))->where('opso_id', $promo->opso_id)->first()->sum;
         $budget_promo = $promo_product->budget_brand;
         $budget_input = $input_products->reduce(function ($carry, $item) {
             return $carry + $item['budget_produk'];
         }, 0);
 
-        if ($budget_left < $budget_promo) {
-            throw new BadRequestException("Error budget");
-        }
-
         if ($budget_promo != $budget_input) {
-            throw new BadRequestException("Error budget");
+            throw new BadRequestException("error_budget_difference");
         }
 
         // delete all promo product by promo brand first

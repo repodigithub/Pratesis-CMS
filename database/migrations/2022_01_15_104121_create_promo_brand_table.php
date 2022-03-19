@@ -17,6 +17,7 @@ class CreatePromoBrandTable extends Migration
             $table->id();
             $table->string('opso_id');
             $table->string('kode_brand');
+            $table->string('method');
             $table->bigInteger('budget_brand');
             $table->timestamps();
 

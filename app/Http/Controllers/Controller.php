@@ -23,7 +23,7 @@ class Controller extends BaseController
         ]);
     }
 
-    protected function getModel($model, $id, $include = null)
+    protected function getModel($model, $id, $include = null, $visibles = [])
     {
         try {
             $data = $model::where('id', $id);
@@ -33,10 +33,10 @@ class Controller extends BaseController
             if (empty($data->count())) {
                 throw new NotFoundHttpException("$model not found.");
             }
-            return $data->first();
+            return $data->first()->makeVisible($visibles);
         } catch (\Throwable $th) {
             Log::error($th->getMessage());
-            throw new NotFoundHttpException("$model not found.");
+            throw new BadRequestHttpException($th->getMessage());
         }
     }
 

@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use App\Models\Promo\PromoDistributor;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Validation\Rule;
 
@@ -42,6 +43,11 @@ class Distributor extends Model
   public function region()
   {
     return $this->area()->first()->region();
+  }
+
+  public function promos()
+  {
+    return $this->hasMany(PromoDistributor::class, 'kode_distributor', 'kode_distributor');
   }
 
   public function getNamaAreaAttribute()
