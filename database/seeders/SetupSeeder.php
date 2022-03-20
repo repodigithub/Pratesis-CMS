@@ -137,8 +137,8 @@ class SetupSeeder extends Seeder
                 "password" => Hash::make('password'),
                 "username" => "admin1",
                 "kode_group" => User::ROLE_ADMINISTRATOR,
-                "kode_area" => null,
-                "kode_distributor" => null,
+                "kode_area" => $area->kode_area,
+                "kode_distributor" => $distributor->kode_distributor,
                 "status" => User::STATUS_APPROVE,
             ]);
             $this->command->info("Create admin");

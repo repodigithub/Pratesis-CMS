@@ -26,10 +26,10 @@ class PromoProductController extends Controller
         $is_from_distributor = strpos($req->getPathInfo(), 'promo-distributor') !== false;
 
         if ($is_from_depot) {
-            if (!auth()->user()->hasRole(User::ROLE_DISTRIBUTOR)) throw new NotFoundHttpException("path_not_found");
+            // if (!auth()->user()->hasRole(User::ROLE_DISTRIBUTOR)) throw new NotFoundHttpException("path_not_found");
             $data = $this->getModel(PromoArea::class, $id)->promo->promoProducts();
         } else if ($is_from_distributor) {
-            if (!auth()->user()->hasRole(User::ROLE_DISTRIBUTOR)) throw new NotFoundHttpException("path_not_found");
+            // if (!auth()->user()->hasRole(User::ROLE_DISTRIBUTOR)) throw new NotFoundHttpException("path_not_found");
             $data = $this->getModel(PromoDistributor::class, $id)->promo->promoProducts();
         } else {
             $data = $this->getModel(Promo::class, $id)->promoProducts();
@@ -74,11 +74,11 @@ class PromoProductController extends Controller
         $data = $this->getModel(PromoBrand::class, $product, 'products');
 
         if ($is_from_depot) {
-            if (!auth()->user()->hasRole(User::ROLE_DISTRIBUTOR)) throw new NotFoundHttpException("path_not_found");
+            // if (!auth()->user()->hasRole(User::ROLE_DISTRIBUTOR)) throw new NotFoundHttpException("path_not_found");
             $promo_area = $this->getModel(PromoArea::class, $id);
             $data->budget = $promo_area->budget * $data->persentase / 100;
         } else if ($is_from_distributor) {
-            if (!auth()->user()->hasRole(User::ROLE_DISTRIBUTOR)) throw new NotFoundHttpException("path_not_found");
+            // if (!auth()->user()->hasRole(User::ROLE_DISTRIBUTOR)) throw new NotFoundHttpException("path_not_found");
             $promo_distributor = $this->getModel(PromoDistributor::class, $req->route('id'));
             $data->budget = $promo_distributor->budget * $data->persentase / 100;
         }
