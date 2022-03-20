@@ -4,6 +4,7 @@ $router->group(['prefix' => 'promo'], function () use ($router) {
   $router->get('/generate-id', ['uses' => 'PromoController@generateID']);
   $router->get('/', ['uses' => 'PromoController@index']);
   $router->post('/', ['uses' => 'PromoController@create']);
+  $router->post('/status', ['uses' => 'PromoController@status']);
 
   $router->group(['prefix' => '{id}'], function () use ($router) {
     $router->get('/', ['uses' => 'PromoController@show']);
@@ -19,6 +20,7 @@ $router->group(['prefix' => 'promo'], function () use ($router) {
 
 $router->group(['prefix' => 'promo-depot'], function () use ($router) {
   $router->get('/', ['uses' => 'PromoAreaController@index']);
+  $router->post('/status', ['uses' => 'PromoAreaController@status']);
 
   $router->group(['prefix' => '{id}'], function () use ($router) {
     $router->get('/', ['uses' => 'PromoAreaController@show']);
@@ -33,6 +35,7 @@ $router->group(['prefix' => 'promo-depot'], function () use ($router) {
 
 $router->group(['prefix' => 'promo-distributor'], function () use ($router) {
   $router->get('/', ['uses' => 'PromoDistributorController@index']);
+  $router->put('/status', ['uses' => 'PromoDistributorController@status']);
 
   $router->group(['prefix' => '{id}'], function () use ($router) {
     $router->get('/', ['uses' => 'PromoDistributorController@show']);

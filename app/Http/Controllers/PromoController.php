@@ -4,9 +4,11 @@ namespace App\Http\Controllers;
 
 use App\Http\Controllers\Master\MasterDataController;
 use App\Models\Promo\Promo;
+use App\Models\Promo\PromoArea;
 use Illuminate\Validation\Rule;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\File;
 
 class PromoController extends MasterDataController
@@ -31,7 +33,9 @@ class PromoController extends MasterDataController
 
   public function generateID()
   {
-    $opso_id = date('y') . date('m') . str_pad(Promo::count() + 1, 4, 0, STR_PAD_LEFT);
+    $sequenceName = (new $this->model())->getTable() . "_id_seq";
+    $count = DB::selectOne("SELECT nextval('{$sequenceName}') AS val")->val;;
+    $opso_id = (int) (date('y') . date('m') . str_pad($count, 4, 0, STR_PAD_LEFT));
     return $this->response(compact('opso_id'));
   }
 
@@ -43,10 +47,42 @@ class PromoController extends MasterDataController
       'status' => ['nullable', Rule::in([Promo::STATUS_APPROVE, Promo::STATUS_DRAFT, Promo::STATUS_NEED_APPROVAL, Promo::STATUS_REJECT])]
     ]);
 
-    $data->status = $req->input('status');
-    $data->save();
+    DB::transaction(function () use ($data, $req) {
+      $data->status = $req->input('status');
+      $data->save();
+
+      if ($req->input('status') == Promo::STATUS_APPROVE) {
+        $data->promoAreas()->update(['status' => PromoArea::STATUS_NEW_PROMO]);
+      }
+    });
+    $data = $this->getModel($this->model, $id);
 
     return $this->response($data);
+  }
+
+  public function status(Request $req)
+  {
+    $this->validate($req, [
+      'ids' => 'required|array',
+      'ids.*' => 'required|distinct|exists:promo,id',
+      'status' => ['nullable', Rule::in([Promo::STATUS_APPROVE, Promo::STATUS_DRAFT, Promo::STATUS_NEED_APPROVAL, Promo::STATUS_REJECT])]
+    ]);
+
+    $count =  DB::transaction(function () use ($req) {
+      if ($req->input('status') == Promo::STATUS_APPROVE) {
+        PromoArea::whereHas("promo", function ($q) use ($req) {
+          $q->whereIn('id', $req->input("ids"));
+        })->update(['status' => PromoArea::STATUS_NEW_PROMO]);
+      }
+
+      return Promo::whereIn('id', $req->input('ids'))->update([
+        'status' => $req->input('status')
+      ]);
+    });
+
+
+
+    return $this->response($count);
   }
 
   protected function onFilter(Builder $query, Request $req)

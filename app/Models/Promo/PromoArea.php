@@ -18,25 +18,45 @@ class PromoArea extends Model
 
   public $fillable = ["opso_id", "kode_area", "budget", "status"];
 
-  public $appends = ["nama_area", "region", "alamat", "persentase", "statistics"];
+  public $appends = ["nama_promo", "start_date", "end_date", "spend_type", "nama_area", "region", "alamat", "persentase", "statistics"];
 
   public $hidden = ["statistics", "budget_distributor"];
 
   public static function rules(Promo $promo, PromoArea $pa = null)
   {
     $budget = $promo->budget - $promo->budget_area;
-    if (!empty($pb)) $budget += $pa->budget;
+    if (!empty($pa)) $budget += $pa->budget;
 
     $rules = [];
     $rules["kode_area"] = [
       "required",
       "exists:area,kode_area",
       Rule::unique("promo_area")->where(function ($query) use ($promo) {
-        return $query->where("opso_id", "!=", $promo->opso_id);
+        return $query->where("opso_id", $promo->opso_id);
       })->ignore(!empty($pa) ? $pa->id : null)
     ];
     $rules["budget"] = ["required", "numeric", "min:0", "max:$budget"];
     return $rules;
+  }
+
+  public function getNamaPromoAttribute()
+  {
+    return $this->promo()->first()->nama_promo;
+  }
+
+  public function getStartDateAttribute()
+  {
+    return $this->promo()->first()->start_date;
+  }
+
+  public function getEndDateAttribute()
+  {
+    return $this->promo()->first()->end_date;
+  }
+
+  public function getSpendTypeAttribute()
+  {
+    return $this->promo()->first()->kode_spend_type;
   }
 
   public function getStatisticsAttribute()

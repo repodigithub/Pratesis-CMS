@@ -14,23 +14,64 @@ class PromoDistributorController extends Controller
     function __construct()
     {
         $this->middleware("auth:api");
-        $this->middleware("group:" . User::ROLE_DISTRIBUTOR, ['only' => ['updateStatus']]);
+        // $this->middleware("group:" . User::ROLE_DISTRIBUTOR, ['only' => ['updateStatus']]);
     }
 
     public function index($id = null, Request $req)
     {
-        if (strpos($req->getPathInfo(), 'promo-distributor') !== false) {
-            if (!auth()->user()->hasRole(User::ROLE_DISTRIBUTOR)) throw new NotFoundHttpException("path_not_found");
+        $this->validate($req, [
+            'status' => ['nullable', Rule::in([
+                PromoDistributor::STATUS_APPROVE,
+                PromoDistributor::STATUS_CLAIM,
+                PromoDistributor::STATUS_END,
+            ])]
+        ]);
+        $is_from_distributor = strpos($req->getPathInfo(), 'promo-distributor') !== false;
+        if ($is_from_distributor) {
+            // if (!auth()->user()->hasRole(User::ROLE_DISTRIBUTOR)) throw new NotFoundHttpException("path_not_found");
             $data = auth()->user()->distributor->promos();
         } else {
             $data = $this->getModel(PromoArea::class, $id)->promoDistributors();
         }
+
+        // Filter
+        $data->whereHas("promoArea", function ($q) use ($req) {
+            $q->whereHas("promo", function ($r) use ($req) {
+                if ($req->filled("opso_id")) {
+                    $r->where("opso_id", "ILIKE", "%{$req->query("opso_id")}%");
+                }
+                if ($req->filled("start_date")) {
+                    $r->whereDate("start_date", '>=', date('Y-m-d', strtotime($req->query("start_date"))));
+                }
+                if ($req->filled("end_date")) {
+                    $r->whereDate("end_date", '<=', date('Y-m-d', strtotime($req->query("end_date"))));
+                }
+                if ($req->filled("spend_type")) {
+                    $r->where("kode_spend_type", "{$req->query("spend_type")}");
+                }
+            });
+        });
+
+        if ($req->filled("status")) {
+            $data->where("status", "{$req->query("status")}");
+        }
+
         $pagination = $this->getPagination($req);
         if (!empty($pagination->sort)) {
             $sort = $pagination->sort;
             $data->orderBy((new PromoDistributor())->getTable() . '.' . $sort[0], $sort[1]);
         }
         $data = $data->paginate($pagination->limit, ["*"], "page", $pagination->page);
+
+        if ($is_from_distributor) {
+            $data->setCollection($data->getCollection()->makeHidden([
+                "nama_distributor", "distributor_group",
+            ]));
+        } else {
+            $data->setCollection($data->getCollection()->makeHidden([
+                "opso_id", "nama_promo", "start_date", "end_date", "spend_type",
+            ]));
+        }
 
         return $this->response($data);
     }
@@ -49,7 +90,8 @@ class PromoDistributorController extends Controller
     public function show($id = null, $dis = null, Request $req)
     {
         if (strpos($req->getPathInfo(), 'promo-distributor') !== false) {
-            if (!auth()->user()->hasRole(User::ROLE_DISTRIBUTOR)) throw new NotFoundHttpException("path_not_found");
+            // if (!auth()->user()->hasRole(User::ROLE_DISTRIBUTOR)) throw new NotFoundHttpException("path_not_found");
+            if (!auth()->user()->distributor->promos()->where('id', $id)->count()) throw new NotFoundHttpException(PromoDistributor::class . " not found.");
             $data = $this->getModel(PromoDistributor::class, $id);
         } else {
             $data = $this->getModel(PromoArea::class, $id);
@@ -61,6 +103,7 @@ class PromoDistributorController extends Controller
 
     public function update($id, $dis, Request $req)
     {
+        if (!auth()->user()->area->promos()->where('id', $id)->count()) throw new NotFoundHttpException(PromoArea::class . " not found.");
         $pa = $this->getModel(PromoArea::class, $id);
         $data = $this->getModel(PromoDistributor::class, $dis);
         $this->validate($req, PromoDistributor::rules($pa, $data));
@@ -72,6 +115,7 @@ class PromoDistributorController extends Controller
 
     public function updateStatus($id, Request $req)
     {
+        if (!auth()->user()->distributor->promos()->where('id', $id)->count()) throw new NotFoundHttpException(PromoDistributor::class . " not found.");
         $data = $this->getModel(PromoDistributor::class, $id);
 
         $this->validate($req, [

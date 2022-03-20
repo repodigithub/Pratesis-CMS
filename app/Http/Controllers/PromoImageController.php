@@ -38,10 +38,10 @@ class PromoImageController extends MasterDataController
     protected function onFilter(Builder $query, Request $req)
     {
         if (strpos($req->getPathInfo(), 'promo-depot') !== false) {
-            if (!auth()->user()->hasRole(User::ROLE_DISTRIBUTOR)) throw new NotFoundHttpException("path_not_found");
+            // if (!auth()->user()->hasRole(User::ROLE_DISTRIBUTOR)) throw new NotFoundHttpException("path_not_found");
             $promo = $this->getModel(PromoArea::class, $req->route('id'))->promo;
         } else if (strpos($req->getPathInfo(), 'promo-distributor') !== false) {
-            if (!auth()->user()->hasRole(User::ROLE_DISTRIBUTOR)) throw new NotFoundHttpException("path_not_found");
+            // if (!auth()->user()->hasRole(User::ROLE_DISTRIBUTOR)) throw new NotFoundHttpException("path_not_found");
             $promo = $this->getModel(PromoDistributor::class, $req->route('id'))->promo;
         } else {
             $promo = $this->getModel(Promo::class, $req->route('id'));
