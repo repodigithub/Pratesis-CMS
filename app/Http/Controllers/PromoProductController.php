@@ -81,8 +81,6 @@ class PromoProductController extends Controller
             if (!auth()->user()->hasRole(User::ROLE_DISTRIBUTOR)) throw new NotFoundHttpException("path_not_found");
             $promo_distributor = $this->getModel(PromoDistributor::class, $req->route('id'));
             $data->budget = $promo_distributor->budget * $data->persentase / 100;
-        } else {
-            $data = $this->getModel(Promo::class, $id);
         }
 
         if ($is_from_depot || $is_from_distributor) {
