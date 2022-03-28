@@ -96,7 +96,7 @@ class PromoController extends MasterDataController
     }
 
     if ($req->filled("area_id")) {
-      $query->whereHas("promoArea", function ($q) use ($req) {
+      $query->whereHas("promoAreas", function ($q) use ($req) {
         $q->where('kode_area', $req->query("area_id"));
       });
     }
