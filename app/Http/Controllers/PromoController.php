@@ -127,7 +127,7 @@ class PromoController extends MasterDataController
       $rules["opso_id"] = "required|unique:promo,opso_id,$data->id";
     } else {
       $rules["opso_id"] = "required|unique:promo";
-      $rules['file'] = 'required|file';
+      $rules['file'] = 'nullable|file';
     }
     $rules['nama_promo'] = 'required';
     $rules['budget'] = 'required|numeric|min:0';
