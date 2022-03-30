@@ -96,7 +96,7 @@ class PromoController extends MasterDataController
     }
 
     if ($req->filled("area_id")) {
-      $query->whereHas("promoArea", function ($q) use ($req) {
+      $query->whereHas("promoAreas", function ($q) use ($req) {
         $q->where('kode_area', $req->query("area_id"));
       });
     }
@@ -127,7 +127,7 @@ class PromoController extends MasterDataController
       $rules["opso_id"] = "required|unique:promo,opso_id,$data->id";
     } else {
       $rules["opso_id"] = "required|unique:promo";
-      $rules['file'] = 'required|file';
+      $rules['file'] = 'nullable|file';
     }
     $rules['nama_promo'] = 'required';
     $rules['budget'] = 'required|numeric|min:0';
