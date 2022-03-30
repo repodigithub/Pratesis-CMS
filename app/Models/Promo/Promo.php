@@ -45,7 +45,10 @@ class Promo extends Model
 
   public function getDocumentAttribute()
   {
-    return url($this->file);
+    if (!empty($this->file)) {
+      return url($this->file);
+    }
+    return '';
   }
 
   public function getStatisticsAttribute()

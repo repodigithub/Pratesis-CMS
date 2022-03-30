@@ -22,9 +22,9 @@ class CreatePromoTable extends Migration
             $table->date('start_date');
             $table->date('end_date');
             $table->integer('claim');
-            $table->string('kode_spend_type');
-            $table->string('kode_budget_holder');
-            $table->string('file');
+            $table->string('kode_spend_type')->nullable();
+            $table->string('kode_budget_holder')->nullable();
+            $table->string('file')->nullable();
             $table->timestamps();
 
             $table->foreign('kode_spend_type')->references('kode_spend_type')->on('spend_type')

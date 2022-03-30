@@ -26,6 +26,7 @@ use App\Models\User;
 use Illuminate\Database\Seeder;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\Schema;
 
 class SetupSeeder extends Seeder
 {
@@ -37,6 +38,7 @@ class SetupSeeder extends Seeder
     public function run()
     {
         DB::transaction(function () {
+            Schema::disableForeignKeyConstraints();
             // Buat kode group / user level
             $groups = [
                 [
@@ -61,6 +63,8 @@ class SetupSeeder extends Seeder
                 ],
             ];
 
+            // DB::table('group_permission')->truncate();
+            Permission::truncate();
             Group::truncate();
             $res = Group::insert($groups);
             $this->command->info(sprintf("Create groups %s", $res));
@@ -77,7 +81,6 @@ class SetupSeeder extends Seeder
                 }
             }
 
-            Permission::truncate();
             $res = Permission::insert($permissions);
             $this->command->info(sprintf("Create permission %s", $res));
 
@@ -270,6 +273,7 @@ class SetupSeeder extends Seeder
                 'budget' => $promo_area->budget * 20 / 100,
                 // 'status' => PromoDistributor::STATUS_APPROVE
             ]);
+            Schema::enableForeignKeyConstraints();
         });
     }
 }
