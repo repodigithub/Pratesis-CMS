@@ -17,7 +17,7 @@ class PromoDistributor extends Model
 
   public $fillable = ["promo_area_id", "kode_distributor", "budget", "status"];
 
-  public $appends = ["opso_id", "nama_promo", "start_date", "end_date", "kode_spend_type", "nama_distributor", "distributor_group", "persentase", "statistics", "status_promo"];
+  public $appends = ["opso_id", "nama_promo", "start_date", "end_date", "kode_spend_type", "kode_budget_holder", "document", "claim", "nama_distributor", "distributor_group", "persentase", "statistics", "status_promo"];
 
   public $hidden = ["statistics", "budget_distributor", "status"];
 
@@ -74,6 +74,21 @@ class PromoDistributor extends Model
   public function getKodeSpendTypeAttribute()
   {
     return $this->promo()->first()->kode_spend_type;
+  }
+
+  public function getKodeBudgetHolderAttribute()
+  {
+    return $this->promo()->first()->kode_budget_holder;
+  }
+
+  public function getDocumentAttribute()
+  {
+    return $this->promo()->first()->document;
+  }
+
+  public function getClaimAttribute()
+  {
+    return $this->promo()->first()->claim;
   }
 
   public function getStatisticsAttribute()
