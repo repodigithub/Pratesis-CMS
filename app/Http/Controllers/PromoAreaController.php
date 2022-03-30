@@ -65,7 +65,7 @@ class PromoAreaController extends Controller
         }
 
         if ($req->filled("status")) {
-            $data->where("status", $req->query("status"));
+            $data->whereIn("status", explode(',', $req->query("status")));
         }
 
         $pagination = $this->getPagination($req);

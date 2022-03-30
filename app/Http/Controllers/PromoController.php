@@ -114,7 +114,7 @@ class PromoController extends MasterDataController
     }
 
     if ($req->filled("status")) {
-      $query->where("status", $req->query("status"));
+      $query->whereIn("status", explode(',', $req->query("status")));
     }
 
     return $query;
