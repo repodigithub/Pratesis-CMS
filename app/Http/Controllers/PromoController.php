@@ -109,12 +109,12 @@ class PromoController extends MasterDataController
       $query->whereDate("end_date", date('Y-m-d', strtotime($req->query("end_date"))));
     }
 
-    if ($req->filled("spend_type")) {
-      $query->where("kode_spend_type", $req->query("spend_type"));
+    if ($req->filled("kode_spend_type")) {
+      $query->where("kode_spend_type", $req->query("kode_spend_type"));
     }
 
     if ($req->filled("status")) {
-      $query->where("status", $req->query("status"));
+      $query->whereIn("status", explode(',', $req->query("status")));
     }
 
     return $query;
