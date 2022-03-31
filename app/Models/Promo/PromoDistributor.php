@@ -17,9 +17,9 @@ class PromoDistributor extends Model
 
   public $fillable = ["promo_area_id", "kode_distributor", "budget", "status"];
 
-  public $appends = ["opso_id", "nama_promo", "start_date", "end_date", "spend_type", "nama_distributor", "distributor_group", "persentase", "statistics"];
+  public $appends = ["opso_id", "nama_promo", "start_date", "end_date", "kode_spend_type", "kode_budget_holder", "document", "claim", "nama_distributor", "distributor_group", "persentase", "statistics", "status_promo"];
 
-  public $hidden = ["statistics", "budget_distributor"];
+  public $hidden = ["statistics", "budget_distributor", "status"];
 
   public static function rules(PromoArea $pa, PromoDistributor $pd = null)
   {
@@ -36,6 +36,20 @@ class PromoDistributor extends Model
     ];
     $rules["budget"] = ["required", "numeric", "max:$budget"];
     return $rules;
+  }
+
+  public function getStatusPromoAttribute()
+  {
+    $promo = $this->promo()->first();
+    $claim_start = $promo->end_date;
+    $claim_end = date('c', strtotime("+$promo->claim days", strtotime($claim_start)));
+    if (time() > strtotime($claim_end)) {
+      return self::STATUS_END;
+    }
+    if (time() > strtotime($claim_start)) {
+      return self::STATUS_CLAIM;
+    }
+    return $this->status;
   }
 
   public function getOpsoIdAttribute()
@@ -57,9 +71,24 @@ class PromoDistributor extends Model
     return $this->promo()->first()->end_date;
   }
 
-  public function getSpendTypeAttribute()
+  public function getKodeSpendTypeAttribute()
   {
     return $this->promo()->first()->kode_spend_type;
+  }
+
+  public function getKodeBudgetHolderAttribute()
+  {
+    return $this->promo()->first()->kode_budget_holder;
+  }
+
+  public function getDocumentAttribute()
+  {
+    return $this->promo()->first()->document;
+  }
+
+  public function getClaimAttribute()
+  {
+    return $this->promo()->first()->claim;
   }
 
   public function getStatisticsAttribute()

@@ -46,14 +46,14 @@ class PromoDistributorController extends Controller
                 if ($req->filled("end_date")) {
                     $r->whereDate("end_date", '<=', date('Y-m-d', strtotime($req->query("end_date"))));
                 }
-                if ($req->filled("spend_type")) {
-                    $r->where("kode_spend_type", "{$req->query("spend_type")}");
+                if ($req->filled("kode_spend_type")) {
+                    $r->where("kode_spend_type", "{$req->query("kode_spend_type")}");
                 }
             });
         });
 
         if ($req->filled("status")) {
-            $data->where("status", "{$req->query("status")}");
+            $data->whereIn("status", explode(',', $req->query("status")));
         }
 
         $pagination = $this->getPagination($req);
@@ -69,7 +69,7 @@ class PromoDistributorController extends Controller
             ]));
         } else {
             $data->setCollection($data->getCollection()->makeHidden([
-                "opso_id", "nama_promo", "start_date", "end_date", "spend_type",
+                "opso_id", "nama_promo", "start_date", "end_date", "kode_spend_type",
             ]));
         }
 
