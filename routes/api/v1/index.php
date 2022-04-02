@@ -22,4 +22,5 @@ $router->group(['prefix' => 'v1'], function () use ($router) {
   include('user-group.php');
   include('user.php');
   include('promo/index.php');
+  include('claim.php');
 });

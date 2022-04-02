@@ -4,9 +4,13 @@ namespace App\Models;
 
 use App\Models\Promo\PromoDistributor;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Validation\Rule;
 
 class Claim extends Model
 {
+  const STATUS_DRAFT = 'draft';
+  const STATUS_SUBMIT = 'submit';
+
   protected $table = "claim";
 
   public $fillable = [
@@ -19,6 +23,29 @@ class Claim extends Model
     'faktur_pajak',
     'description',
   ];
+
+  // public $appends = ['kode_distributor'];
+  
+  public $hidden = ['kode_distributor'];
+
+  public static function rules(Claim $claim = null)
+  {
+    $rules = [
+      'promo_distributor_id' => 'required|exists:promo_distributor,id',
+      'amount' => 'nullable|numeric',
+      'status' => ['required', Rule::in([self::STATUS_DRAFT, self::STATUS_SUBMIT])],
+      'laporan_tpr_barang' => 'nullable|text',
+      'laporan_tpr_uang' => 'nullable|text',
+      'faktur_pajak' => 'nullable|text',
+      'description' => 'nullable|text',
+    ];
+    return $rules;
+  }
+
+  public function getKodeDistributorAttribute()
+  {
+    return $this->promoDistributor()->first()->kode_distributor;
+  }
 
   public function promoDistributor()
   {
