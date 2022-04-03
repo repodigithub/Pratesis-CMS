@@ -159,11 +159,11 @@ class SetupSeeder extends Seeder
             $this->command->info("Create admin");
             // buat depot
             $ga = User::create([
-                "user_id" => "DIS01",
-                "full_name" => "Distributor",
-                "email" => "dis@local.host",
+                "user_id" => "GA01",
+                "full_name" => "General Admin",
+                "email" => "ga@local.host",
                 "password" => Hash::make('password'),
-                "username" => "dis01",
+                "username" => "ga01",
                 "kode_group" => User::ROLE_GENERAL_ADMIN,
                 "kode_area" => $area->kode_area,
                 "status" => User::STATUS_APPROVE,
@@ -323,7 +323,7 @@ class SetupSeeder extends Seeder
                 'budget' => $promo_area->budget * 20 / 100,
                 // 'status' => PromoDistributor::STATUS_APPROVE
             ]);
-            
+
             Claim::create([
                 'promo_distributor_id' => $pd->id,
                 'kode_uli' => $pd->kode_distributor . date('y') . str_pad(Claim::count() + 1, 4, 0, STR_PAD_LEFT),
