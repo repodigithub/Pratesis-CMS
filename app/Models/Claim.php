@@ -2,6 +2,8 @@
 
 namespace App\Models;
 
+use App\Models\Promo\Promo;
+use App\Models\Promo\PromoArea;
 use App\Models\Promo\PromoDistributor;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Validation\Rule;
@@ -24,10 +26,6 @@ class Claim extends Model
     'description',
   ];
 
-  // public $appends = ['kode_distributor'];
-  
-  public $hidden = ['kode_distributor'];
-
   public static function rules(Claim $claim = null)
   {
     $rules = [
@@ -42,13 +40,8 @@ class Claim extends Model
     return $rules;
   }
 
-  public function getKodeDistributorAttribute()
-  {
-    return $this->promoDistributor()->first()->kode_distributor;
-  }
-
   public function promoDistributor()
   {
-    return $this->belongsTo(PromoDistributor::class, 'promo_distributor_id');
+    return $this->belongsTo(PromoDistributor::class);
   }
 }

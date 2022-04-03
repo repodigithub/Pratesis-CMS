@@ -73,20 +73,52 @@ class ClaimController extends Controller
 
     public function show($id, Request $req)
     {
-        $include = null;
-        if ($req->filled('include')) {
-            $include = $req->query('include');
-        }
-
-        $data = $this->getModel(Claim::class, $id, $include)->makeVisible([
-            'kode_distributor',
-            'nama_distributor',
-            'jenis_kegiatan',
-            'ppn_amount',
-            'pph_amount',
-            'total_amount'
-        ]);
+        $data = $this->getDetail($id);
 
         return $this->response($data);
+    }
+
+    public function showInvoice($id, Request $req)
+    {
+        $data = $this->getDetail($id);
+        $data->distributor = $data->promoDistributor->distributor;
+        $data->promo = $data->promoDistributor->promo->makeHidden(['budget', 'promoType']);
+
+        return $this->response($data->makeHidden('promoDistributor'));
+    }
+
+    public function update($id, Request $req)
+    {
+        $data = $this->getModel(Claim::class, $id);
+
+        $this->validate($req, Claim::rules());
+
+        $data->update($req->all());
+        $data = $this->getModel(Claim::class, $id);
+
+        return $this->response($data);
+    }
+
+    public function delete($id)
+    {
+        $data = $this->getModel(Claim::class, $id);
+        $data->delete();
+        return $this->response();
+    }
+
+    private function getDetail($id)
+    {
+        $data = $this->getModel(Claim::class, $id);
+
+        $distributor = $data->promoDistributor->distributor;
+        $tipe_promo = $data->promoDistributor->promo->promoType->first();
+
+        $data->kode_distributor = $distributor->kode_distributor;
+        $data->nama_distributor = $distributor->nama_distributor;
+        $data->jenis_kegiatan = $tipe_promo->nama_kegiatan;
+        $data->ppn_amount = $data->amount * $tipe_promo->persentase_ppn / 100;
+        $data->pph_amount = $data->amount * $tipe_promo->persentase_pph / 100;
+        $data->total_amount = $data->amount + $data->ppn_amount + $data->pph_amount;
+        return $data->makeHidden('promoDistributor');
     }
 }
