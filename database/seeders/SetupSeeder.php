@@ -143,8 +143,8 @@ class SetupSeeder extends Seeder
             ]);
             $this->command->info("create distributor");
 
-            // Buat admin
             User::truncate();
+            // Buat admin
             $user = User::create([
                 "user_id" => "ADM01",
                 "full_name" => "Administrator",
@@ -157,6 +157,17 @@ class SetupSeeder extends Seeder
                 "status" => User::STATUS_APPROVE,
             ]);
             $this->command->info("Create admin");
+            // buat depot
+            $ga = User::create([
+                "user_id" => "DIS01",
+                "full_name" => "Distributor",
+                "email" => "dis@local.host",
+                "password" => Hash::make('password'),
+                "username" => "dis01",
+                "kode_group" => User::ROLE_GENERAL_ADMIN,
+                "kode_area" => $area->kode_area,
+                "status" => User::STATUS_APPROVE,
+            ]);
             // buat distributor
             $dis = User::create([
                 "user_id" => "DIS01",
@@ -165,7 +176,6 @@ class SetupSeeder extends Seeder
                 "password" => Hash::make('password'),
                 "username" => "dis01",
                 "kode_group" => User::ROLE_DISTRIBUTOR,
-                "kode_area" => $area->kode_area,
                 "kode_distributor" => $distributor->kode_distributor,
                 "status" => User::STATUS_APPROVE,
             ]);
