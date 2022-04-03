@@ -6,6 +6,7 @@ use App\Models\Claim;
 use App\Models\Promo\PromoDistributor;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Validation\Rule;
 use Symfony\Component\HttpKernel\Exception\BadRequestHttpException;
 
 class ClaimController extends Controller
@@ -19,8 +20,17 @@ class ClaimController extends Controller
     {
         $pagination = $this->getPagination($req);
 
-        $data = Claim::whereHas('promoDistributor', function ($q) {
-            $q->where("kode_distributor", auth()->user()->kode_distributor);
+        $data = Claim::whereHas('promoDistributor', function ($q) use ($req) {
+            switch ($req->query('level')) {
+                case 'depot':
+                    $q->whereIn("kode_distributor", auth()->user()->area->distributors->pluck('kode_distributor'));
+                    break;
+                case 'ho':
+                    break;
+                default:
+                    $q->where("kode_distributor", auth()->user()->kode_distributor);
+                    break;
+            }
         });
 
         if (!empty($pagination->sort)) {
@@ -29,6 +39,18 @@ class ClaimController extends Controller
         }
 
         $data = $data->paginate($pagination->limit, ["*"], "page", $pagination->page);
+
+        $data->setCollection($data->getCollection()->map(function ($val) {
+            $promo = $val->promoDistributor;
+            $distributor = $promo->distributor;
+            $tipe_promo = $promo->promo->promoType->first();
+
+            $val->kode_distributor = $distributor->kode_distributor;
+            $val->nama_distributor = $distributor->nama_distributor;
+            $val->jenis_kegiatan = $tipe_promo->nama_kegiatan;
+            $val->claim = $promo->budget;
+            return $val->makeHidden('promoDistributor');
+        }));
 
         return $this->response($data);
     }
@@ -74,17 +96,7 @@ class ClaimController extends Controller
     public function show($id, Request $req)
     {
         $data = $this->getDetail($id);
-
         return $this->response($data);
-    }
-
-    public function showInvoice($id, Request $req)
-    {
-        $data = $this->getDetail($id);
-        $data->distributor = $data->promoDistributor->distributor;
-        $data->promo = $data->promoDistributor->promo->makeHidden(['budget', 'promoType']);
-
-        return $this->response($data->makeHidden('promoDistributor'));
     }
 
     public function update($id, Request $req)
@@ -99,6 +111,21 @@ class ClaimController extends Controller
         return $this->response($data);
     }
 
+    public function updateStatus($id, Request $req)
+    {
+        $data = $this->getModel(Claim::class, $id);
+
+        $this->validate($req, [
+            'status' => ['required', Rule::in([Claim::STATUS_APPROVE, Claim::STATUS_REJECT])],
+        ]);
+
+        $data->update($req->only(['status', 'alasan']));
+        $data = $this->getModel(Claim::class, $id);
+
+        return $this->response($data);
+    }
+
+
     public function delete($id)
     {
         $data = $this->getModel(Claim::class, $id);
@@ -111,7 +138,13 @@ class ClaimController extends Controller
         $data = $this->getModel(Claim::class, $id);
 
         $distributor = $data->promoDistributor->distributor;
-        $tipe_promo = $data->promoDistributor->promo->promoType->first();
+        $promo = $data->promoDistributor->promo;
+        $tipe_promo = $promo->promoType->first();
+
+        $data->opso_id = $promo->opso_id;
+        $data->nama_promo = $promo->nama_promo;
+        $data->start_date = $promo->start_date;
+        $data->end_date = $promo->end_date;
 
         $data->kode_distributor = $distributor->kode_distributor;
         $data->nama_distributor = $distributor->nama_distributor;

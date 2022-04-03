@@ -23,6 +23,7 @@ class CreateClaimsTable extends Migration
             $table->string('laporan_tpr_uang')->nullable();
             $table->string('faktur_pajak')->nullable();
             $table->text('description')->nullable();
+            $table->text('alasan')->nullable();
             $table->timestamps();
 
             $table->foreign('promo_distributor_id')->references('id')->on('promo_distributor')

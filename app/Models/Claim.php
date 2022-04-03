@@ -12,6 +12,8 @@ class Claim extends Model
 {
   const STATUS_DRAFT = 'draft';
   const STATUS_SUBMIT = 'submit';
+  const STATUS_APPROVE = 'approve';
+  const STATUS_REJECT = 'reject';
 
   protected $table = "claim";
 
@@ -24,6 +26,7 @@ class Claim extends Model
     'laporan_tpr_uang',
     'faktur_pajak',
     'description',
+    'alasan'
   ];
 
   public static function rules(Claim $claim = null)
