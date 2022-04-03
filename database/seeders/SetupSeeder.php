@@ -6,6 +6,7 @@ use App\Models\Area;
 use App\Models\Brand;
 use App\Models\BudgetHolder;
 use App\Models\Category;
+use App\Models\Claim;
 use App\Models\Distributor;
 use App\Models\Permission\Group;
 use App\Models\Permission\Permission;
@@ -22,6 +23,8 @@ use App\Models\Promo\PromoImage;
 use App\Models\Promo\PromoProduct;
 use App\Models\Spend;
 use App\Models\SubBrand;
+use App\Models\Tax;
+use App\Models\TipePromo;
 use App\Models\User;
 use Illuminate\Database\Seeder;
 use Illuminate\Support\Facades\DB;
@@ -129,10 +132,19 @@ class SetupSeeder extends Seeder
                 'titik_koordinat' => null,
                 'status_distributor' => Distributor::STATUS_ACTIVE,
             ]);
+            Distributor::create([
+                'kode_distributor' => 'TEST1',
+                'nama_distributor' => 'Test distributor',
+                'kode_distributor_group' => $sales->kode_distributor_group,
+                'kode_area' => $area->kode_area,
+                'alamat' => 'alamat',
+                'titik_koordinat' => null,
+                'status_distributor' => Distributor::STATUS_ACTIVE,
+            ]);
             $this->command->info("create distributor");
 
-            // Buat admin
             User::truncate();
+            // Buat admin
             $user = User::create([
                 "user_id" => "ADM01",
                 "full_name" => "Administrator",
@@ -145,6 +157,17 @@ class SetupSeeder extends Seeder
                 "status" => User::STATUS_APPROVE,
             ]);
             $this->command->info("Create admin");
+            // buat depot
+            $ga = User::create([
+                "user_id" => "DIS01",
+                "full_name" => "Distributor",
+                "email" => "dis@local.host",
+                "password" => Hash::make('password'),
+                "username" => "dis01",
+                "kode_group" => User::ROLE_GENERAL_ADMIN,
+                "kode_area" => $area->kode_area,
+                "status" => User::STATUS_APPROVE,
+            ]);
             // buat distributor
             $dis = User::create([
                 "user_id" => "DIS01",
@@ -153,26 +176,53 @@ class SetupSeeder extends Seeder
                 "password" => Hash::make('password'),
                 "username" => "dis01",
                 "kode_group" => User::ROLE_DISTRIBUTOR,
-                "kode_area" => $area->kode_area,
                 "kode_distributor" => $distributor->kode_distributor,
                 "status" => User::STATUS_APPROVE,
             ]);
             $this->command->info("Create admin distributor");
 
             Investment::truncate();
-            Investment::create([
+            $investment = Investment::create([
                 "kode_investment" => "TEST",
                 "nama_investment" => "Test investment"
             ]);
             $this->command->info("create investment");
             Spend::truncate();
-            Spend::create([
+            $spend = Spend::create([
                 "kode_spend_type" => "TEST",
                 "kode_investment" => "TEST",
                 "fund_type" => "1",
                 "reference_tax" => "#",
                 "condition_type" => "10"
             ]);
+
+            $this->command->info("create ppn");
+            Tax::truncate();
+            $ppn = Tax::create([
+                'kode_pajak' => 'TESTPPN',
+                'nama_pajak' => 'TEST PPN',
+                'tipe_pajak' => 'ppn',
+                'presentase_pajak' => 10,
+                'reference_tax' => '#'
+            ]);
+            $this->command->info("create pph");
+            $pph = Tax::create([
+                'kode_pajak' => 'TESTPPH',
+                'nama_pajak' => 'TEST PPH',
+                'tipe_pajak' => 'pph',
+                'presentase_pajak' => 10,
+                'reference_tax' => '#'
+            ]);
+            $this->command->info("create tipe promo");
+            $type = TipePromo::create([
+                "kode_kegiatan" => "TEST",
+                "nama_kegiatan" => "TEST Kegiatan",
+                "deskripsi_kegiatan" => "TEST deskripsi kegiatan",
+                "kode_ppn" => $ppn->kode_pajak,
+                "kode_pph" => $pph->kode_pajak,
+            ]);
+            $type->spendTypes()->attach($spend);
+
             BudgetHolder::truncate();
             BudgetHolder::create([
                 "kode_budget_holder" => "TEST",
@@ -267,12 +317,24 @@ class SetupSeeder extends Seeder
             $this->command->info("create promo area");
 
             PromoDistributor::truncate();
-            PromoDistributor::create([
+            $pd = PromoDistributor::create([
                 'promo_area_id' => $promo_area->id,
                 'kode_distributor' => $distributor->kode_distributor,
                 'budget' => $promo_area->budget * 20 / 100,
                 // 'status' => PromoDistributor::STATUS_APPROVE
             ]);
+            
+            Claim::create([
+                'promo_distributor_id' => $pd->id,
+                'kode_uli' => $pd->kode_distributor . date('y') . str_pad(Claim::count() + 1, 4, 0, STR_PAD_LEFT),
+                'status' => Claim::STATUS_DRAFT,
+                'amount' => 2000000,
+                'laporan_tpr_barang' => '',
+                'laporan_tpr_uang' => '',
+                'faktur_pajak' => '',
+                'description' => '',
+            ]);
+
             Schema::enableForeignKeyConstraints();
         });
     }
