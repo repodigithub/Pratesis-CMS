@@ -21,14 +21,6 @@ class PromoAreaController extends Controller
 
     public function index($id = null, Request $req)
     {
-        $this->validate($req, [
-            'status' => ['nullable', Rule::in([
-                PromoArea::STATUS_APPROVE,
-                PromoArea::STATUS_NEED_APPROVAL,
-                PromoArea::STATUS_NEW_PROMO,
-                PromoArea::STATUS_REJECT
-            ])]
-        ]);
         $is_from_depot = strpos($req->getPathInfo(), 'promo-depot') !== false;
         if ($is_from_depot) {
             // if (!auth()->user()->hasRole(User::ROLE_DISTRIBUTOR)) throw new NotFoundHttpException("path_not_found");
