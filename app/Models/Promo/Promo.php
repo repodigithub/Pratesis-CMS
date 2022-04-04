@@ -33,7 +33,16 @@ class Promo extends Model
 
   public $hidden = ['file', 'statistics', 'budget_product', 'budget_area'];
 
-  public $appends = ['document', 'statistics'];
+  public $appends = ['document', 'thumbnail', 'statistics'];
+
+  public function getThumbnailAttribute()
+  {
+    $thumbnail = $this->promoImages()->first();
+    if (!empty($thumbnail)) {
+      return $thumbnail->link;
+    }
+    return null;
+  }
 
   public function getBudgetProductAttribute()
   {
