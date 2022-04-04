@@ -3,9 +3,11 @@
 namespace App\Models\Promo;
 
 use App\Models\Area;
+use App\Models\Claim;
 use App\Models\Distributor;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Validation\Rule;
+use Symfony\Component\HttpKernel\Exception\BadRequestHttpException;
 
 class PromoDistributor extends Model
 {
@@ -17,7 +19,7 @@ class PromoDistributor extends Model
 
   public $fillable = ["promo_area_id", "kode_distributor", "budget", "status"];
 
-  public $appends = ["opso_id", "nama_promo", "start_date", "end_date", "kode_spend_type", "kode_budget_holder", "document", "claim", "nama_distributor", "distributor_group", "persentase", "statistics", "status_promo"];
+  public $appends = ["opso_id", "nama_promo", "start_date", "end_date", "kode_spend_type", "kode_budget_holder", "document", "claim", "nama_distributor", "distributor_group", "persentase", "statistics", "status_promo", "is_claimed"];
 
   public $hidden = ["statistics", "budget_distributor", "status"];
 
@@ -25,16 +27,19 @@ class PromoDistributor extends Model
   {
     $budget = $pa->budget - $pa->statistics['budget_distributor'];
     if (!empty($pd)) $budget += $pd->budget;
+    if ($budget == 0) throw new BadRequestHttpException("error_budget_is_zero");
 
     $rules = [];
     $rules["kode_distributor"] = [
       "required",
-      "exists:distributor,kode_distributor",
+      Rule::exists('distributor')->where(function ($query) use ($pa, $pd) {
+        return $query->where('kode_area', $pa->kode_area);
+      }),
       Rule::unique("promo_distributor")->where(function ($query) use ($pa, $pd) {
-        return $query->where("promo_area_id", "!=", $pa->id);
+        return $query->where("promo_area_id", $pa->id);
       })->ignore(!empty($pd) ? $pd->id : null)
     ];
-    $rules["budget"] = ["required", "numeric", "max:$budget"];
+    $rules["budget"] = ["required", "numeric", "gt:0", "lte:$budget"];
     return $rules;
   }
 
@@ -50,6 +55,11 @@ class PromoDistributor extends Model
       return self::STATUS_CLAIM;
     }
     return $this->status;
+  }
+
+  public function getIsClaimedAttribute()
+  {
+    return !!$this->claim()->count();
   }
 
   public function getOpsoIdAttribute()
@@ -126,6 +136,11 @@ class PromoDistributor extends Model
     } catch (\Throwable $th) {
       return 0;
     }
+  }
+
+  public function claim()
+  {
+    return $this->hasOne(Claim::class, "promo_distributor_id");
   }
 
   public function promo()

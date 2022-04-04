@@ -2,6 +2,8 @@
 
 namespace App\Models\Promo;
 
+use App\Models\Spend;
+use App\Models\TipePromo;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\DB;
 
@@ -61,6 +63,22 @@ class Promo extends Model
       "outstanding_claim" => 0,
       "budget_area" => $this->budget_area,
     ];
+  }
+
+  public function promoType()
+  {
+    // return $this->belongsToMany(Permission::class, "group_permission", "kode_group", "kode_permission", "kode_group", "kode_permission");
+
+
+    return $this->belongsTo(Spend::class, 'kode_spend_type', 'kode_spend_type')
+    ->first()->belongsToMany(
+      TipePromo::class,
+      'tipe_promo_spend_type',
+      'kode_spend_type',
+      'kode_kegiatan',
+      'kode_spend_type',
+      'kode_kegiatan'
+    );
   }
 
   public function promoImages()

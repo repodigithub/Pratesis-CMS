@@ -25,6 +25,11 @@ class Area extends Model
     return $this->belongsTo(Region::class, 'kode_region', 'kode_region');
   }
 
+  public function distributors()
+  {
+    return $this->hasMany(Distributor::class, 'kode_area', 'kode_area');
+  }
+
   public function promos()
   {
     return $this->hasMany(PromoArea::class, 'kode_area', 'kode_area');
