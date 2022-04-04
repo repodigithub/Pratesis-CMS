@@ -27,12 +27,15 @@ class PromoProductController extends Controller
 
         if ($is_from_depot) {
             // if (!auth()->user()->hasRole(User::ROLE_DISTRIBUTOR)) throw new NotFoundHttpException("path_not_found");
-            $data = $this->getModel(PromoArea::class, $id)->promo->promoProducts();
+            $promo = $this->getModel(PromoArea::class, $id);
+            $data = $promo->promo->promoProducts();
         } else if ($is_from_distributor) {
             // if (!auth()->user()->hasRole(User::ROLE_DISTRIBUTOR)) throw new NotFoundHttpException("path_not_found");
-            $data = $this->getModel(PromoDistributor::class, $id)->promo->promoProducts();
+            $promo = $this->getModel(PromoDistributor::class, $id);
+            $data = $promo->promo->promoProducts();
         } else {
-            $data = $this->getModel(Promo::class, $id)->promoProducts();
+            $promo = $this->getModel(Promo::class, $id);
+            $data = $promo->promoProducts();
         }
         $pagination = $this->getPagination($req);
 
@@ -44,7 +47,19 @@ class PromoProductController extends Controller
         $data = $data->paginate($pagination->limit, ["*"], "page", $pagination->page);
 
         if ($is_from_depot || $is_from_distributor) {
-            $data->setCollection($data->getCollection()->makeHidden(['budget_brand']));
+            $data->setCollection(
+                $data->getCollection()
+                    ->makeHidden(['budget_brand'])
+                    ->map(function ($val) use ($promo, $is_from_depot, $is_from_distributor) {
+                        if ($is_from_depot) {
+                            $val->budget_brand_depot = $val->persentase * $promo->budget / 100;
+                        } 
+                        if ($is_from_distributor) {
+                            $val->budget_brand_distributor = $val->persentase * $promo->budget / 100;
+                        }
+                        return $val;
+                    })
+            );
         }
 
         return $this->response($data);
