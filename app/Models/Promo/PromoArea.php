@@ -18,7 +18,7 @@ class PromoArea extends Model
 
   public $fillable = ["opso_id", "kode_area", "budget", "status"];
 
-  public $appends = ["nama_promo", "start_date", "end_date", "kode_spend_type", "kode_budget_holder", "document", "claim", "nama_area", "region", "alamat", "persentase", "statistics"];
+  public $appends = ["nama_promo", "thumbnail", "start_date", "end_date", "kode_spend_type", "kode_budget_holder", "document", "claim", "nama_area", "region", "alamat", "persentase", "statistics"];
 
   public $hidden = ["statistics", "budget_distributor"];
 
@@ -42,6 +42,11 @@ class PromoArea extends Model
   public function getNamaPromoAttribute()
   {
     return $this->promo()->first()->nama_promo;
+  }
+
+  public function getThumbnailAttribute()
+  {
+    return $this->promo()->first()->thumbnail;
   }
 
   public function getStartDateAttribute()
