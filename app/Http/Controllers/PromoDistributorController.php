@@ -40,6 +40,9 @@ class PromoDistributorController extends Controller
                 if ($req->filled("opso_id")) {
                     $r->where("opso_id", "ILIKE", "%{$req->query("opso_id")}%");
                 }
+                if ($req->filled("nama")) {
+                    $r->where("nama_promo", "ILIKE", "%{$req->query("nama")}%");
+                }
                 if ($req->filled("start_date")) {
                     $r->whereDate("start_date", '>=', date('Y-m-d', strtotime($req->query("start_date"))));
                 }

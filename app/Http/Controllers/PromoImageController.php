@@ -67,7 +67,7 @@ class PromoImageController extends MasterDataController
         $data['opso_id'] = $promo->opso_id;
 
         $file = $req->file('file');
-        $file_name = $file->getClientOriginalName();
+        $file_name = str_replace(' ', '_', $file->getClientOriginalName());
         $file_path = implode("/", ['promo/image', date('Ymd/His')]);
         $file->move(storage_path('/app/public/' . $file_path), $file_name);
 
