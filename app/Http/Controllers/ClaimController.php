@@ -33,6 +33,8 @@ class ClaimController extends Controller
             }
         });
 
+        $data->whereIn('status', [Claim::STATUS_DRAFT, Claim::STATUS_SUBMIT, Claim::STATUS_REJECT]);
+
         if (!empty($pagination->sort)) {
             $sort = $pagination->sort;
             $data->orderBy((new Claim())->getTable() . '.' . $sort[0], $sort[1]);
@@ -45,11 +47,50 @@ class ClaimController extends Controller
             $distributor = $promo->distributor;
             $tipe_promo = $promo->promo->promoType->first();
 
-            $val->kode_distributor = $distributor->kode_distributor;
-            $val->nama_distributor = $distributor->nama_distributor;
-            $val->jenis_kegiatan = $tipe_promo->nama_kegiatan;
+            $val->kode_distributor = !empty($distributor->kode_distributor) ? $distributor->kode_distributor : '';
+            $val->nama_distributor = !empty($distributor->nama_distributor) ? $distributor->nama_distributor : '';
+            $val->jenis_kegiatan = !empty($tipe_promo->nama_kegiatan) ? $tipe_promo->nama_kegiatan : '';
             $val->claim = $promo->budget;
             return $val->makeHidden('promoDistributor');
+        }));
+
+        return $this->response($data);
+    }
+
+    public function indexLaporan(Request $req)
+    {
+        $pagination = $this->getPagination($req);
+
+        $data = Claim::whereHas('promoDistributor', function ($q) use ($req) {
+            switch ($req->query('level')) {
+                case 'depot':
+                    $q->whereIn("kode_distributor", auth()->user()->area->distributors->pluck('kode_distributor'));
+                    break;
+                case 'ho':
+                    break;
+                default:
+                    $q->where("kode_distributor", auth()->user()->kode_distributor);
+                    break;
+            }
+        });
+
+        $data->whereIn('status', [Claim::STATUS_APPROVE]);
+
+        if (!empty($pagination->sort)) {
+            $sort = $pagination->sort;
+            $data->orderBy((new Claim())->getTable() . '.' . $sort[0], $sort[1]);
+        }
+
+        $data = $data->paginate($pagination->limit, ["*"], "page", $pagination->page);
+
+        $data->setCollection($data->getCollection()->map(function ($val) {
+            $promo = $val->promoDistributor;
+            $tipe_promo = $promo->promo->promoType->first();
+
+            $val->ppn_amount = $val->amount * $tipe_promo->persentase_ppn / 100;
+            $val->pph_amount = $val->amount * $tipe_promo->persentase_pph / 100;
+            $val->claim = $promo->budget;
+            return $val->makeVisible(['status_claim'])->makeHidden(['promoDistributor', 'status']);
         }));
 
         return $this->response($data);
@@ -59,8 +100,18 @@ class ClaimController extends Controller
     {
         $this->validate($req, ['file' => 'required|file']);
         $file = $req->file('file');
-        $filename = $file->getClientOriginalName();
+        $filename = str_replace(" ", "_", $file->getClientOriginalName());
         $path = implode('/', ['claim', date('Ymd/His')]);
+        $file->move(storage_path("app/public/" . $path), $filename);
+        return $this->response(url("storage/$path/$filename"));
+    }
+
+    public function uploadLaporan(Request $req)
+    {
+        $this->validate($req, ['file' => 'required|file']);
+        $file = $req->file('file');
+        $filename = str_replace(" ", "_", $file->getClientOriginalName());
+        $path = implode('/', ['laporan-claim', date('Ymd/His')]);
         $file->move(storage_path("app/public/" . $path), $filename);
         return $this->response(url("storage/$path/$filename"));
     }
@@ -76,16 +127,22 @@ class ClaimController extends Controller
         }
 
         $claim = DB::transaction(function () use ($req, $promo) {
-            return Claim::create([
-                'promo_distributor_id' => $promo->id,
-                'kode_uli' => $promo->kode_distributor . date('y') . str_pad(Claim::count() + 1, 4, 0, STR_PAD_LEFT),
-                'status' => $req->input('status'),
-                'amount' => $req->input('amount', 0),
-                'laporan_tpr_barang' => $req->input('laporan_tpr_barang'),
-                'laporan_tpr_uang' => $req->input('laporan_tpr_uang'),
-                'faktur_pajak' => $req->input('faktur_pajak'),
-                'description' => $req->input('description'),
-            ]);
+            return Claim::create(
+                array_merge(
+                    $req->only([
+                        'amount',
+                        'status',
+                        'laporan_tpr_barang',
+                        'laporan_tpr_uang',
+                        'faktur_pajak',
+                        'description',
+                    ]),
+                    [
+                        'promo_distributor_id' => $promo->id,
+                        'kode_uli' => $promo->kode_distributor . date('y') . str_pad(Claim::count() + 1, 4, 0, STR_PAD_LEFT),
+                    ]
+                )
+            );
         });
 
         return $this->response($claim);
@@ -103,9 +160,16 @@ class ClaimController extends Controller
     {
         $data = $this->getModel(Claim::class, $id);
 
-        $this->validate($req, Claim::rules());
+        $this->validate($req, Claim::rules($data));
 
-        $data->update($req->all());
+        $data->update($req->only([
+            'amount',
+            'status',
+            'laporan_tpr_barang',
+            'laporan_tpr_uang',
+            'faktur_pajak',
+            'description',
+        ]));
         $data = $this->getModel(Claim::class, $id);
 
         return $this->response($data);
@@ -119,12 +183,32 @@ class ClaimController extends Controller
             'status' => ['required', Rule::in([Claim::STATUS_APPROVE, Claim::STATUS_REJECT])],
         ]);
 
-        $data->update($req->only(['status', 'alasan']));
+        $update = $req->only(['status', 'alasan']);
+        if ($update['status'] == Claim::STATUS_APPROVE) {
+            $update['approved_date'] = time();
+        }
+        $data->update($update);
         $data = $this->getModel(Claim::class, $id);
 
         return $this->response($data);
     }
 
+    public function updateLaporan($id, Request $req)
+    {
+        $data = $this->getModel(Claim::class, $id);
+
+        if ($data->status != Claim::STATUS_APPROVE) {
+            throw new BadRequestHttpException("error_claim_not_approved");
+        }
+
+        $this->validate($req, [
+            "bukti_bayar" => "required|url"
+        ]);
+
+        $data->update($req->only('bukti_bayar'));
+
+        return $this->response($data->makeHidden('status')->makeVisible('status_claim'));
+    }
 
     public function delete($id)
     {
