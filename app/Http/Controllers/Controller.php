@@ -55,7 +55,7 @@ class Controller extends BaseController
 
     protected function storeFile($model, $file)
     {
-        $filename = $file->getClientOriginalName();
+        $filename = str_replace(' ', '_', $file->getClientOriginalName());
         if (strpos($filename, $model::FILE_NAME) === false) {
             throw new BadRequestHttpException("Filename must \"" . $model::FILE_NAME . "\"");
         }
