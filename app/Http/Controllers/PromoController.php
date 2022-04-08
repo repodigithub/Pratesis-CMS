@@ -146,7 +146,7 @@ class PromoController extends MasterDataController
 
     $file = $req->file('file');
     if (!empty($file)) {
-      $file_name = $file->getClientOriginalName();
+      $file_name = str_replace(" ", "_", $file->getClientOriginalName());
       $file_path = implode("/", ['promo', date('Ymd/His')]);
       $file->move(storage_path('/app/public/' . $file_path), $file_name);
 
