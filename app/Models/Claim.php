@@ -49,6 +49,10 @@ class Claim extends Model
     }
     $budget = $promo->budget;
 
+    if ($promo->is_claimed) {
+      throw new BadRequestHttpException("error_promo_is_claimed");
+    }
+
     $rules = [
       'promo_distributor_id' => 'required|exists:promo_distributor,id',
       'amount' => ['nullable', 'numeric', 'max:' . $budget],

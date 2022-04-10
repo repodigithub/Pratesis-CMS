@@ -48,9 +48,12 @@ class ClaimController extends Controller
             $distributor = $promo->distributor;
             $tipe_promo = $promo->promo->promoType->first();
 
+
             $val->kode_distributor = !empty($distributor->kode_distributor) ? $distributor->kode_distributor : '';
             $val->nama_distributor = !empty($distributor->nama_distributor) ? $distributor->nama_distributor : '';
             $val->jenis_kegiatan = !empty($tipe_promo->nama_kegiatan) ? $tipe_promo->nama_kegiatan : '';
+            $val->ppn_amount = $val->amount * $tipe_promo->persentase_ppn / 100;
+            $val->pph_amount = $val->amount * $tipe_promo->persentase_pph / 100;
             $val->claim = $promo->budget;
             return $val->makeHidden('promoDistributor');
         }));
@@ -120,12 +123,6 @@ class ClaimController extends Controller
     public function create(Request $req)
     {
         $this->validate($req, Claim::rules());
-
-        $promo = $this->getModel(PromoDistributor::class, $req->promo_distributor_id);
-
-        if ($promo->is_claimed) {
-            throw new BadRequestHttpException("error_promo_is_claimed");
-        }
 
         $claim = DB::transaction(function () use ($req, $promo) {
             return Claim::create(
