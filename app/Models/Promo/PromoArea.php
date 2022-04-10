@@ -3,6 +3,7 @@
 namespace App\Models\Promo;
 
 use App\Models\Area;
+use App\Models\Claim;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Validation\Rule;
@@ -20,7 +21,7 @@ class PromoArea extends Model
 
   public $appends = ["nama_promo", "thumbnail", "start_date", "end_date", "kode_spend_type", "kode_budget_holder", "document", "claim", "nama_area", "region", "alamat", "persentase", "statistics"];
 
-  public $hidden = ["statistics", "budget_distributor"];
+  public $hidden = ["statistics", "budget_distributor", "budget_claimed"];
 
   public static function rules(Promo $promo, PromoArea $pa = null)
   {
@@ -83,8 +84,8 @@ class PromoArea extends Model
   {
     return [
       "budget" => $this->budget,
-      "claim" => 0,
-      "outstanding_claim" => 0,
+      "claim" => $this->budget_claimed,
+      "outstanding_claim" => $this->budget - $this->budget_claimed,
       "budget_distributor" => $this->budget_distributor,
     ];
   }
@@ -96,6 +97,11 @@ class PromoArea extends Model
     } catch (\Throwable $th) {
       return 0;
     }
+  }
+
+  public function getBudgetClaimedAttribute()
+  {
+    return (int) Claim::selectRaw('SUM(amount)')->whereIn('claim.promo_distributor_id', $this->promoDistributors()->pluck('promo_distributor.id'))->getQuery()->first()->sum;
   }
 
   public function getNamaAreaAttribute()
