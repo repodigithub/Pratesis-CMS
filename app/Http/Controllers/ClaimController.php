@@ -8,6 +8,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Validation\Rule;
 use Symfony\Component\HttpKernel\Exception\BadRequestHttpException;
+use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 
 class ClaimController extends Controller
 {
@@ -153,6 +154,18 @@ class ClaimController extends Controller
     public function show($id, Request $req)
     {
         $data = $this->getDetail($id);
+        if ($data->status == Claim::STATUS_APPROVE) {
+            throw new NotFoundHttpException("");
+        }
+        return $this->response($data);
+    }
+
+    public function showLaporan($id, Request $req)
+    {
+        $data = $this->getDetail($id)->makeVisible('status_claim');
+        if ($data->status != Claim::STATUS_APPROVE) {
+            throw new NotFoundHttpException("");
+        }
         return $this->response($data);
     }
 
