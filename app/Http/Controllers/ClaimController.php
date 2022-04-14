@@ -124,7 +124,8 @@ class ClaimController extends Controller
     {
         $this->validate($req, Claim::rules());
 
-        $claim = DB::transaction(function () use ($req, $promo) {
+        $claim = DB::transaction(function () use ($req) {
+            $promo = $this->getModel(PromoDistributor::class, $req->promo_distributor_id);
             return Claim::create(
                 array_merge(
                     $req->only([
