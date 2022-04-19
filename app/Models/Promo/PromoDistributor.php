@@ -57,6 +57,11 @@ class PromoDistributor extends Model
     return $this->status;
   }
 
+  public function getBudgetClaimedAttribute()
+  {
+    return (int) Claim::selectRaw('SUM(amount)')->where('promo_distributor_id', $this->id)->getQuery()->first()->sum;
+  }
+
   public function getIsClaimedAttribute()
   {
     return !!$this->claim()->count();
@@ -111,8 +116,8 @@ class PromoDistributor extends Model
   {
     return [
       "budget" => $this->budget,
-      "claim" => 0,
-      "outstanding_claim" => 0,
+      "claim" => $this->budget_claimed,
+      "outstanding_claim" => $this->budget - $this->budget_claimed,
     ];
   }
 

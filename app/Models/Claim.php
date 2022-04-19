@@ -49,7 +49,7 @@ class Claim extends Model
     }
     $budget = $promo->budget;
 
-    if ($promo->is_claimed) {
+    if (empty($claim) && $promo->is_claimed) {
       throw new BadRequestHttpException("error_promo_is_claimed");
     }
 

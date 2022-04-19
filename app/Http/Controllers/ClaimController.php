@@ -80,6 +80,25 @@ class ClaimController extends Controller
 
         $data->whereIn('status', [Claim::STATUS_APPROVE]);
 
+        if ($req->filled("kode_distributor")) {
+            $data->whereHas('promoDistributor', function ($q) use ($req) {
+                $q->where('kode_distributor', $req->query('kode_distributor'));
+            });
+        }
+
+        if ($req->filled("status")) {
+            switch ($req->query('status')) {
+                case Claim::LAPORAN_CAN_PAY:
+                    $data->whereNull('bukti_bayar');
+                    break;
+                case Claim::LAPORAN_PAYED:
+                    $data->whereNotNull('bukti_bayar');
+                    break;
+                default:
+                    break;
+            }
+        }
+
         if (!empty($pagination->sort)) {
             $sort = $pagination->sort;
             $data->orderBy((new Claim())->getTable() . '.' . $sort[0], $sort[1]);
@@ -124,7 +143,8 @@ class ClaimController extends Controller
     {
         $this->validate($req, Claim::rules());
 
-        $claim = DB::transaction(function () use ($req, $promo) {
+        $claim = DB::transaction(function () use ($req) {
+            $promo = $this->getModel(PromoDistributor::class, $req->promo_distributor_id);
             return Claim::create(
                 array_merge(
                     $req->only([

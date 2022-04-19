@@ -2,6 +2,7 @@
 
 namespace App\Models\Promo;
 
+use App\Models\Claim;
 use App\Models\Spend;
 use App\Models\TipePromo;
 use Illuminate\Database\Eloquent\Model;
@@ -31,7 +32,7 @@ class Promo extends Model
     'file',
   ];
 
-  public $hidden = ['file', 'statistics', 'budget_product', 'budget_area'];
+  public $hidden = ['file', 'statistics', 'budget_product', 'budget_area', 'budget_claimed'];
 
   public $appends = ['document', 'thumbnail', 'statistics'];
 
@@ -54,6 +55,11 @@ class Promo extends Model
     return (int) $this->promoAreas()->select(DB::raw('SUM(budget)'))->getQuery()->first()->sum;
   }
 
+  public function getBudgetClaimedAttribute()
+  {
+    return (int) Claim::selectRaw('SUM(amount)')->whereIn('claim.promo_distributor_id', $this->promoDistributors()->pluck('promo_distributor.id'))->getQuery()->first()->sum;
+  }
+
   public function getDocumentAttribute()
   {
     if (!empty($this->file)) {
@@ -68,26 +74,23 @@ class Promo extends Model
       "budget" => $this->budget,
       "budget_update" => $this->budget_product,
       "budget_left" => $this->budget - $this->budget_product,
-      "claim" => 0,
-      "outstanding_claim" => 0,
+      "claim" => $this->budget_claimed,
+      "outstanding_claim" => $this->budget - $this->budget_claimed,
       "budget_area" => $this->budget_area,
     ];
   }
 
   public function promoType()
   {
-    // return $this->belongsToMany(Permission::class, "group_permission", "kode_group", "kode_permission", "kode_group", "kode_permission");
-
-
     return $this->belongsTo(Spend::class, 'kode_spend_type', 'kode_spend_type')
-    ->first()->belongsToMany(
-      TipePromo::class,
-      'tipe_promo_spend_type',
-      'kode_spend_type',
-      'kode_kegiatan',
-      'kode_spend_type',
-      'kode_kegiatan'
-    );
+      ->first()->belongsToMany(
+        TipePromo::class,
+        'tipe_promo_spend_type',
+        'kode_spend_type',
+        'kode_kegiatan',
+        'kode_spend_type',
+        'kode_kegiatan'
+      );
   }
 
   public function promoImages()
@@ -103,5 +106,10 @@ class Promo extends Model
   public function promoAreas()
   {
     return $this->hasMany(PromoArea::class, 'opso_id', 'opso_id');
+  }
+
+  public function promoDistributors()
+  {
+    return $this->hasManyThrough(PromoDistributor::class, PromoArea::class, 'opso_id', 'promo_area_id', 'opso_id', 'promo_area.id');
   }
 }
