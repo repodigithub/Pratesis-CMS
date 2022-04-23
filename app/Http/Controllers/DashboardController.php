@@ -142,9 +142,80 @@ class DashboardController extends Controller
 
     public function getTidakLayakBayar(Request $req)
     {
+        $this->validate($req, [
+            'level' => 'nullable|in:depot,distributor'
+        ]);
+
+        $pagination = $this->getPagination($req);
+
+        $data = Claim::select("*")->whereNull('bukti_bayar')->where('status', Claim::STATUS_REJECT);
+
+        switch ($req->query('level')) {
+            case 'depot':
+                break;
+            case 'distributor':
+            default:
+                $kode_distributor = auth()->user()->kode_distributor;
+                $data->whereIn('promo_distributor_id', PromoDistributor::where('kode_distributor', $kode_distributor)->pluck('id'));
+                break;
+        }
+
+        if (!empty($pagination->sort)) {
+            $sort = $pagination->sort;
+            $data->orderBy((new Claim())->getTable() . '.' . $sort[0], $sort[1]);
+        }
+
+        $data = $data->paginate($pagination->limit, ["*"], "page", $pagination->page);
+
+        $data->setCollection($data->getCollection()->map(function ($val) {
+            $promo = $val->promoDistributor;
+            $tipe_promo = $promo->promo->promoType->first();
+
+            $val->claim = $promo->budget;
+            $val->jenis_kegiatan = !empty($tipe_promo->nama_kegiatan) ? $tipe_promo->nama_kegiatan : '';
+            return $val->makeHidden(['promoDistributor']);
+        }));
+
+        return $this->response($data);
     }
 
     public function getMenungguPembayaran(Request $req)
     {
+        $this->validate($req, [
+            'level' => 'nullable|in:depot,distributor'
+        ]);
+
+        $pagination = $this->getPagination($req);
+
+        $data = Claim::select("*")->whereNull('bukti_bayar')->where('status', Claim::STATUS_APPROVE);
+
+        switch ($req->query('level')) {
+            case 'depot':
+                break;
+            case 'distributor':
+            default:
+                $kode_distributor = auth()->user()->kode_distributor;
+                $data->whereIn('promo_distributor_id', PromoDistributor::where('kode_distributor', $kode_distributor)->pluck('id'));
+                break;
+        }
+
+        if (!empty($pagination->sort)) {
+            $sort = $pagination->sort;
+            $data->orderBy((new Claim())->getTable() . '.' . $sort[0], $sort[1]);
+        }
+
+        $data = $data->paginate($pagination->limit, ["*"], "page", $pagination->page);
+
+
+        $data->setCollection($data->getCollection()->map(function ($val) {
+            $promo = $val->promoDistributor;
+            $tipe_promo = $promo->promo->promoType->first();
+
+            $val->claim = $promo->budget;
+            $val->jenis_kegiatan = !empty($tipe_promo->nama_kegiatan) ? $tipe_promo->nama_kegiatan : '';
+            return $val->makeVisible(['status_claim'])->makeHidden(['promoDistributor', 'status']);
+        }));
+
+        return $this->response($data);
     }
 }
