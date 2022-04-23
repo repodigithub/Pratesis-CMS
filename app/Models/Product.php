@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use App\Models\Promo\PromoProduct;
 use Illuminate\Database\Eloquent\Model;
 
 class Product extends Model
@@ -55,5 +56,10 @@ class Product extends Model
   public function divisi()
   {
     return $this->belongsTo(Divisi::class, "kode_divisi", "kode_divisi");
+  }
+
+  public function promo()
+  {
+    return $this->hasOne(PromoProduct::class, "kode_produk", "kode_produk");
   }
 }

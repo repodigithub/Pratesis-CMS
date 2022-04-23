@@ -2,11 +2,16 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Area;
+use App\Models\Brand;
 use App\Models\Claim;
+use App\Models\Divisi;
+use App\Models\Product;
 use App\Models\Promo\Promo;
 use App\Models\Promo\PromoArea;
 use App\Models\Promo\PromoDistributor;
 use App\Models\Promo\PromoProduct;
+use App\Models\Region;
 use Illuminate\Http\Request;
 
 class DashboardController extends Controller
@@ -77,20 +82,62 @@ class DashboardController extends Controller
         ]);;
     }
 
+    public function getArea(Request $req)
+    {
+        $data = Area::select('*')->get()->makeHidden([
+            'kode_region',
+            'created_at',
+            'updated_at',
+            'nama_region'
+        ]);
+        return $this->response($data);;
+    }
+
     public function getByDivisi(Request $req)
     {
+        $data = Divisi::select('divisi.*')->selectRaw('SUM(promo_product.budget_produk) as budget')
+            ->join('produk', 'divisi.kode_divisi', '=', 'produk.kode_divisi')
+            ->join('promo_product', 'promo_product.kode_produk', '=', 'produk.kode_produk')
+            ->groupBy('divisi.id')
+            ->orderBy('budget', 'desc')
+            ->limit(5)
+            ->get();
+        return $this->response($data);
     }
 
     public function getByBrand(Request $req)
     {
+        $data = Brand::select('brand.*')->selectRaw('SUM(promo_product.budget_produk) as budget')
+            ->join('produk', 'brand.kode_brand', '=', 'produk.kode_brand')
+            ->join('promo_product', 'promo_product.kode_produk', '=', 'produk.kode_produk')
+            ->groupBy('brand.id')
+            ->orderBy('budget', 'desc')
+            ->limit(5)
+            ->get();
+        return $this->response($data);
     }
 
     public function getByRegion(Request $req)
     {
+        $data = Region::select('region.*')->selectRaw('SUM(promo_area.budget) as budget')
+            ->join('area', 'region.kode_region', '=', 'area.kode_region')
+            ->join('promo_area', 'promo_area.kode_area', '=', 'area.kode_area')
+            ->groupBy('region.id')
+            ->orderBy('budget', 'desc')
+            ->limit(5)
+            ->get();
+        return $this->response($data);
     }
 
     public function getByArea(Request $req)
     {
+        $data = Area::select('area.*')->selectRaw('SUM(promo_area.budget) as budget')
+            ->join('promo_area', 'promo_area.kode_area', '=', 'area.kode_area')
+            ->groupBy('area.id')
+            ->orderBy('budget', 'desc')
+            ->limit(5)
+            ->get();
+        return $this->response($data);
     }
 
     public function getTidakLayakBayar(Request $req)
