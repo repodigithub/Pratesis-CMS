@@ -17,7 +17,7 @@ class PromoDistributorController extends Controller
         // $this->middleware("group:" . User::ROLE_DISTRIBUTOR, ['only' => ['updateStatus']]);
     }
 
-    public function index($id = null, Request $req)
+    public function index(Request $req, $id = null)
     {
         $this->validate($req, [
             'status' => ['nullable', Rule::in([
@@ -90,7 +90,7 @@ class PromoDistributorController extends Controller
         return $this->response($data);
     }
 
-    public function show($id = null, $dis = null, Request $req)
+    public function show(Request $req, $id = null, $dis = null)
     {
         if (strpos($req->getPathInfo(), 'promo-distributor') !== false) {
             // if (!auth()->user()->hasRole(User::ROLE_DISTRIBUTOR)) throw new NotFoundHttpException("path_not_found");
