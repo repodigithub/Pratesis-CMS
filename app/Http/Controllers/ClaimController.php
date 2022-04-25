@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\Claim;
+use App\Models\Distributor;
 use App\Models\Promo\PromoDistributor;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
@@ -34,7 +35,16 @@ class ClaimController extends Controller
             }
         });
 
-        $data->whereIn('status', [Claim::STATUS_DRAFT, Claim::STATUS_SUBMIT, Claim::STATUS_REJECT]);
+        switch ($req->query('level')) {
+            case 'depot':
+                $data->whereIn('status', [Claim::STATUS_SUBMIT, Claim::STATUS_REJECT]);
+                break;
+            case 'ho':
+            case 'distributor':
+            default:
+                $data->whereIn('status', [Claim::STATUS_DRAFT, Claim::STATUS_SUBMIT, Claim::STATUS_REJECT]);
+                break;
+        }
 
         if (!empty($pagination->sort)) {
             $sort = $pagination->sort;

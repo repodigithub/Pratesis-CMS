@@ -293,7 +293,7 @@ class SetupSeeder extends Seeder
                 $promo_brand = PromoBrand::create([
                     'opso_id' => $promo->opso_id,
                     'kode_brand' => $brand->kode_brand,
-                    'budget_brand' => $promo->budget * 10 / 100,
+                    'budget_brand' => $promo->budget * 10 / 100 + (10000 * $index),
                     'method' => PromoBrand::METHOD_AUTO
                 ]);
                 foreach ($brand->products as $product) {
