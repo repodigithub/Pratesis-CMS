@@ -17,7 +17,7 @@ class CreateAreaTable extends Migration
             $table->id();
             $table->string('kode_area')->unique();
             $table->string('nama_area');
-            $table->text('alamat_depo');
+            $table->text('alamat_depo')->nullable();
             $table->string('kode_region');
             $table->string('titik_koordinat')->nullable();
             $table->timestamps();
