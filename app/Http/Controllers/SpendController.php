@@ -60,7 +60,7 @@ class SpendController extends MasterDataController
       $rules["kode_spend_type"] = "required|unique:spend_type";
     }
     $rules["kode_investment"] = "required|exists:investment,kode_investment";
-    $rules["fund_type"] = "required|numeric";
+    $rules["fund_type"] = "required";
     $rules["reference_tax"] = "required";
     $rules["condition_type"] = "required";
     return $rules;

@@ -68,6 +68,7 @@ class UserController extends Controller
       "full_name" => "required",
       "email" => "email|required|unique:user",
       "username" => "required|unique:user",
+      "password" => "required",
       "kode_group" => "nullable|exists:user_group,kode_group",
       "kode_distributor" => "nullable|exists:distributor,kode_distributor",
       "kode_area" => "nullable|exists:area,kode_area",
