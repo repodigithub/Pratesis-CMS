@@ -132,15 +132,18 @@ class SetupSeeder extends Seeder
                 'titik_koordinat' => null,
                 'status_distributor' => Distributor::STATUS_ACTIVE,
             ]);
-            Distributor::create([
-                'kode_distributor' => 'TEST1',
-                'nama_distributor' => 'Test distributor',
-                'kode_distributor_group' => $sales->kode_distributor_group,
-                'kode_area' => $area->kode_area,
-                'alamat' => 'alamat',
-                'titik_koordinat' => null,
-                'status_distributor' => Distributor::STATUS_ACTIVE,
-            ]);
+            $distributors = [];
+            for ($i = 0; $i < 5; $i++) {
+                $distributors[] = Distributor::create([
+                    'kode_distributor' => 'TEST' . $i,
+                    'nama_distributor' => 'Test distributor ' . $i,
+                    'kode_distributor_group' => $sales->kode_distributor_group,
+                    'kode_area' => $area->kode_area,
+                    'alamat' => null,
+                    'titik_koordinat' => null,
+                    'status_distributor' => Distributor::STATUS_ACTIVE,
+                ]);
+            }
             $this->command->info("create distributor");
 
             User::truncate();
@@ -324,6 +327,16 @@ class SetupSeeder extends Seeder
                 // 'status' => PromoDistributor::STATUS_APPROVE
             ]);
 
+            $pds = [];
+            foreach ($distributors as $d) {
+                $pds[] = PromoDistributor::create([
+                    'promo_area_id' => $promo_area->id,
+                    'kode_distributor' => $d->kode_distributor,
+                    'budget' => $promo_area->budget * 4 / 25,
+                    // 'status' => PromoDistributor::STATUS_APPROVE
+                ]);
+            }
+
             Claim::create([
                 'promo_distributor_id' => $pd->id,
                 'kode_uli' => $pd->kode_distributor . date('y') . str_pad(Claim::count() + 1, 4, 0, STR_PAD_LEFT),
@@ -334,6 +347,25 @@ class SetupSeeder extends Seeder
                 'faktur_pajak' => '',
                 'description' => '',
             ]);
+
+            $claims = [];
+            foreach ($pds as $index => $item) {
+                $status = [Claim::STATUS_SUBMIT, Claim::STATUS_APPROVE, Claim::STATUS_DRAFT, Claim::STATUS_REJECT];
+                $claims[] = Claim::create([
+                    'promo_distributor_id' => $item->id,
+                    'kode_uli' => $item->kode_distributor . date('y') . str_pad(Claim::count() + 1, 4, 0, STR_PAD_LEFT),
+                    'status' => $status[$index % count($status)],
+                    'amount' => $item->budget,
+                    'laporan_tpr_barang' => '',
+                    'laporan_tpr_uang' => '',
+                    'faktur_pajak' => '',
+                    'description' => '',
+                ]);
+            }
+
+            $c = $claims[0];
+            $c->bukti_bayar = 'contoh sudah terbayar';
+            $c->save();
 
             Schema::enableForeignKeyConstraints();
         });
