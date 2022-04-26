@@ -34,7 +34,7 @@ class PromoController extends MasterDataController
   public function generateID()
   {
     $sequenceName = (new $this->model())->getTable() . "_id_seq";
-    $count = DB::selectOne("SELECT nextval('{$sequenceName}') AS val")->val;;
+    $count = DB::selectOne("SELECT nextval('{$sequenceName}') AS val")->val;
     $opso_id = (int) (date('y') . date('m') . str_pad($count, 4, 0, STR_PAD_LEFT));
     return $this->response(compact('opso_id'));
   }

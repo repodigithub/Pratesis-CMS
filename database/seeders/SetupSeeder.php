@@ -132,15 +132,18 @@ class SetupSeeder extends Seeder
                 'titik_koordinat' => null,
                 'status_distributor' => Distributor::STATUS_ACTIVE,
             ]);
-            Distributor::create([
-                'kode_distributor' => 'TEST1',
-                'nama_distributor' => 'Test distributor',
-                'kode_distributor_group' => $sales->kode_distributor_group,
-                'kode_area' => $area->kode_area,
-                'alamat' => 'alamat',
-                'titik_koordinat' => null,
-                'status_distributor' => Distributor::STATUS_ACTIVE,
-            ]);
+            $distributors = [];
+            for ($i = 0; $i < 5; $i++) {
+                $distributors[] = Distributor::create([
+                    'kode_distributor' => 'TEST' . $i,
+                    'nama_distributor' => 'Test distributor ' . $i,
+                    'kode_distributor_group' => $sales->kode_distributor_group,
+                    'kode_area' => $area->kode_area,
+                    'alamat' => null,
+                    'titik_koordinat' => null,
+                    'status_distributor' => Distributor::STATUS_ACTIVE,
+                ]);
+            }
             $this->command->info("create distributor");
 
             User::truncate();
@@ -153,7 +156,7 @@ class SetupSeeder extends Seeder
                 "username" => "admin1",
                 "kode_group" => User::ROLE_ADMINISTRATOR,
                 "kode_area" => $area->kode_area,
-                "kode_distributor" => $distributor->kode_distributor,
+                "kode_distributor" => $distributors[0]->kode_distributor,
                 "status" => User::STATUS_APPROVE,
             ]);
             $this->command->info("Create admin");
@@ -268,72 +271,114 @@ class SetupSeeder extends Seeder
             }
             $this->command->info("create produk");
             Promo::truncate();
-            $promo = Promo::create([
-                "status" => Promo::STATUS_DRAFT,
-                "opso_id" => "22030001",
-                "nama_promo" => "Promo Ramadhan",
-                "budget" => "100000000",
-                "start_date" => "2022-04-01",
-                "end_date" => "2022-05-01",
-                "claim" => 14,
-                "kode_spend_type" => "TEST",
-                "kode_budget_holder" => "TEST",
-                "file" => "/storage/promo/20220312/174427/quotation.pdf"
-            ]);
-            $this->command->info("create promo");
             PromoImage::truncate();
-            PromoImage::create([
-                "opso_id" => $promo->opso_id,
-                "file" => "/storage/promo/image/20220316/020013/K.png",
-            ]);
-            $this->command->info("create promo image");
             PromoBrand::truncate();
             PromoProduct::truncate();
-            foreach (Brand::all() as $index => $brand) {
-                $promo_brand = PromoBrand::create([
-                    'opso_id' => $promo->opso_id,
-                    'kode_brand' => $brand->kode_brand,
-                    'budget_brand' => $promo->budget * 10 / 100 + (10000 * $index),
-                    'method' => PromoBrand::METHOD_AUTO
-                ]);
-                foreach ($brand->products as $product) {
-                    $budget = $promo_brand->budget_brand / $brand->products()->count();
+            PromoArea::truncate();
+            PromoDistributor::truncate();
 
-                    $promo_brand->products()->create([
-                        'status' => 1,
-                        'kode_produk' => $product->kode_produk,
-                        'budget_produk' => $budget,
+            $promos = [];
+            for ($i = 0; $i < 5; $i++) {
+                $sequenceName = (new Promo())->getTable() . "_id_seq";
+                $count = DB::selectOne("SELECT nextval('{$sequenceName}') AS val")->val;
+                $opso_id = (int) (date('y') . date('m') . str_pad($count, 4, 0, STR_PAD_LEFT));
+
+                $promos[] = Promo::create([
+                    "status" => Promo::STATUS_DRAFT,
+                    "opso_id" => $opso_id,
+                    "nama_promo" => "Promo Ramadhan",
+                    "budget" => "100000000",
+                    "start_date" => "2022-04-01",
+                    "end_date" => "2022-05-01",
+                    "claim" => 14,
+                    "kode_spend_type" => "TEST",
+                    "kode_budget_holder" => "TEST",
+                    "file" => "/storage/promo/20220312/174427/quotation.pdf"
+                ]);
+                $this->command->info("create promo");
+            }
+
+            $ind = 0;
+            foreach ($promos as $promo) {
+                PromoImage::create([
+                    "opso_id" => $promo->opso_id,
+                    "file" => "/storage/promo/image/20220316/020013/K.png",
+                ]);
+                $this->command->info("create promo image");
+                foreach (Brand::all() as $index => $brand) {
+                    $promo_brand = PromoBrand::create([
+                        'opso_id' => $promo->opso_id,
+                        'kode_brand' => $brand->kode_brand,
+                        'budget_brand' => $promo->budget * 10 / 100 + (10000 * $index),
+                        'method' => PromoBrand::METHOD_AUTO
+                    ]);
+                    foreach ($brand->products as $product) {
+                        $budget = $promo_brand->budget_brand / $brand->products()->count();
+
+                        $promo_brand->products()->create([
+                            'status' => 1,
+                            'kode_produk' => $product->kode_produk,
+                            'budget_produk' => $budget,
+                        ]);
+                    }
+                }
+                $this->command->info("create promo product");
+                $promo_area = PromoArea::create([
+                    'opso_id' => $promo->opso_id,
+                    'kode_area' => $area->kode_area,
+                    'budget' => $promo->budget * 10 / 100,
+                    // 'status' => PromoArea::STATUS_NEW_PROMO
+                ]);
+                $this->command->info("create promo area");
+
+                $pd = PromoDistributor::create([
+                    'promo_area_id' => $promo_area->id,
+                    'kode_distributor' => $distributor->kode_distributor,
+                    'budget' => $promo_area->budget * 20 / 100,
+                    // 'status' => PromoDistributor::STATUS_APPROVE
+                ]);
+
+                $pds = [];
+                foreach ($distributors as $d) {
+                    $pds[] = PromoDistributor::create([
+                        'promo_area_id' => $promo_area->id,
+                        'kode_distributor' => $d->kode_distributor,
+                        'budget' => $promo_area->budget * 4 / 25,
+                        // 'status' => PromoDistributor::STATUS_APPROVE
                     ]);
                 }
+
+                $claims = [];
+                for ($i = 0; $i < 3; $i++) {
+                    $status = [Claim::STATUS_SUBMIT, Claim::STATUS_APPROVE, Claim::STATUS_DRAFT, Claim::STATUS_REJECT];
+                    $item = $pds[$i];
+                    $this->command->info($ind . ", " . $status[$ind % count($status)]);
+                    $claim  = Claim::create([
+                        'promo_distributor_id' => $item->id,
+                        'kode_uli' => $item->kode_distributor . date('y') . str_pad(Claim::count() + 1, 4, 0, STR_PAD_LEFT),
+                        'status' => $status[$ind++ % count($status)],
+                        'amount' => $item->budget,
+                        'laporan_tpr_barang' => '',
+                        'laporan_tpr_uang' => '',
+                        'faktur_pajak' => '',
+                        'description' => '',
+                    ]);
+                    if ($claim->status == Claim::STATUS_APPROVE) {
+                        $claim->approved_date = time();
+                        $claim->save();
+                    }
+                    $claims[] = $claim;
+                }
             }
-            $this->command->info("create promo product");
-            PromoArea::truncate();
-            $promo_area = PromoArea::create([
-                'opso_id' => $promo->opso_id,
-                'kode_area' => $area->kode_area,
-                'budget' => $promo->budget * 10 / 100,
-                // 'status' => PromoArea::STATUS_NEW_PROMO
-            ]);
-            $this->command->info("create promo area");
 
-            PromoDistributor::truncate();
-            $pd = PromoDistributor::create([
-                'promo_area_id' => $promo_area->id,
-                'kode_distributor' => $distributor->kode_distributor,
-                'budget' => $promo_area->budget * 20 / 100,
-                // 'status' => PromoDistributor::STATUS_APPROVE
-            ]);
+            $claims = Claim::where('status', Claim::STATUS_APPROVE)->get();
+            for ($i = 0; $i < $claims->count() / 2; $i++) {
+                $claim = $claims[$i];
+                $claim->bukti_bayar = 'contoh sudah terbayar';
+                $claim->save();
+            }
 
-            Claim::create([
-                'promo_distributor_id' => $pd->id,
-                'kode_uli' => $pd->kode_distributor . date('y') . str_pad(Claim::count() + 1, 4, 0, STR_PAD_LEFT),
-                'status' => Claim::STATUS_DRAFT,
-                'amount' => 2000000,
-                'laporan_tpr_barang' => '',
-                'laporan_tpr_uang' => '',
-                'faktur_pajak' => '',
-                'description' => '',
-            ]);
+            $this->command->info(Claim::where('status', Claim::STATUS_REJECT)->count());
 
             Schema::enableForeignKeyConstraints();
         });

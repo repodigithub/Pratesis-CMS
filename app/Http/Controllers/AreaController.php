@@ -59,7 +59,7 @@ class AreaController extends MasterDataController
       $rules["kode_area"] = "required|unique:area";
     }
     $rules["nama_area"] = "required";
-    $rules["alamat_depo"] = "required";
+    $rules["alamat_depo"] = "nullable";
     $rules["kode_region"] = "required|exists:region,kode_region";
     $rules["titik_koordinat"] = "nullable";
     return $rules;

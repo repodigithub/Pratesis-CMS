@@ -17,7 +17,7 @@ class CreateSpendTypeTable extends Migration
             $table->id();
             $table->string('kode_spend_type')->unique();
             $table->string('kode_investment');
-            $table->integer('fund_type');
+            $table->string('fund_type');
             $table->string('reference_tax');
             $table->string('condition_type');
             $table->timestamps();

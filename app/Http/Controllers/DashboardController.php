@@ -172,6 +172,8 @@ class DashboardController extends Controller
             $tipe_promo = $promo->promo->promoType->first();
 
             $val->claim = $promo->budget;
+            $val->kode_distributor = $promo->kode_distributor;
+            $val->nama_distributor = $promo->nama_distributor;
             $val->jenis_kegiatan = !empty($tipe_promo->nama_kegiatan) ? $tipe_promo->nama_kegiatan : '';
             return $val->makeHidden(['promoDistributor']);
         }));
@@ -212,6 +214,8 @@ class DashboardController extends Controller
             $tipe_promo = $promo->promo->promoType->first();
 
             $val->claim = $promo->budget;
+            $val->kode_distributor = $promo->kode_distributor;
+            $val->nama_distributor = $promo->nama_distributor;
             $val->jenis_kegiatan = !empty($tipe_promo->nama_kegiatan) ? $tipe_promo->nama_kegiatan : '';
             return $val->makeVisible(['status_claim'])->makeHidden(['promoDistributor', 'status']);
         }));
