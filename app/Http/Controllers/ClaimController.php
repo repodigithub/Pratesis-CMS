@@ -62,8 +62,8 @@ class ClaimController extends Controller
             $val->kode_distributor = !empty($distributor->kode_distributor) ? $distributor->kode_distributor : '';
             $val->nama_distributor = !empty($distributor->nama_distributor) ? $distributor->nama_distributor : '';
             $val->jenis_kegiatan = !empty($tipe_promo->nama_kegiatan) ? $tipe_promo->nama_kegiatan : '';
-            $val->ppn_amount = $val->amount * $tipe_promo->persentase_ppn / 100;
-            $val->pph_amount = $val->amount * $tipe_promo->persentase_pph / 100;
+            $val->ppn_amount = number_format($val->amount * $tipe_promo->persentase_ppn / 100, 2);
+            $val->pph_amount = number_format($val->amount * $tipe_promo->persentase_pph / 100, 2);
             $val->claim = $promo->budget;
             return $val->makeHidden('promoDistributor');
         }));
@@ -120,8 +120,8 @@ class ClaimController extends Controller
             $promo = $val->promoDistributor;
             $tipe_promo = $promo->promo->promoType->first();
 
-            $val->ppn_amount = $val->amount * $tipe_promo->persentase_ppn / 100;
-            $val->pph_amount = $val->amount * $tipe_promo->persentase_pph / 100;
+            $val->ppn_amount = number_format($val->amount * $tipe_promo->persentase_ppn / 100, 2);
+            $val->pph_amount = number_format($val->amount * $tipe_promo->persentase_pph / 100, 2);
             $val->claim = $promo->budget;
             return $val->makeVisible(['status_claim'])->makeHidden(['promoDistributor', 'status']);
         }));
@@ -273,8 +273,8 @@ class ClaimController extends Controller
         $data->kode_distributor = $distributor->kode_distributor;
         $data->nama_distributor = $distributor->nama_distributor;
         $data->jenis_kegiatan = $tipe_promo->nama_kegiatan;
-        $data->ppn_amount = $data->amount * $tipe_promo->persentase_ppn / 100;
-        $data->pph_amount = $data->amount * $tipe_promo->persentase_pph / 100;
+        $data->ppn_amount = number_format($data->amount * $tipe_promo->persentase_ppn / 100, 2);
+        $data->pph_amount = number_format($data->amount * $tipe_promo->persentase_pph / 100, 2);
         $data->total_amount = $data->amount + $data->ppn_amount + $data->pph_amount;
         return $data->makeHidden('promoDistributor');
     }

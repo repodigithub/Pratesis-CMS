@@ -52,10 +52,10 @@ class PromoProductController extends Controller
                     ->makeHidden(['budget_brand'])
                     ->map(function ($val) use ($promo, $is_from_depot, $is_from_distributor) {
                         if ($is_from_depot) {
-                            $val->budget_brand_depot = $val->persentase * $promo->budget / 100;
-                        } 
+                            $val->budget_brand_depot = number_format($val->persentase * $promo->budget / 100, 2);
+                        }
                         if ($is_from_distributor) {
-                            $val->budget_brand_distributor = $val->persentase * $promo->budget / 100;
+                            $val->budget_brand_distributor = number_format($val->persentase * $promo->budget / 100, 2);
                         }
                         return $val;
                     })
@@ -91,11 +91,11 @@ class PromoProductController extends Controller
         if ($is_from_depot) {
             // if (!auth()->user()->hasRole(User::ROLE_DISTRIBUTOR)) throw new NotFoundHttpException("path_not_found");
             $promo_area = $this->getModel(PromoArea::class, $id);
-            $data->budget = $promo_area->budget * $data->persentase / 100;
+            $data->budget = number_format($promo_area->budget * $data->persentase / 100, 2);
         } else if ($is_from_distributor) {
             // if (!auth()->user()->hasRole(User::ROLE_DISTRIBUTOR)) throw new NotFoundHttpException("path_not_found");
             $promo_distributor = $this->getModel(PromoDistributor::class, $req->route('id'));
-            $data->budget = $promo_distributor->budget * $data->persentase / 100;
+            $data->budget = number_format($promo_distributor->budget * $data->persentase / 100, 2);
         }
 
         if ($is_from_depot || $is_from_distributor) {
