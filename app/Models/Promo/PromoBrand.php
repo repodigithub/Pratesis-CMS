@@ -59,7 +59,7 @@ class PromoBrand extends Model
   {
     try {
       $budget = $this->promo()->first()->budget;
-      return $this->budget_brand / $budget * 100;
+      return number_format($this->budget_brand / $budget * 100, 2);
     } catch (\Throwable $th) {
       return 0;
     }

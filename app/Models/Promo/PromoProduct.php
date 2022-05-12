@@ -22,7 +22,7 @@ class PromoProduct extends Model
   {
     $budget_brand = $this->promoBrand()->first()->budget_brand;
 
-    return $this->budget_produk / $budget_brand * 100;
+    return number_format($this->budget_produk / $budget_brand * 100, 2);
   }
 
   public function product()
