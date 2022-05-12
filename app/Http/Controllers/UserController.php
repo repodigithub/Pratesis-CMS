@@ -79,7 +79,7 @@ class UserController extends Controller
     $user->user_id = $req->input("user_id");
     $user->full_name = $req->input("full_name");
     $user->email = $req->input("email");
-    $user->password = Hash::make('123456');
+    $user->password = Hash::make($req->input("password"));
     $user->username = $req->input("username");
     $user->kode_distributor = $req->input("kode_distributor");
     $user->kode_area = $req->input("kode_area");
@@ -132,6 +132,7 @@ class UserController extends Controller
       "full_name" => "required",
       "email" => "email|required|unique:user,email,$data->id",
       "username" => "required|unique:user,username,$data->id",
+      "password" => "nullable",
       "kode_group" => "nullable",
       "kode_area" => "nullable",
       "kode_distributor" => "nullable",
@@ -149,6 +150,10 @@ class UserController extends Controller
       "kode_distributor",
       "status",
     ]));
+
+    if ($req->filled('password')) {
+      $data->update(["password" => Hash::make($req->input("password"))]);
+    }
 
     return $this->response($data);
   }
