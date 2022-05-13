@@ -20,9 +20,12 @@ class PromoProduct extends Model
 
   public function getPersentaseAttribute()
   {
-    $budget_brand = $this->promoBrand()->first()->budget_brand;
-
-    return number_format($this->budget_produk / $budget_brand * 100, 2);
+    try {
+      $budget_brand = $this->promoBrand()->first()->budget_brand;
+      return number_format(($this->budget_produk) / ($budget_brand) * 100, 2);
+    } catch (\Throwable $th) {
+      return null;
+    }
   }
 
   public function product()

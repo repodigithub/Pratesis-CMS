@@ -19,7 +19,7 @@ class PromoAreaController extends Controller
         // $this->middleware("group:" . User::ROLE_DISTRIBUTOR, ['only' => ['updateStatus']]);
     }
 
-    public function index($id = null, Request $req)
+    public function index(Request $req, $id = null)
     {
         $is_from_depot = strpos($req->getPathInfo(), 'promo-depot') !== false;
         if ($is_from_depot) {

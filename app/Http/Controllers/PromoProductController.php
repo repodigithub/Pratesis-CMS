@@ -51,12 +51,7 @@ class PromoProductController extends Controller
                 $data->getCollection()
                     ->makeHidden(['budget_brand'])
                     ->map(function ($val) use ($promo, $is_from_depot, $is_from_distributor) {
-                        if ($is_from_depot) {
-                            $val->budget_brand_depot = number_format($val->persentase * $promo->budget / 100, 2);
-                        }
-                        if ($is_from_distributor) {
-                            $val->budget_brand_distributor = number_format($val->persentase * $promo->budget / 100, 2);
-                        }
+                        $val->budget_brand = number_format($val->persentase * $promo->budget / 100, 2);
                         return $val;
                     })
             );
@@ -100,7 +95,13 @@ class PromoProductController extends Controller
 
         if ($is_from_depot || $is_from_distributor) {
             $data->makeHidden('budget_brand');
-            $data->products->makeHidden('budget_produk');
+            $data->products = ($data->products
+                ->makeHidden('budget_produk')
+                ->map(function ($val) use ($data) {
+                    $val->budget = number_format($val->persentase * filter_var($data->budget, FILTER_SANITIZE_NUMBER_FLOAT, FILTER_FLAG_ALLOW_FRACTION) / 100, 2);
+                    return $val;
+                })
+            );
         }
 
         return $this->response($data);
