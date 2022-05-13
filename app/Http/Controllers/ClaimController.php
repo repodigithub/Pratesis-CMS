@@ -273,9 +273,11 @@ class ClaimController extends Controller
         $data->kode_distributor = $distributor->kode_distributor;
         $data->nama_distributor = $distributor->nama_distributor;
         $data->jenis_kegiatan = $tipe_promo->nama_kegiatan;
-        $data->ppn_amount = number_format($data->amount * $tipe_promo->persentase_ppn / 100, 2);
-        $data->pph_amount = number_format($data->amount * $tipe_promo->persentase_pph / 100, 2);
-        $data->total_amount = $data->amount + $data->ppn_amount + $data->pph_amount;
+        $ppn_amount = $data->amount * $tipe_promo->persentase_ppn / 100;
+        $pph_amount = $data->amount * $tipe_promo->persentase_pph / 100;
+        $data->ppn_amount = number_format($ppn_amount, 2);
+        $data->pph_amount = number_format($pph_amount, 2);
+        $data->total_amount = number_format(($data->amount) + ($ppn_amount) + ($pph_amount), 2);
         return $data->makeHidden('promoDistributor');
     }
 }
