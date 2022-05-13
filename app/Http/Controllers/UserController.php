@@ -152,7 +152,8 @@ class UserController extends Controller
     ]));
 
     if ($req->filled('password')) {
-      $data->update(["password" => Hash::make($req->input("password"))]);
+      $data->password = Hash::make($req->input("password"));
+      $data->save();
     }
 
     return $this->response($data);
