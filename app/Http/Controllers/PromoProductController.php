@@ -51,7 +51,7 @@ class PromoProductController extends Controller
                 $data->getCollection()
                     ->makeHidden(['budget_brand'])
                     ->map(function ($val) use ($promo, $is_from_depot, $is_from_distributor) {
-                        $val->budget_brand = number_format($val->persentase * $promo->budget / 100, 2);
+                        $val->budget = number_format($val->persentase * $promo->budget / 100, 2);
                         return $val;
                     })
             );
