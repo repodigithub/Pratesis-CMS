@@ -42,11 +42,12 @@ class MasterDataController extends Controller
 
   public function index(Request $req)
   {
-    if ($req->filled('search')) {
+    if ($req->filled('search') || $req->filled('type')) {
       return $this->indexType("", $req);
     }
 
     $models = [
+      '*',
       Alasan::FILE_PATH,
       Area::FILE_PATH,
       Brand::FILE_PATH,
@@ -86,7 +87,9 @@ class MasterDataController extends Controller
     }
 
     if ($req->filled("type")) {
-      $data->where("type", $req->query('type'));
+      if ($req->query('type') != '*') {
+        $data->where("type", $req->query('type'));
+      }
     }
 
     if ($req->filled("uploader")) {
