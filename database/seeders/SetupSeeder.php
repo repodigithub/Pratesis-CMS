@@ -45,10 +45,6 @@ class SetupSeeder extends Seeder
             // Buat kode group / user level
             $groups = [
                 [
-                    "kode_group" => User::ROLE_ADMINISTRATOR,
-                    "nama_group" => "Administrator",
-                ],
-                [
                     "kode_group" => User::ROLE_DISTRIBUTOR,
                     "nama_group" => "Distributor",
                 ],
@@ -59,10 +55,6 @@ class SetupSeeder extends Seeder
                 [
                     "kode_group" => User::ROLE_HEAD_OFFICE,
                     "nama_group" => "Head Office",
-                ],
-                [
-                    "kode_group" => User::ROLE_SALES,
-                    "nama_group" => "Sales",
                 ],
             ];
 
@@ -123,15 +115,15 @@ class SetupSeeder extends Seeder
 
             // Buat kode distributor
             Distributor::truncate();
-            $distributor = Distributor::create([
-                'kode_distributor' => 'TEST',
-                'nama_distributor' => 'Test distributor',
-                'kode_distributor_group' => $sales->kode_distributor_group,
-                'kode_area' => $area->kode_area,
-                'alamat' => 'alamat',
-                'titik_koordinat' => null,
-                'status_distributor' => Distributor::STATUS_ACTIVE,
-            ]);
+            // $distributor = Distributor::create([
+            //     'kode_distributor' => 'TEST',
+            //     'nama_distributor' => 'Test distributor',
+            //     'kode_distributor_group' => $sales->kode_distributor_group,
+            //     'kode_area' => $area->kode_area,
+            //     'alamat' => 'alamat',
+            //     'titik_koordinat' => null,
+            //     'status_distributor' => Distributor::STATUS_ACTIVE,
+            // ]);
             $distributors = [];
             for ($i = 0; $i < 5; $i++) {
                 $distributors[] = Distributor::create([
@@ -154,7 +146,7 @@ class SetupSeeder extends Seeder
                 "email" => "admin@local.host",
                 "password" => Hash::make('password'),
                 "username" => "admin1",
-                "kode_group" => User::ROLE_ADMINISTRATOR,
+                "kode_group" => User::ROLE_HEAD_OFFICE,
                 "kode_area" => $area->kode_area,
                 "kode_distributor" => $distributors[0]->kode_distributor,
                 "status" => User::STATUS_APPROVE,
@@ -176,10 +168,10 @@ class SetupSeeder extends Seeder
                 "user_id" => "DIS01",
                 "full_name" => "Distributor",
                 "email" => "dis@local.host",
-                "password" => Hash::make('password'),
+                "password" => Hash::make('passw/ 100ord'),
                 "username" => "dis01",
                 "kode_group" => User::ROLE_DISTRIBUTOR,
-                "kode_distributor" => $distributor->kode_distributor,
+                "kode_distributor" => $distributors[0]->kode_distributor,
                 "status" => User::STATUS_APPROVE,
             ]);
             $this->command->info("Create admin distributor");
@@ -278,15 +270,22 @@ class SetupSeeder extends Seeder
             PromoDistributor::truncate();
 
             $promos = [];
-            for ($i = 0; $i < 5; $i++) {
+            for ($i = 0; $i < 10; $i++) {
                 $sequenceName = (new Promo())->getTable() . "_id_seq";
                 $count = DB::selectOne("SELECT nextval('{$sequenceName}') AS val")->val;
                 $opso_id = (int) (date('y') . date('m') . str_pad($count, 4, 0, STR_PAD_LEFT));
+                $status = [
+                    Promo::STATUS_APPROVE,
+                    Promo::STATUS_NEED_APPROVAL,
+                    Promo::STATUS_APPROVE,
+                    Promo::STATUS_DRAFT,
+                    Promo::STATUS_APPROVE,
+                ];
 
                 $promos[] = Promo::create([
-                    "status" => Promo::STATUS_DRAFT,
+                    "status" => $status[$i % count($status)],
                     "opso_id" => $opso_id,
-                    "nama_promo" => "Promo Ramadhan",
+                    "nama_promo" => "Promo Ramadhan " . ($i + 1),
                     "budget" => "100000000",
                     "start_date" => "2022-04-01",
                     "end_date" => "2022-05-01",
@@ -299,6 +298,7 @@ class SetupSeeder extends Seeder
             }
 
             $ind = 0;
+            $ind_pa = 0;
             foreach ($promos as $promo) {
                 PromoImage::create([
                     "opso_id" => $promo->opso_id,
@@ -309,7 +309,7 @@ class SetupSeeder extends Seeder
                     $promo_brand = PromoBrand::create([
                         'opso_id' => $promo->opso_id,
                         'kode_brand' => $brand->kode_brand,
-                        'budget_brand' => $promo->budget * 10 / 100 + (10000 * $index),
+                        'budget_brand' => ($promo->budget * 10 / 100 + (10000 * $index)),
                         'method' => PromoBrand::METHOD_AUTO
                     ]);
                     foreach ($brand->products as $product) {
@@ -323,30 +323,30 @@ class SetupSeeder extends Seeder
                     }
                 }
                 $this->command->info("create promo product");
+                $status = null;
+                if ($promo->status == Promo::STATUS_APPROVE) {
+                    $status = [PromoArea::STATUS_NEW_PROMO, PromoArea::STATUS_NEED_APPROVAL, PromoArea::STATUS_APPROVE,];
+                    $status = $status[$ind_pa++ % count($status)];
+                }
                 $promo_area = PromoArea::create([
                     'opso_id' => $promo->opso_id,
                     'kode_area' => $area->kode_area,
                     'budget' => $promo->budget * 10 / 100,
-                    // 'status' => PromoArea::STATUS_NEW_PROMO
+                    'status' => $status,
                 ]);
                 $this->command->info("create promo area");
 
-                $pd = PromoDistributor::create([
-                    'promo_area_id' => $promo_area->id,
-                    'kode_distributor' => $distributor->kode_distributor,
-                    'budget' => $promo_area->budget * 20 / 100,
-                    // 'status' => PromoDistributor::STATUS_APPROVE
-                ]);
-
                 $pds = [];
+                $status = $promo_area->status == PromoArea::STATUS_APPROVE ? PromoDistributor::STATUS_APPROVE : null;
                 foreach ($distributors as $d) {
                     $pds[] = PromoDistributor::create([
                         'promo_area_id' => $promo_area->id,
                         'kode_distributor' => $d->kode_distributor,
                         'budget' => $promo_area->budget * 4 / 25,
-                        // 'status' => PromoDistributor::STATUS_APPROVE
+                        'status' => $status
                     ]);
                 }
+                $this->command->info('create promo distributor');
 
                 $claims = [];
                 for ($i = 0; $i < 3; $i++) {
