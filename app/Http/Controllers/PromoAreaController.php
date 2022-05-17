@@ -25,6 +25,7 @@ class PromoAreaController extends Controller
         if ($is_from_depot) {
             // if (!auth()->user()->hasRole(User::ROLE_DISTRIBUTOR)) throw new NotFoundHttpException("path_not_found");
             $data = auth()->user()->area->promos();
+            $data->whereNotNull('status');
         } else {
             $data = $this->getModel(Promo::class, $id);
             $data = $data->promoAreas();
