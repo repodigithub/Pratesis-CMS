@@ -32,7 +32,7 @@ class PromoDistributorController extends Controller
             $data = auth()->user()->distributor->promos();
         } else {
             $data = $this->getModel(PromoArea::class, $id)->promoDistributors();
-            $data->whereNotNull('status');
+            // $data->whereNotNull('status');
         }
 
         // Filter
