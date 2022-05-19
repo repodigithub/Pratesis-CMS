@@ -26,7 +26,7 @@ class DistributorController extends MasterDataController
     }
 
     if ($req->filled("kode_distributor")) {
-      $data->where("kode_distributor", "ILIKE", "%{$req->query("kode_distributor")}%");
+      $data->where("kode_distributor", "{$req->query("kode_distributor")}");
     }
 
     if ($req->filled("nama_distributor")) {
@@ -34,16 +34,16 @@ class DistributorController extends MasterDataController
     }
 
     if ($req->filled("kode_distributor_group")) {
-      $data->where("kode_distributor_group", "ILIKE", "%{$req->query("kode_distributor_group")}%");
+      $data->where("kode_distributor_group", "{$req->query("kode_distributor_group")}");
     }
 
     if ($req->filled("kode_area")) {
-      $data->where("kode_area", "ILIKE", "%{$req->query("kode_area")}%");
+      $data->where("kode_area", "{$req->query("kode_area")}");
     }
 
     if ($req->filled("kode_region")) {
       $data->whereHas("area", function ($q) use ($req) {
-        $q->where("kode_region", "ILIKE", "%{$req->query("kode_region")}%");
+        $q->where("kode_region", "{$req->query("kode_region")}");
       });
     }
 
