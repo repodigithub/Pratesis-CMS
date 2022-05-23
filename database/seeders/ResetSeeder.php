@@ -68,16 +68,45 @@ class ResetSeeder extends Seeder
 
             User::truncate();
             // Buat admin
+
+            User::truncate();
+            // Buat admin
             $user = User::create([
-                "user_id" => "ADM01",
+                "user_id" => "admin",
                 "full_name" => "Administrator",
                 "email" => "admin@local.host",
-                "password" => Hash::make('password'),
+                "password" => Hash::make('password123'),
                 "username" => "admin1",
                 "kode_group" => User::ROLE_HEAD_OFFICE,
+                // "kode_area" => $area->kode_area,
+                // "kode_distributor" => $distributors[0]->kode_distributor,
                 "status" => User::STATUS_APPROVE,
             ]);
             $this->command->info("Create admin");
+            // buat depot
+            $ga = User::create([
+                "user_id" => "GA01",
+                "full_name" => "General Admin",
+                "email" => "ga@local.host",
+                "password" => Hash::make('password123'),
+                "username" => "ga01",
+                "kode_group" => User::ROLE_GENERAL_ADMIN,
+                // "kode_area" => $area->kode_area,
+                "status" => User::STATUS_APPROVE,
+            ]);
+            $this->command->info("Create user general admin");
+            // buat distributor
+            $dis = User::create([
+                "user_id" => "DIS01",
+                "full_name" => "Distributor",
+                "email" => "dis@local.host",
+                "password" => Hash::make('password123'),
+                "username" => "dis01",
+                "kode_group" => User::ROLE_DISTRIBUTOR,
+                // "kode_distributor" => $distributors[0]->kode_distributor,
+                "status" => User::STATUS_APPROVE,
+            ]);
+            $this->command->info("Create user distributor");
 
             Schema::enableForeignKeyConstraints();
         });
