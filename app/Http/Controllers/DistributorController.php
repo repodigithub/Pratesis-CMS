@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Http\Controllers\Master\MasterDataController;
 use App\Models\Distributor;
+use Illuminate\Support\Collection;
 use Illuminate\Validation\Rule;
 
 class DistributorController extends MasterDataController
@@ -58,6 +59,31 @@ class DistributorController extends MasterDataController
     return $data;
   }
 
+  protected function getImportedData(Collection $collect)
+  {
+    $model = new $this->model;
+    return $collect->map(function ($value) use ($model) {
+      $data = [];
+      foreach ($model->fillable as $index => $key) {
+        if ($key == 'status' && in_array($value[$index], [0, 1])) {
+          switch ($value[$index]) {
+            case '0':
+              $data[$key] = Distributor::STATUS_NON_ACTIVE;
+              break;
+            case '1':
+              $data[$key] = Distributor::STATUS_ACTIVE;
+              break;
+            default:
+              break;
+          }
+        } else {
+          $data[$key] = $value[$index];
+        }
+      }
+      return $data;
+    });
+  }
+
   protected function rules($data = null)
   {
     $rules = [];
@@ -69,9 +95,9 @@ class DistributorController extends MasterDataController
     $rules["nama_distributor"] = "required";
     $rules["kode_distributor_group"] = "required|exists:distributor_group,kode_distributor_group";
     $rules["kode_area"] = "required|exists:area,kode_area";
-    $rules["alamat"] = "required";
+    $rules["alamat"] = "nullable";
     $rules["titik_koordinat"] = "nullable";
-    $rules["status_distributor"] = ["required", Rule::in([Distributor::STATUS_ACTIVE, Distributor::STATUS_NON_ACTIVE])];
+    $rules["status_distributor"] = ["required", Rule::in([Distributor::STATUS_ACTIVE, Distributor::STATUS_NON_ACTIVE, 0, 1])];
     return $rules;
   }
 }
