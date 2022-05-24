@@ -64,12 +64,20 @@ class TipePromo extends Model
 
   public function getPersentasePpnAttribute()
   {
-    return $this->ppn()->first()->presentase_pajak;
+    try {
+      return $this->ppn()->first()->presentase_pajak;
+    } catch (\Throwable $th) {
+      return null;
+    }
   }
 
   public function getPersentasePphAttribute()
   {
-    return $this->pph()->first()->presentase_pajak;
+    try {
+      return $this->pph()->first()->presentase_pajak;
+    } catch (\Throwable $th) {
+      return null;
+    }
   }
 
   // ppn
