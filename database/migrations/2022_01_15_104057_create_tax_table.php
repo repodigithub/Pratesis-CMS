@@ -1,6 +1,6 @@
 <?php
 
-use Illuminate\Database\Migrations\Migration;
+use Database\Factories\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
 
@@ -15,11 +15,11 @@ class CreateTaxTable extends Migration
     {
         Schema::create('tax', function (Blueprint $table) {
             $table->id();
-            $table->char('kode_pajak')->unique();
+            $table->string('kode_pajak')->unique();
             $table->string('nama_pajak');
             $table->string('tipe_pajak');
             $table->integer('presentase_pajak');
-            $table->char('reference_tax');
+            $table->string('reference_tax');
             $table->timestamps();
         });
     }

@@ -4,7 +4,7 @@ use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
 
-class CreateSalesWorkforceTable extends Migration
+class CreateSettingsTable extends Migration
 {
     /**
      * Run the migrations.
@@ -13,10 +13,10 @@ class CreateSalesWorkforceTable extends Migration
      */
     public function up()
     {
-        Schema::create('sales_workforce', function (Blueprint $table) {
+        Schema::create('settings', function (Blueprint $table) {
             $table->id();
-            $table->char('kode_sales_workforce', 6)->unique();
-            $table->string('nama_sales_workforce');
+            $table->string("key")->unique();
+            $table->text("value")->nullable();
             $table->timestamps();
         });
     }
@@ -28,6 +28,6 @@ class CreateSalesWorkforceTable extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('sales_workforce');
+        Schema::dropIfExists('settings');
     }
 }

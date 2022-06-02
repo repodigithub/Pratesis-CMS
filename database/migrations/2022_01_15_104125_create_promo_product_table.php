@@ -1,6 +1,6 @@
 <?php
 
-use Illuminate\Database\Migrations\Migration;
+use Database\Factories\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
 
@@ -15,17 +15,16 @@ class CreatePromoProductTable extends Migration
     {
         Schema::create('promo_product', function (Blueprint $table) {
             $table->id();
-            $table->char('opso_id', 8);
-            $table->char('kode_brand', 15);
-            $table->string('nama_brand');
-            $table->char('kode_produk', 8);
-            $table->integer('budget_produk');
+            $table->boolean('status')->default(0);
+            $table->unsignedBigInteger('promo_brand_id');
+            $table->string('kode_produk');
+            $table->bigInteger('budget_produk')->default(0);
             $table->timestamps();
 
-            $table->foreign('opso_id')->references('opso_id')->on('promo')
-                ->onDelete('cascade')->onUpdate('cascade');
+            $table->foreign('promo_brand_id')->references('id')->on('promo_brand')
+                ->cascadeOnDelete()->cascadeOnUpdate();
             $table->foreign('kode_produk')->references('kode_produk')->on('produk')
-                ->onDelete('cascade')->onUpdate('cascade');
+                ->cascadeOnDelete()->cascadeOnUpdate();
         });
     }
 

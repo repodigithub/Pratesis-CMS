@@ -4,6 +4,7 @@ namespace App\Exceptions;
 
 use Illuminate\Auth\Access\AuthorizationException;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
+use Illuminate\Support\Arr;
 use Illuminate\Validation\ValidationException;
 use Laravel\Lumen\Exceptions\Handler as ExceptionHandler;
 use Symfony\Component\HttpKernel\Exception\HttpException;
@@ -49,6 +50,35 @@ class Handler extends ExceptionHandler
      */
     public function render($request, Throwable $exception)
     {
-        return parent::render($request, $exception);
+        return parent::prepareJsonResponse($request, $exception);
+    }
+
+    protected function convertExceptionToArray(Throwable $e)
+    {
+        $status_code = 500;
+        if ($this->isHttpException($e)) {
+            $status_code = $e->getStatusCode();
+        }
+
+        $data = [];
+        if ($e instanceof ValidationException) {
+            $data = $e->errors();
+            $status_code = $e->status;
+        }
+        
+        return config("app.debug", false) ? [
+            "code" => $status_code,
+            "message" => $e->getMessage(),
+            "data" => $data,
+            "file" => $e->getFile(),
+            "line" => $e->getLine(),
+            "trace" => collect($e->getTrace())->map(function ($trace) {
+                return Arr::except($trace, ["args"]);
+            })->all(),
+        ] : [
+            "code" => $status_code,
+            "message" => $this->isHttpException($e) ? $e->getMessage() : "Server Error",
+            "data" => $data,
+        ];
     }
 }

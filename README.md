@@ -6,6 +6,8 @@ Powered by Lumen PHP Framework
 
 ```
 composer install
+php artisan migrate
+php artisan jwt:secret
 ```
 
 ## Serve
@@ -16,4 +18,4 @@ php -S localhost:8000 -t public
 
 ## Documentation
 
-Soon
+(https://documenter.getpostman.com/view/4535179/UVsFx7zw)

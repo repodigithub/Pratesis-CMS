@@ -1,6 +1,6 @@
 <?php
 
-use Illuminate\Database\Migrations\Migration;
+use Database\Factories\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
 
@@ -15,6 +15,7 @@ class CreateAlasanTable extends Migration
     {
         Schema::create('alasan', function (Blueprint $table) {
             $table->id();
+            $table->string("kode_alasan")->unique();
             $table->text('deskripsi_alasan');
             $table->timestamps();
         });

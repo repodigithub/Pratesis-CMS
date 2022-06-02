@@ -13,6 +13,8 @@
 |
 */
 
+include('api/api.php');
+
 $router->get('/', function () use ($router) {
-    return $router->app->version();
+    return env('APP_NAME');
 });

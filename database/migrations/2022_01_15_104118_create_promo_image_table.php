@@ -1,6 +1,6 @@
 <?php
 
-use Illuminate\Database\Migrations\Migration;
+use Database\Factories\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
 
@@ -15,10 +15,10 @@ class CreatePromoImageTable extends Migration
     {
         Schema::create('promo_image', function (Blueprint $table) {
             $table->id();
-            $table->char('opso_id', 8);
-            $table->string('image_promo');
+            $table->string('opso_id');
+            $table->string('file');
             $table->timestamps();
-            
+
             $table->foreign('opso_id')->references('opso_id')->on('promo')
                 ->onDelete('cascade')->onUpdate('cascade');
         });

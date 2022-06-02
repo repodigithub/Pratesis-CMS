@@ -1,6 +1,6 @@
 <?php
 
-use Illuminate\Database\Migrations\Migration;
+use Database\Factories\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
 
@@ -15,11 +15,11 @@ class CreateSpendTypeTable extends Migration
     {
         Schema::create('spend_type', function (Blueprint $table) {
             $table->id();
-            $table->char('kode_spend_type')->unique();
-            $table->char('kode_investment', 4);
-            $table->integer('fund_type');
-            $table->char('reference_tax');
-            $table->char('condition_type');
+            $table->string('kode_spend_type')->unique();
+            $table->string('kode_investment');
+            $table->string('fund_type');
+            $table->string('reference_tax');
+            $table->string('condition_type');
             $table->timestamps();
 
             $table->foreign('kode_investment')->references('kode_investment')->on('investment')
