@@ -57,7 +57,22 @@ class PromoDistributorController extends Controller
         });
 
         if ($req->filled("status")) {
-            $data->whereIn("status", explode(',', $req->query("status")));
+            $data->whereHas("promoArea", function ($q) use ($req) {
+                $q->whereHas("promo", function ($r) use ($req) {
+                    switch ($req->query("status")) {
+                        case PromoDistributor::STATUS_APPROVE:
+                            $r->whereDate("promo.end_date", ">", date('Y-m-d'));
+                            break;
+                        case PromoDistributor::STATUS_CLAIM:
+                            $r->whereDate("promo.end_date", "<", "'" . date('Y-m-d') . "'");
+                            $r->whereRaw("(promo.end_date + promo.claim) > '" . date('Y-m-d') . "'");
+                            break;
+                        case PromoDistributor::STATUS_END:
+                            $r->whereRaw("(promo.end_date + promo.claim) < '" . date('Y-m-d') . "'");
+                            break;
+                    }
+                });
+            });
         }
 
         $pagination = $this->getPagination($req);
