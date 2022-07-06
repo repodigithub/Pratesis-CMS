@@ -12,55 +12,7 @@ class ReportController extends Controller
         $this->middleware("auth:api");
     }
 
-    public function promo(Request $req)
-    {
-
-        $data = $this->getCorePromo($req);
-
-        return $this->response($data);
-    }
-
-    public function area(Request $req)
-    {
-
-        $data = $this->getCorePromo($req, function ($data) use ($req) {
-            if (!empty($req->query('kode_area'))) {
-                $data->whereHas('promoAreas', function ($query) use ($req) {
-                    $query->where('kode_area', $req->query('kode_area'));
-                });
-            }
-            return $data;
-        });
-
-        $data->setCollection($data->getCollection()->map(function ($val) {
-            $val->promo_area = $val->promoAreas()->get()->pluck('kode_area');
-            return $val;
-        }));
-
-        return $this->response($data);
-    }
-    public function brand(Request $req)
-    {
-        $data = $this->getCorePromo($req, function ($data) use ($req) {
-            if (!empty($req->query('kode_brand'))) {
-                $data->whereHas('promoProducts', function ($query) use ($req) {
-                    $query->where('kode_brand', $req->query('kode_brand'));
-                });
-            }
-            return $data;
-        });
-
-        $data->setCollection($data->getCollection()->map(function ($val) {
-            $val->brands = $val->promoProducts()->get()->map(function ($v) {
-                return $v->brand()->first()->only('kode_brand', 'nama_brand');
-            });
-            return $val;
-        }));
-
-        return $this->response($data);
-    }
-
-    private function getCorePromo(Request $req, callable $callback = null)
+    private function promo(Request $req)
     {
         $pagination = $this->getPagination($req);
         $data = Promo::select([
@@ -96,16 +48,29 @@ class ReportController extends Controller
             $data->where('status', $req->query('status'));
         }
 
-        if (!empty($callback)) {
-            $data = $callback($data);
+        if (!empty($req->query('kode_area'))) {
+            $data->whereHas('promoAreas', function ($query) use ($req) {
+                $query->where('kode_area', $req->query('kode_area'));
+            });
+        }
+
+        if (!empty($req->query('kode_brand'))) {
+            $data->whereHas('promoProducts', function ($query) use ($req) {
+                $query->where('kode_brand', $req->query('kode_brand'));
+            });
         }
 
         $data = $data->paginate($pagination->limit, ["*"], "page", $pagination->page);
         $data->setCollection($data->getCollection()->map(function ($val) {
+            $val->brands = $val->promoProducts()->get()->map(function ($v) {
+                return $v->brand()->first()->only('kode_brand', 'nama_brand');
+            });
+            $val->promo_area = $val->promoAreas()->get()->pluck('kode_area');
+
             return $val->makeHidden(['document', 'thumbnail']);
         }));
 
-        return $data;
+        return $this->response($data);
     }
 
     public function getAreaByHo(Request $req)
