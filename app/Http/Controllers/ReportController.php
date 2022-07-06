@@ -3,7 +3,9 @@
 namespace App\Http\Controllers;
 
 use App\Models\Promo\Promo;
+use App\Models\User;
 use Illuminate\Http\Request;
+use Symfony\Component\HttpKernel\Exception\BadRequestHttpException;
 
 class ReportController extends Controller
 {
@@ -12,16 +14,26 @@ class ReportController extends Controller
         $this->middleware("auth:api");
     }
 
-    private function promo(Request $req)
+    public function promo(Request $req)
     {
         $pagination = $this->getPagination($req);
-        $data = Promo::select([
-            'opso_id',
-            'nama_promo',
-            'status',
-            'start_date',
-            'end_date',
-        ]);
+
+        switch (auth()->user()->kode_group) {
+            case User::ROLE_GENERAL_ADMIN:
+                $data = auth()->user()->area->promos();
+                break;
+            case User::ROLE_DISTRIBUTOR:
+                throw new BadRequestHttpException('access_denied');
+            default:
+                $data = Promo::select([
+                    'opso_id',
+                    'nama_promo',
+                    'status',
+                    'start_date',
+                    'end_date',
+                ]);
+                break;
+        }
 
         $opso_from = $req->query('opso_from');
         $opso_to = $req->query('opso_to');
