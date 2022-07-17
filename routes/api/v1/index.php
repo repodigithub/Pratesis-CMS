@@ -25,4 +25,5 @@ $router->group(['prefix' => 'v1'], function () use ($router) {
   include('claim.php');
   include('setting.php');
   include('dashboard.php');
+  include('reports.php');
 });
